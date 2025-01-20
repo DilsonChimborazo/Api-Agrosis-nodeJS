@@ -16,6 +16,7 @@ export const createMide = async (req, res) =>{
         res.status(500).json({msg:'Error en el servidor'});
     }
 }
+
 export const getMide = async (req, res) => {
     try{
         const sql = ` SELECT mide.fk_id_sensor, mide.fk_id_era,
