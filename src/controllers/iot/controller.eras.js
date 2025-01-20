@@ -16,6 +16,7 @@ export const createEras = async (req, res) => {
     }
 }
 
+
 export const getEras = async (req, res)=>{
     try{
         const sql = ` SELECT eras.descripcion, eras.fk_id_lote,
