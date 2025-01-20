@@ -45,6 +45,7 @@ export const getLotes = async (req, res)=>{
     }
 }
 
+
 export const getLoteById = async (req, res) => {
     try{
         const { id_lote } = req.params;
