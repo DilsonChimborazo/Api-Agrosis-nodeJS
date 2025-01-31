@@ -2,9 +2,9 @@ import {configuracionBD} from '../../config/conexion.js';
 
 export const createEspecie = async (req, res) => {
     try{
-        const {id_especie, nombre_comun, nombre_cientifico,descripcion, fk_id_tipo_cultivo} = req.body;
-        const sql = 'INSERT INTO especie (id_especie, nombre_comun, nombre_cientifico,descripcion, fk_id_tipo_cultivo) VALUES($1, $2, $3, $4, $5)';
-        const values = [id_especie, nombre_comun, nombre_cientifico,descripcion, fk_id_tipo_cultivo];
+        const {nombre_comun, nombre_cientifico,descripcion, fk_id_tipo_cultivo} = req.body;
+        const sql = 'INSERT INTO especie (nombre_comun, nombre_cientifico,descripcion, fk_id_tipo_cultivo) VALUES($1, $2, $3, $4, $5)';
+        const values = [nombre_comun, nombre_cientifico,descripcion, fk_id_tipo_cultivo];
         const result = await configuracionBD.query(sql, values);
         if(result.rowCount>0){
             res.status(200).json({msg:'Especie registrada con éxito'});
