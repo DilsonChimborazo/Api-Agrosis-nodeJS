@@ -4,6 +4,6 @@ import { postDesarrollan,getDesarrollan,actualizarDesarrollan,IdDesarrollan } fr
 const routerDesarollan = Router();
 routerDesarollan.post('/desarrollan',postDesarrollan);
 routerDesarollan.get('/desarrollan',getDesarrollan);
-routerDesarollan.put('/desarrollan/:id',actualizarDesarrollan);
-routerDesarollan.get('/desarrollan/:id',IdDesarrollan);
+routerDesarollan.put('/desarrollan/:id_desarrollan',actualizarDesarrollan);
+routerDesarollan.get('/desarrollan/:id_desarrollan',IdDesarrollan);
 export default routerDesarollan;
