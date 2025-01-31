@@ -1,5 +1,5 @@
 import { configuracionBD } from "../../config/conexion.js";
-import jwt, { decode } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 
 export const validarUsuario = async (req, resp)=>{
     try{

@@ -1,15 +1,17 @@
 import { configuracionBD } from "../../config/conexion.js";
+import bycriptjs from 'bcryptjs';
 
 export const createUsuarios = async (req, res) =>{
     try{
         const {identificacion, nombre, contrasena, email, fk_id_rol} = req.body;
+        const hashedContrasena = await bycriptjs.hash(contrasena, 10)
         const sql = 'INSERT INTO usuarios (identificacion, nombre, contrasena, email, fk_id_rol) VALUES ($1, $2, $3, $4, $5)';
-        const values = [identificacion, nombre, contrasena, email, fk_id_rol];
+        const values = [identificacion, nombre, hashedContrasena, email, fk_id_rol];
         const result = await configuracionBD.query(sql, values);
         if(result.rowCount>0){
             res.status(200).json({msg:'Usuario registrado con exito'})
         }else{
-            res.status(400).json({msg:'Error al registrar usuario'})
+            res.status(400).json({msg:'Error     al registrar usuario'})
         }
     } catch(error){
         console.log(error)
@@ -82,8 +84,12 @@ export const updateUsuarios = async (req, res)=>{
     try{
         const {nombre, contrasena, email, fk_id_rol} = req.body;
         const {identificacion} = req.params;
+        let hashedContrasena;
+        if (contrasena) {
+            hashedContrasena = await bycriptjs.hash(contrasena, 10);
+        }
         const sql = `UPDATE usuarios set nombre = $1 , contrasena = $2, email = $3, fk_id_rol = $4 where identificacion =$5`;
-        const result = await configuracionBD.query(sql, [nombre, contrasena, email, fk_id_rol, identificacion]);
+        const result = await configuracionBD.query(sql, [nombre, hashedContrasena, email, fk_id_rol, identificacion]);
         if(result.rowCount > 0){
             res.status(200).json(result)
         }else{
