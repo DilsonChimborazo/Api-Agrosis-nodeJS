@@ -1,118 +1,66 @@
-import {configuracionBD} from '../../config/conexion.js';
+import { configuracionBD } from '../../config/conexion.js';
 
-export const createAsignacionActividad = async (req, res) => {
-    try{
-        const {fecha, fk_id_actividad, fk_identificacion} = req.body;
-        const sql = 'INSERT INTO asignacion_actividad (fecha, fk_id_actividad, fk_identificacion) VALUES($1, $2, $3)';
-        const values = [fecha, fk_id_actividad, fk_identificacion];
+export const createSemilleros = async (req, res) => {
+    try {
+        const { nombre_semilla, fecha_siembra, fecha_estimada, cantidad } = req.body;
+        const sql = 'INSERT INTO semilleros (nombre_semilla, fecha_siembra, fecha_estimada, cantidad) VALUES($1, $2, $3, $4)';
+        const values = [nombre_semilla, fecha_siembra, fecha_estimada, cantidad];
         const result = await configuracionBD.query(sql, values);
-        if(result.rowCount>0){
-            res.status(200).json({msg:'asignacion de actividad registrada con éxito'});
-        }else{
-            res.status(400).json({msg:'Error al registrar la asignacion de actividad'});
+        if (result.rowCount > 0) {
+            res.status(200).json({ msg: 'Semillero registrado con éxito' });
+        } else {
+            res.status(400).json({ msg: 'Error al registrar semillero' });
         }
-    }catch{
-        res.status(500).json({msg: 'Error en el servidor'});
+    } catch {
+        res.status(500).json({ msg: 'Error en el servidor' });
     }
-}
+};
 
-export const getAsignacionActividad = async (req, res)=>{
-    try{
-        const sql = ` SELECT asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad,
-        actividad.nombre_actividad, actividad.descripcion, fk_identificacion,
-        usuarios.identificacion, usuarios.nombre, usuarios.email, usuarios.fk_id_rol, Rol.id_rol, Rol.nombre_rol, Rol.fecha_creacion
-    FROM asignacion_actividad
-    JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
-    JOIN identificacion ON asignacion_actividad.fk_identificacion = usuarios.identificacion
-    JOIN Rol ON asignacion_actividad.fk_id_rol = Rol.id_rol`;
-        const result = await configuracionBD.query(sql);
-        if (result.rows.length > 0) {
-            const asignacion_actividad = result.rows.map(asignacion_actividad => ({
-                id: asignacion_actividad.id_asignacion_actividad,
-                fecha: asignacion_actividad.fecha,
-                fk_id_actividad: {
-                    id: asignacion_actividad.fk_id_actividad,
-                    nombre_actividad: asignacion_actividad.nombre_actividad,
-                    descripcion: asignacion_actividad.descripcion,
-                    fk_identificacion:{
-                        id: asignacion_actividad.fk_identificacion,
-                        nombre: asignacion_actividad.nombre,
-                        email: asignacion_actividad.email,
-                            fk_id_rol:{
-                                id: asignacion_actividad.fk_id_rol,
-                                nombre_rol: asignacion_actividad.nombre_rol,
-                                fecha_creacion: asignacion_actividad.fecha_creacion,
-
-                            },
-                    },
-                },
-            }));
-            res.status(200).json({asignacion_actividad});
-        } else{
-            res.status(404).json({msg:'No hay asignaciones de actividades registrados'})
+export const getSemilleros = async (req, res) => {
+    try {
+        const sql = `SELECT * from  semilleros`;
+        const result = await configuracionBD.query(sql)
+        if(result.rows.length >0){
+            res.status(200).json(result);
+        } else {
+            res.status(404).json({ msg: 'No hay semilleros registrados' });
         }
-    }catch(err){
+    } catch (err) {
         console.log(err);
-        res.status(500).json({msg:'Error en el servidor'});
+        res.status(500).json({ msg: 'Error en el servidor' });
     }
 }
 
-export const getAsignacionActividadById = async (req, res)=>{
-    try{
-        const {id_asignacion_actividad}=req.params;
-        const sql = ` SELECT asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad,
-        actividad.nombre_actividad, actividad.descripcion, fk_identificacion,
-        usuarios.identificacion, usuarios.nombre, usuarios.email, usuarios.fk_id_rol, Rol.id_rol, Rol.nombre_rol, Rol.fecha_creacion
-    FROM asignacion_actividad
-    JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
-    JOIN identificacion ON asignacion_actividad.fk_identificacion = usuarios.identificacion;
-    JOIN Rol ON asignacion_actividad.fk_id_rol = Rol.id_rol
-    WHERE id_asignacion_actividad = $1  `;
-        const result = await configuracionBD.query(sql,[id_asignacion_actividad]);
+export const getSemillerosById = async (req, res) => {
+    try {
+        const { id_semillero } = req.params;
+        const sql = `SELECT * FROM semilleros WHERE id_semillero = $1`;
+        const result = await configuracionBD.query(sql, [id_semillero]);
         if (result.rows.length > 0) {
-            const asignacion_actividad = result.rows.map(asignacion_actividad => ({
-                id: asignacion_actividad.id_asignacion_actividad,
-                fecha: asignacion_actividad.fecha,
-                fk_id_actividad: {
-                    id: asignacion_actividad.fk_id_actividad,
-                    nombre_actividad: asignacion_actividad.nombre_actividad,
-                    descripcion: asignacion_actividad.descripcion,
-                    fk_identificacion:{
-                        id: asignacion_actividad.fk_identificacion,
-                        nombre: asignacion_actividad.nombre,
-                        email: asignacion_actividad.email,
-                            fk_id_rol:{
-                                id: asignacion_actividad.fk_id_rol,
-                                nombre_rol: asignacion_actividad.nombre_rol,
-                                fecha_creacion: asignacion_actividad.fecha_creacion,
-
-                            },
-                    },
-                },
-            }));
-            res.status(200).json({asignacion_actividad});
-        } else{
-            res.status(404).json({msg:'No hay asignaciones de actividades registrados'})
+            res.status(200).json(result.rows[0]); // Devuelve solo el registro encontrado
+        } else {
+            res.status(404).json({ msg: 'Semillero no encontrado' });
         }
-    }catch(err){
-        console.log(err);
-        res.status(500).json({msg:'Error en el servidor'});
+    } catch (err) {
+        console.log('Error al obtener semillero por ID:', err);
+        res.status(500).json({ msg: 'Error en el servidor', error: err.message });
     }
 }
 
-export const updateAsignacionActividad = async (req, res) => {
-    try{
-        const { id_asignacion_actividad } = req.params;
-        const { fecha, fk_id_actividad, fk_identificacion } = req.body;
-        const sql = 'UPDATE asignacion_actividad SET fecha=$1, fk_id_actividad=$2 , fk_identificacion=$3 WHERE id_asignacion_actividad=$4';
-        const values = [fecha, fk_id_actividad,fk_identificacion, id_asignacion_actividad];
+export const updateSemilleros = async (req, res) => {
+    try {
+        const { id_semillero } = req.params;
+        const { nombre_semilla, fecha_siembra, fecha_estimada, cantidad } = req.body;
+        const sql = 'UPDATE semilleros SET nombre_semilla=$1, fecha_siembra=$2, fecha_estimada=$3, cantidad=$4 WHERE id_semillero=$5';
+        const values = [nombre_semilla, fecha_siembra, fecha_estimada, cantidad, id_semillero];
         const result = await configuracionBD.query(sql, values);
-        if(result.rowCount>0){
-            res.status(200).json({msg:'asignacion de actividad actualizada con éxito'});
-        }else{
-            res.status(404).json({msg:'No se encontró la asignacion de actividad'});
+        if (result.rowCount > 0) {
+            res.status(200).json({ msg: 'Semillero actualizado con éxito' });
+        } else {
+            res.status(404).json({ msg: 'No se encontró el semillero' });
         }
-    }catch{
-        res.status(500).json({msg: 'Error en el servidor'});
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ msg: 'Error en el servidor' });
     }
 }

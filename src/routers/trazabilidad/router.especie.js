@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import { createEspecie, getEspecieById, getEspecie, updateEspecie } from '../../controllers/trazabilidad/controller.especie';
+import { createEspecie, getEspecieById, getEspecie, updateEspecie } from '../../controllers/trazabilidad/controller.especie.js';
 
 const routerEspecie = Router();
 routerEspecie.post('/especie',createEspecie)

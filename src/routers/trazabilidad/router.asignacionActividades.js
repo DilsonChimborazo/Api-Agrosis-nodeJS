@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import { createAsignacionActividad, getAsignacionActividadById, getAsignacionActividad, updateAsignacionActividad } from '../../controllers/trazabilidad/controller.asignacionActividad';
+import { createAsignacionActividad, getAsignacionActividadById, getAsignacionActividad, updateAsignacionActividad } from '../../controllers/trazabilidad/controller.asignacionActividad.js';
 
 const routerasignacion_actividad = Router();
 routerasignacion_actividad.post('/asignacion_actividad',createAsignacionActividad)

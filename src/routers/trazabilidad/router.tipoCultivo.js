@@ -1,10 +1,10 @@
 import {Router} from 'express';
-import { createAsignacionActividad, getAsignacionActividadById, getAsignacionActividad, updateAsignacionActividad } from '../../controllers/trazabilidad/controller.asignacionActividad';
+import { createTipoCultivo, getTipoCultivo, getTipoCultivoById, updateTipoCultivo } from '../../controllers/trazabilidad/controller.tipoCultivo.js';
 
-const routerasignacion_actividad = Router();
-routerasignacion_actividad.post('/asignacion_actividad',createAsignacionActividad)
-routerasignacion_actividad.get('/asignacion_actividad',getAsignacionActividad)
-routerasignacion_actividad.get('/asignacion_actividad/:id_asignacion_actividad',getAsignacionActividadById)
-routerasignacion_actividad.post('/asignacion_actividad/:id_asignacion_actividad',updateAsignacionActividad)
+const routerTipoCultivo = Router();
+routerTipoCultivo.post('/tipo_cultivo',createTipoCultivo)
+routerTipoCultivo.get('/tipo_cultivo',getTipoCultivo)
+routerTipoCultivo.get('/tipo_cultivo/:id_tipo_cultivo',getTipoCultivoById)
+routerTipoCultivo.post('/tipo_cultivo/:id_tipo_cultivo',updateTipoCultivo)
 
-export default routerasignacion_actividad;
+export default routerTipoCultivo;

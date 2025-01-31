@@ -1,10 +1,10 @@
 import {Router} from 'express';
-import { createAsignacionActividad, getAsignacionActividadById, getAsignacionActividad, updateAsignacionActividad } from '../../controllers/trazabilidad/controller.asignacionActividad';
+import { createNotificacion, getNotificacion, getNotificacionById, updateNotificacion } from '../../controllers/trazabilidad/controller.notificacion.js';
 
-const routerasignacion_actividad = Router();
-routerasignacion_actividad.post('/asignacion_actividad',createAsignacionActividad)
-routerasignacion_actividad.get('/asignacion_actividad',getAsignacionActividad)
-routerasignacion_actividad.get('/asignacion_actividad/:id_asignacion_actividad',getAsignacionActividadById)
-routerasignacion_actividad.post('/asignacion_actividad/:id_asignacion_actividad',updateAsignacionActividad)
+const routerNotificacion = Router();
+routerNotificacion.post('/notificacion',createNotificacion)
+routerNotificacion.get('/notificacion',getNotificacion)
+routerNotificacion.get('/notificacion/:id_notificacion',getNotificacionById)
+routerNotificacion.post('/notificacion/:id_notificacion',updateNotificacion)
 
-export default routerasignacion_actividad;
+export default routerNotificacion;

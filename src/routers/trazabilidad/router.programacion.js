@@ -1,10 +1,10 @@
 import {Router} from 'express';
-import { createAsignacionActividad, getAsignacionActividadById, getAsignacionActividad, updateAsignacionActividad } from '../../controllers/trazabilidad/controller.asignacionActividad';
+import { createProgramacion, getProgramacion, getProgramacionById, updateProgramacion } from '../../controllers/trazabilidad/controller.programacion.js';
 
-const routerasignacion_actividad = Router();
-routerasignacion_actividad.post('/asignacion_actividad',createAsignacionActividad)
-routerasignacion_actividad.get('/asignacion_actividad',getAsignacionActividad)
-routerasignacion_actividad.get('/asignacion_actividad/:id_asignacion_actividad',getAsignacionActividadById)
-routerasignacion_actividad.post('/asignacion_actividad/:id_asignacion_actividad',updateAsignacionActividad)
+const routerProgramacion = Router();
+routerProgramacion.post('/programacion',createProgramacion)
+routerProgramacion.get('/programacion',getProgramacion)
+routerProgramacion.get('/programacion/:id_programacion',getProgramacionById)
+routerProgramacion.post('/programacion/:id_programacion',updateProgramacion)
 
-export default routerasignacion_actividad;
+export default routerProgramacion;

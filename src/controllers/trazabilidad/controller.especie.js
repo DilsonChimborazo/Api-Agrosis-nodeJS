@@ -11,19 +11,29 @@ export const createEspecie = async (req, res) => {
         }else{
             res.status(400).json({msg:'Error al registrar la Especie'});
         }
-    }catch{
+    }catch (erro){
+        console.log(erro)
         res.status(500).json({msg: 'Error en el servidor'});
     }
 }
 
-export const getEspecie= async (req, res)=>{
-    try{
-        const sql = ` SELECT especie.id_especie, especie.nombre_comun, especie.nombre_cientifico. especie.descripcion, especie.fk_id_tipo_cultivo,
-        tipo_cultivo.id_tipo_cultivo, tipo_cultivo.nombre, tipo_cultivo.descripcion,
-        
-    FROM especie
-    JOIN tipo_cultivo ON especie.fk_id_tipo_cultivo = cultivo.id_tipo_cultivo
-  `;
+export const getEspecie = async (req, res) => {
+    try {
+        const sql = `
+            SELECT 
+                especie.id_especie, 
+                especie.nombre_comun, 
+                especie.nombre_cientifico, 
+                especie.descripcion, 
+                especie.fk_id_tipo_cultivo,
+                tipo_cultivo.id_tipo_cultivo, 
+                tipo_cultivo.nombre AS nombre, 
+                tipo_cultivo.descripcion AS descripcion
+            FROM 
+                especie
+            JOIN
+            especie ON especie.fk_id_tipo_cultivo = tipo_cultivo.id_tipo_cultivo
+        `;
         const result = await configuracionBD.query(sql);
         if (result.rows.length > 0) {
             const especie = result.rows.map(especie => ({
@@ -31,33 +41,33 @@ export const getEspecie= async (req, res)=>{
                 nombre_comun: especie.nombre_comun,
                 nombre_cientifico: especie.nombre_cientifico,
                 descripcion: especie.descripcion,
-                fk_id_tipo_cultivo: {
-                    id: especie.fk_id_tipo_cultivo,
+                tipo_cultivo: {
+                    id: especie.id_tipo_cultivo,
                     nombre: especie.nombre,
                     descripcion: especie.descripcion,
-                    
                 },
             }));
-            res.status(200).json({especie});
-        } else{
-            res.status(404).json({msg:'No hay especies registradas'})
+            res.status(200).json({ especie});
+        } else {
+            res.status(404).json({ msg: 'No hay especies registradas' });
         }
-    }catch(err){
-        console.log(err);
-        res.status(500).json({msg:'Error en el servidor'});
+    } catch (err) {
+        console.log('Error al obtener especies:', err);
+        res.status(500).json({ msg: 'Error en el servidor', error: err.message });
     }
 }
+
 
 export const getEspecieById = async (req, res)=>{
     try{
         const {id_especie}=req.params;
-        const sql = ` SELECT especie.id_especie, especie.nombre_comun, especie.nombre_cientifico. especie.descripcion, especie.fk_id_tipo_cultivo,
-        tipo_cultivo.id_tipo_cultivo, tipo_cultivo.nombre, tipo_cultivo.descripcion,
+        const sql = ` SELECT especie.id_especie, especie.nombre_comun, especie.nombre_cientifico, especie.descripcion, especie.fk_id_tipo_cultivo,
+        tipo_cultivo.id_tipo_cultivo, tipo_cultivo.nombre, tipo_cultivo.descripcion
         
     FROM especie
     JOIN tipo_cultivo ON especie.fk_id_tipo_cultivo = cultivo.id_tipo_cultivo
-    WHERE especie = $1`;
-    const result = await configuracionBD.query(sql);
+    WHERE especie.id_especie =$1`;
+    const result = await configuracionBD.query(sql,[id_especie]);
     if (result.rows.length > 0) {
         const especie = result.rows.map(especie => ({
             id: especie.id_especie,

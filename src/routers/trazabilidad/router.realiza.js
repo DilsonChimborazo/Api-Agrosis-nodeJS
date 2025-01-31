@@ -1,10 +1,10 @@
 import {Router} from 'express';
-import { createAsignacionActividad, getAsignacionActividadById, getAsignacionActividad, updateAsignacionActividad } from '../../controllers/trazabilidad/controller.asignacionActividad';
+import { createRealiza, getRealiza, getRealizaById, updateRealiza } from '../../controllers/trazabilidad/controller.realiza.js';
 
-const routerasignacion_actividad = Router();
-routerasignacion_actividad.post('/asignacion_actividad',createAsignacionActividad)
-routerasignacion_actividad.get('/asignacion_actividad',getAsignacionActividad)
-routerasignacion_actividad.get('/asignacion_actividad/:id_asignacion_actividad',getAsignacionActividadById)
-routerasignacion_actividad.post('/asignacion_actividad/:id_asignacion_actividad',updateAsignacionActividad)
+const routerRealiza = Router();
+routerRealiza.post('/realiza',createRealiza)
+routerRealiza.get('/realiza',getRealiza)
+routerRealiza.get('/realiza/:id_realiza',getRealizaById)
+routerRealiza.post('/realiza/:id_realiza',updateRealiza)
 
-export default routerasignacion_actividad;
+export default routerRealiza;

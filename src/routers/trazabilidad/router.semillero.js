@@ -1,10 +1,10 @@
 import {Router} from 'express';
-import { createAsignacionActividad, getAsignacionActividadById, getAsignacionActividad, updateAsignacionActividad } from '../../controllers/trazabilidad/controller.asignacionActividad';
+import { createSemilleros, getSemilleros, getSemillerosById, updateSemilleros } from '../../controllers/trazabilidad/controller.semillero.js';
 
-const routerasignacion_actividad = Router();
-routerasignacion_actividad.post('/asignacion_actividad',createAsignacionActividad)
-routerasignacion_actividad.get('/asignacion_actividad',getAsignacionActividad)
-routerasignacion_actividad.get('/asignacion_actividad/:id_asignacion_actividad',getAsignacionActividadById)
-routerasignacion_actividad.post('/asignacion_actividad/:id_asignacion_actividad',updateAsignacionActividad)
+const routerSemillero = Router();
+routerSemillero.post('/semilleros',createSemilleros)
+routerSemillero.get('/semilleros',getSemilleros)
+routerSemillero.get('/semilleros/:id_semilleros',getSemillerosById)
+routerSemillero.post('/semilleros/:id_semilleros',updateSemilleros)
 
-export default routerasignacion_actividad;
+export default routerSemillero;  

@@ -1,55 +1,36 @@
 import {configuracionBD} from '../../config/conexion.js';
 
-export const createAsignacionActividad = async (req, res) => {
+export const createTipoCultivo = async (req, res) => {
     try{
-        const {fecha, fk_id_actividad, fk_identificacion} = req.body;
-        const sql = 'INSERT INTO asignacion_actividad (fecha, fk_id_actividad, fk_identificacion) VALUES($1, $2, $3)';
-        const values = [fecha, fk_id_actividad, fk_identificacion];
+        const {id_tipo_cultivo, nombre, descripcion} = req.body;
+        const sql = 'INSERT INTO tipo_cultivo (id_tipo_cultivo, nombre, descripcion) VALUES($1, $2, $3)';
+        const values = [id_tipo_cultivo, nombre, descripcion];
         const result = await configuracionBD.query(sql, values);
         if(result.rowCount>0){
-            res.status(200).json({msg:'asignacion de actividad registrada con éxito'});
+            res.status(200).json({msg:'Tipo de cultivo registrado con éxito'});
         }else{
-            res.status(400).json({msg:'Error al registrar la asignacion de actividad'});
+            res.status(400).json({msg:'Error al registrar Tipo de cultivo'});
         }
     }catch{
         res.status(500).json({msg: 'Error en el servidor'});
     }
 }
 
-export const getAsignacionActividad = async (req, res)=>{
+export const getTipoCultivo  = async (req, res)=>{
     try{
-        const sql = ` SELECT asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad,
-        actividad.nombre_actividad, actividad.descripcion, fk_identificacion,
-        usuarios.identificacion, usuarios.nombre, usuarios.email, usuarios.fk_id_rol, Rol.id_rol, Rol.nombre_rol, Rol.fecha_creacion
-    FROM asignacion_actividad
-    JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
-    JOIN identificacion ON asignacion_actividad.fk_identificacion = usuarios.identificacion
-    JOIN Rol ON asignacion_actividad.fk_id_rol = Rol.id_rol`;
+        const sql = ` SELECT tipo_cultivo.id_tipo_cultivo, tipo_cultivo.nombre, tipo_cultivo.descripcion
+        FROM tipo_cultivo`;
         const result = await configuracionBD.query(sql);
         if (result.rows.length > 0) {
-            const asignacion_actividad = result.rows.map(asignacion_actividad => ({
-                id: asignacion_actividad.id_asignacion_actividad,
-                fecha: asignacion_actividad.fecha,
-                fk_id_actividad: {
-                    id: asignacion_actividad.fk_id_actividad,
-                    nombre_actividad: asignacion_actividad.nombre_actividad,
-                    descripcion: asignacion_actividad.descripcion,
-                    fk_identificacion:{
-                        id: asignacion_actividad.fk_identificacion,
-                        nombre: asignacion_actividad.nombre,
-                        email: asignacion_actividad.email,
-                            fk_id_rol:{
-                                id: asignacion_actividad.fk_id_rol,
-                                nombre_rol: asignacion_actividad.nombre_rol,
-                                fecha_creacion: asignacion_actividad.fecha_creacion,
-
-                            },
-                    },
-                },
+            const tipo_cultivo = result.rows.map(tipo_cultivo => ({
+                id: tipo_cultivo.id_tipo_cultivo,
+                nombre: tipo_cultivo.nombre,
+                descripcion: tipo_cultivo.descripcion,
+                    
             }));
-            res.status(200).json({asignacion_actividad});
+            res.status(200).json({tipo_cultivo});
         } else{
-            res.status(404).json({msg:'No hay asignaciones de actividades registrados'})
+            res.status(404).json({msg:'No hay tipo de cultivos registrados'})
         }
     }catch(err){
         console.log(err);
@@ -57,42 +38,23 @@ export const getAsignacionActividad = async (req, res)=>{
     }
 }
 
-export const getAsignacionActividadById = async (req, res)=>{
+export const getTipoCultivoById = async (req, res)=>{
     try{
-        const {id_asignacion_actividad}=req.params;
-        const sql = ` SELECT asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad,
-        actividad.nombre_actividad, actividad.descripcion, fk_identificacion,
-        usuarios.identificacion, usuarios.nombre, usuarios.email, usuarios.fk_id_rol, Rol.id_rol, Rol.nombre_rol, Rol.fecha_creacion
-    FROM asignacion_actividad
-    JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
-    JOIN identificacion ON asignacion_actividad.fk_identificacion = usuarios.identificacion;
-    JOIN Rol ON asignacion_actividad.fk_id_rol = Rol.id_rol
-    WHERE id_asignacion_actividad = $1  `;
-        const result = await configuracionBD.query(sql,[id_asignacion_actividad]);
+        const {id_tipo_cultivo}=req.params;
+        const sql = ` SELECT tipo_cultivo.id_tipo_cultivo, tipo_cultivo.nombre, tipo_cultivo.descripcion
+        FROM tipo_cultivo`;
+
+
+        const result = await configuracionBD.query(sql,[id_tipo_cultivo]);
         if (result.rows.length > 0) {
-            const asignacion_actividad = result.rows.map(asignacion_actividad => ({
-                id: asignacion_actividad.id_asignacion_actividad,
-                fecha: asignacion_actividad.fecha,
-                fk_id_actividad: {
-                    id: asignacion_actividad.fk_id_actividad,
-                    nombre_actividad: asignacion_actividad.nombre_actividad,
-                    descripcion: asignacion_actividad.descripcion,
-                    fk_identificacion:{
-                        id: asignacion_actividad.fk_identificacion,
-                        nombre: asignacion_actividad.nombre,
-                        email: asignacion_actividad.email,
-                            fk_id_rol:{
-                                id: asignacion_actividad.fk_id_rol,
-                                nombre_rol: asignacion_actividad.nombre_rol,
-                                fecha_creacion: asignacion_actividad.fecha_creacion,
-
-                            },
-                    },
-                },
+            const tipo_cultivo = result.rows.map(tipo_cultivo => ({
+                id: tipo_cultivo.id_tipo_cultivo,
+                nombre: tipo_cultivo.nombre,
+                descripcion:tipo_cultivo.descripcion,
             }));
-            res.status(200).json({asignacion_actividad});
+            res.status(200).json({tipo_cultivo});
         } else{
-            res.status(404).json({msg:'No hay asignaciones de actividades registrados'})
+            res.status(404).json({msg:'No existe el tipo de cultivo'})
         }
     }catch(err){
         console.log(err);
@@ -100,17 +62,17 @@ export const getAsignacionActividadById = async (req, res)=>{
     }
 }
 
-export const updateAsignacionActividad = async (req, res) => {
+export const updateTipoCultivo  = async (req, res) => {
     try{
-        const { id_asignacion_actividad } = req.params;
-        const { fecha, fk_id_actividad, fk_identificacion } = req.body;
-        const sql = 'UPDATE asignacion_actividad SET fecha=$1, fk_id_actividad=$2 , fk_identificacion=$3 WHERE id_asignacion_actividad=$4';
-        const values = [fecha, fk_id_actividad,fk_identificacion, id_asignacion_actividad];
+        const { id_tipo_cultivo } = req.params;
+        const { nombre, descripcion } = req.body;
+        const sql = 'UPDATE tipo_cultivo SET nombre=$1, descripcion=$2 WHERE id_tipo_cultivo=$3';
+        const values = [id_tipo_cultivo, nombre, descripcion];
         const result = await configuracionBD.query(sql, values);
         if(result.rowCount>0){
-            res.status(200).json({msg:'asignacion de actividad actualizada con éxito'});
+            res.status(200).json({msg:'Tipo de cultivo actualizado con éxito'});
         }else{
-            res.status(404).json({msg:'No se encontró la asignacion de actividad'});
+            res.status(404).json({msg:'No se encontró el tipo de cultivo'});
         }
     }catch{
         res.status(500).json({msg: 'Error en el servidor'});

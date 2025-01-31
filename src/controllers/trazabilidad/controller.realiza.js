@@ -2,14 +2,14 @@ import {configuracionBD} from '../../config/conexion.js';
 
 export const createRealiza = async (req, res) => {
     try{
-        const {descripcion, fk_id_lote} = req.body;
-        const sql = 'INSERT INTO eras (descripcion, fk_id_lote) VALUES($1, $2)';
-        const values = [descripcion, fk_id_lote];
+        const {id_realiza, fk_id_cultivo, fk_id_actividad} = req.body;
+        const sql = 'INSERT INTO eras (id_realiza, fk_id_cultivo, fk_id_actividad) VALUES($1, $2, $3)';
+        const values = [id_realiza, fk_id_cultivo, fk_id_actividad];
         const result = await configuracionBD.query(sql, values);
         if(result.rowCount>0){
-            res.status(200).json({msg:'Era registrada con éxito'});
+            res.status(200).json({msg:' "Realiza" registrada con éxito'});
         }else{
-            res.status(400).json({msg:'Error al registrar la era'});
+            res.status(400).json({msg:'Error al registrar "Realiza" '});
         }
     }catch{
         res.status(500).json({msg: 'Error en el servidor'});
@@ -18,32 +18,31 @@ export const createRealiza = async (req, res) => {
 
 export const getRealiza = async (req, res)=>{
     try{
-        const sql = ` SELECT eras.descripcion, eras.fk_id_lote,
-        lote.id_lote, lote.dimension, lote.nombre_lote, lote.fk_id_ubicacion, lote.estado,
-        ubicacion.id_ubicacion, ubicacion.latitud, ubicacion.longitud
-    FROM eras
-    JOIN lote ON eras.fk_id_lote = lote.id_lote
-    JOIN ubicacion ON lote.fk_id_ubicacion = ubicacion.id_ubicacion;`;
+        const sql = ` SELECT realiza.id_realiza, realiza.fk_id_cultivo, cultivo.id_cultivo,
+        cultivo.nombre_cultivo, cultivo.descripcion, realiza.fk_id_actividad, actividad.id_actividad,
+        actividad.nombre_actividad, actividad.descripcion
+    FROM realiza
+    JOIN cultivo ON realiza.fk_id_cultivo = cultivo.id_cultivo
+    JOIN actividad ON realiza.fk_id_actividad = actividad.id_actividad;`;
         const result = await configuracionBD.query(sql);
         if (result.rows.length > 0) {
-            const eras = result.rows.map(eras => ({
-                id: eras.id_eras,
-                descripcion: eras.descripcion,
-                fk_id_lote: {
-                    id: eras.fk_id_lote,
-                    dimension: eras.dimension,
-                    nombre_lote: eras.nombre_lote,
-                    fk_id_ubicacion:{
-                        id: eras.fk_id_ubicacion,
-                        latitud: eras.latitud,
-                        longitud: eras.longitud
+            const realiza = result.rows.map(realiza => ({
+                id: realiza.id_realiza,
+                fk_id_cultivo: {
+                    id: realiza.fk_id_cultivo,
+                    nombre: realiza.nombre,
+                    descripcion: realiza.descripcion
+                },
+                fk_id_actividad:{
+                    id: realiza.fk_id_actividad,
+                    nombre: realiza.nombre,
+                    descripcion: realiza.descripcion
                     },
-                    estado: eras.estado
-                }
+                
             }));
-            res.status(200).json({eras});
+            res.status(200).json({realiza});
         } else{
-            res.status(404).json({msg:'No hay eras registrados'})
+            res.status(404).json({msg:'No hay "realiza" registrados'})
         }
     }catch(err){
         console.log(err);
@@ -51,34 +50,33 @@ export const getRealiza = async (req, res)=>{
     }
 }
 
-export const getEraById = async (req, res)=>{
+export const getRealizaById = async (req, res)=>{
     try{
-        const { id_eras } = req.params;
-        const sql = ` SELECT eras.descripcion, eras.fk_id_lote,
-        lote.id_lote, lote.dimension, lote.nombre_lote, lote.fk_id_ubicacion, lote.estado,
-        ubicacion.id_ubicacion, ubicacion.latitud, ubicacion.longitud
-    FROM eras
-    JOIN lote ON eras.fk_id_lote = lote.id_lote
-    JOIN ubicacion ON lote.fk_id_ubicacion = ubicacion.id_ubicacion
-    WHERE id_eras = $1 `;
-        const result = await configuracionBD.query(sql,[id_eras]);
+        const { id_realiza } = req.params;
+        const sql = ` SELECT realiza.id_realiza, realiza.fk_id_cultivo, cultivo.id_cultivo,
+        cultivo.nombre, cultivo.descripcion, realiza.fk_id_actividad, actividad.id_actividad,
+        actividad.nombre, actividad.descripcion
+    FROM realiza
+    JOIN cultivo ON realiza.fk_id_cultivo = cultivo.id_cultivo
+    JOIN actividad ON realiza.fk_id_actividad = actividad.id_actividad
+    WHERE id_realiza = $1 `;
+        const result = await configuracionBD.query(sql,[id_realiza]);
         if (result.rows.length > 0) {
-            const era = result.rows.map(eras => ({
-                id: eras.id_eras,
-                descripcion: eras.descripcion,
-                fk_id_lote: {
-                    id: eras.fk_id_lote,
-                    dimension: eras.dimension,
-                    nombre_lote: eras.nombre_lote,
-                    fk_id_ubicacion:{
-                        id: eras.fk_id_ubicacion,
-                        latitud: eras.latitud,
-                        longitud: eras.longitud
+            const realiza = result.rows.map(realiza => ({
+                id: realiza.id_realiza,
+                fk_id_cultivo: {
+                    id: realiza.fk_id_cultivo,
+                    nombre: realiza.nombre,
+                    descripcion: realiza.descripcion
+                },
+                fk_id_actividad:{
+                    id: realiza.fk_id_actividad,
+                    nombre: realiza.nombre,
+                    descripcion: realiza.descripcion
                     },
-                    estado: eras.estado
-                }
+                
             }));
-            res.status(200).json({era});
+            res.status(200).json({realiza});
         } else{
             res.status(404).json({msg:'No se encontro esa era'})
         }
@@ -88,12 +86,12 @@ export const getEraById = async (req, res)=>{
     }
 }
 
-export const updateEra = async (req, res) => {
+export const updateRealiza = async (req, res) => {
     try{
-        const { id_eras } = req.params;
-        const { descripcion, fk_id_lote } = req.body;
-        const sql = 'UPDATE eras SET descripcion=$1, fk_id_lote=$2 WHERE id_eras=$3';
-        const values = [descripcion, fk_id_lote, id_eras];
+        const { id_realiza} = req.params;
+        const { fk_id_cultivo, fk_id_actividad } = req.body;
+        const sql = 'UPDATE realiza SET fk_id_cultivo=$1, fk_id_actividad=$2 WHERE id_realiza=$3';
+        const values = [fk_id_cultivo, fk_id_actividad, id_realiza];
         const result = await configuracionBD.query(sql, values);
         if(result.rowCount>0){
             res.status(200).json({msg:'Era actualizada con éxito'});

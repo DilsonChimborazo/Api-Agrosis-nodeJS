@@ -11,20 +11,21 @@ export const createAsignacionActividad = async (req, res) => {
         }else{
             res.status(400).json({msg:'Error al registrar la asignacion de actividad'});
         }
-    }catch{
+    }catch(erro){
+        console.log(erro);
         res.status(500).json({msg: 'Error en el servidor'});
     }
 }
 
 export const getAsignacionActividad = async (req, res)=>{
     try{
-        const sql = ` SELECT asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad,
-        actividad.nombre_actividad, actividad.descripcion, fk_identificacion,
-        usuarios.identificacion, usuarios.nombre, usuarios.email, usuarios.fk_id_rol, Rol.id_rol, Rol.nombre_rol, Rol.fecha_creacion
+        const sql = ` SELECT asignacion_actividad.id_asignacion_actividad, asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad,
+        actividad.id_actividad, actividad.nombre_actividad, actividad.descripcion, asignacion_actividad.fk_identificacion,
+        usuarios.identificacion, usuarios.nombre, usuarios.contrasena, usuarios.email, usuarios.fk_id_rol, rol.id_rol, rol.nombre_rol, rol.fecha_creacion
     FROM asignacion_actividad
     JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
-    JOIN identificacion ON asignacion_actividad.fk_identificacion = usuarios.identificacion
-    JOIN Rol ON asignacion_actividad.fk_id_rol = Rol.id_rol`;
+    JOIN usuarios ON asignacion_actividad.fk_identificacion = usuarios.identificacion
+    JOIN rol ON usuarios.fk_id_rol = rol.id_rol`;
         const result = await configuracionBD.query(sql);
         if (result.rows.length > 0) {
             const asignacion_actividad = result.rows.map(asignacion_actividad => ({
@@ -60,14 +61,15 @@ export const getAsignacionActividad = async (req, res)=>{
 export const getAsignacionActividadById = async (req, res)=>{
     try{
         const {id_asignacion_actividad}=req.params;
-        const sql = ` SELECT asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad,
-        actividad.nombre_actividad, actividad.descripcion, fk_identificacion,
-        usuarios.identificacion, usuarios.nombre, usuarios.email, usuarios.fk_id_rol, Rol.id_rol, Rol.nombre_rol, Rol.fecha_creacion
+        const sql = ` SELECT asignacion_actividad.id_asignacion_actividad, asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad,
+        actividad.id_actividad, actividad.nombre_actividad, actividad.descripcion, asignacion_actividad.fk_identificacion,
+        usuarios.identificacion, usuarios.nombre, usuarios.contrasena, usuarios.email, usuarios.fk_id_rol, rol.id_rol, rol.nombre_rol, rol.fecha_creacion
     FROM asignacion_actividad
     JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
-    JOIN identificacion ON asignacion_actividad.fk_identificacion = usuarios.identificacion;
-    JOIN Rol ON asignacion_actividad.fk_id_rol = Rol.id_rol
+    JOIN usuarios ON asignacion_actividad.fk_identificacion = usuarios.identificacion
+    JOIN rol ON usuarios.fk_id_rol = rol.id_rol
     WHERE id_asignacion_actividad = $1  `;
+    
         const result = await configuracionBD.query(sql,[id_asignacion_actividad]);
         if (result.rows.length > 0) {
             const asignacion_actividad = result.rows.map(asignacion_actividad => ({
@@ -112,7 +114,8 @@ export const updateAsignacionActividad = async (req, res) => {
         }else{
             res.status(404).json({msg:'No se encontró la asignacion de actividad'});
         }
-    }catch{
+    }catch(erro){
+        console.log(erro)
         res.status(500).json({msg: 'Error en el servidor'});
     }
 }

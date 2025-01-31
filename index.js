@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import routerAsignacionActividad from './src/routers/trazabilidad/router.asignacionActividad.js';
+import routerasignacion_actividad from './src/routers/trazabilidad/router.asignacionActividades.js';
 import routerCalendarioLunar from './src/routers/trazabilidad/router.calendarioLunar.js';
 import routerEspecie from './src/routers/trazabilidad/router.especie.js';
 import routerNotificacion from './src/routers/trazabilidad/router.notificacion.js';
@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 // Definimos los endpoints para las operaciones CRUD
-app.use(routerAsignacionActividad)
+app.use(routerasignacion_actividad)
 app.use(routerCalendarioLunar)
 app.use(routerEspecie)
 app.use(routerNotificacion)

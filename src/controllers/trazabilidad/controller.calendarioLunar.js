@@ -2,9 +2,9 @@ import {configuracionBD} from '../../config/conexion.js';
 
 export const createCalendarioLunar = async (req, res) => {
     try{
-        const {id_calendario_lunar, fecha, descripcion, evento} = req.body;
-        const sql = 'INSERT INTO calendario_lunar (id_calendario_lunar, fecha, descripcion, evento) VALUES($1, $2, $3, $4)';
-        const values = [id_calendario_lunar,fecha, descripcion, evento];
+        const {fecha, descripcion, evento} = req.body;
+        const sql = 'INSERT INTO calendario_lunar (fecha, descripcion, evento) VALUES($1, $2, $3)';
+        const values = [fecha, descripcion, evento];
         const result = await configuracionBD.query(sql, values);
         if(result.rowCount>0){
             res.status(200).json({msg:'Evento en calendario lunar registrado con éxito'});
@@ -18,18 +18,11 @@ export const createCalendarioLunar = async (req, res) => {
 
 export const getCalendarioLunar = async (req, res)=>{
     try{
-        const sql = ` SELECT calendario_lunar.id_calendario_lunar, calendario_lunar.fecha, calendario_lunar.descripcion, calendario_lunar.evento,
-    FROM  calendario_lunar`;
+        const sql = ` SELECT * from calendario_lunar`;
         const result = await configuracionBD.query(sql);
         if (result.rows.length > 0) {
-            const  calendario_lunar = result.rows.map( calendario_lunar => ({
-                id: calendario_lunar.id_calendario_lunar,
-                fecha:  calendario_lunar.fecha,
-                descripcion:  calendario_lunar.descripcion,
-                evento:  calendario_lunar.evento,
-                
-            }));
-            res.status(200).json({ calendario_lunar});
+           
+            res.status(200).json(result);
         } else{
             res.status(404).json({msg:'No hay eventos en  calendario lunar registrados'})
         }
@@ -39,37 +32,28 @@ export const getCalendarioLunar = async (req, res)=>{
     }
 }
 
-export const getCalendarioLunarById = async (req, res)=>{
-    try{
-        const {id_calendario_lunar}=req.params;
-        const sql = ` SELECT  calendario_lunar.id_calendario_lunar, calendario_lunar.fecha, calendario_lunar.descripcion, calendario_lunar.evento,
-        
-    FROM  calendario_lunar,
-    WHERE  calendario_lunar = $1  `;
-        const result = await configuracionBD.query(sql,[id_calendario_lunar]);
+export const getCalendarioLunarById = async (req, res) => {
+    try {
+        const { id_calendario_lunar } = req.params;
+        const sql = `SELECT * FROM calendario_lunar WHERE id_calendario_lunar = $1`;
+        const result = await configuracionBD.query(sql, [id_calendario_lunar]);
         if (result.rows.length > 0) {
-            const  calendario_lunar = result.rows.map( calendario_lunar => ({
-                id:  calendario_lunar.id_calendario_lunar,
-                fecha:  calendario_lunar.fecha,
-                descripcion:  calendario_lunar.descripcion,
-                evento: calendario_lunar.evento,
-                
-            }));
-            res.status(200).json({calendario_lunar});
-        } else{
-            res.status(404).json({msg:'No hay eventos registrados en el  calendario lunar'})
+            res.status(200).json(result.rows[0]); // Devuelve solo el registro encontrado
+        } else {
+            res.status(404).json({ msg: 'No hay eventos registrados en el calendario lunar' });
         }
-    }catch(err){
-        console.log(err);
-        res.status(500).json({msg:'Error en el servidor'});
+    } catch (err) {
+        console.log('Error al obtener el calendario lunar:', err);
+        res.status(500).json({ msg: 'Error en el servidor', error: err.message });
     }
 }
+
 
 export const updateCalendarioLunar= async (req, res) => {
     try{
         const { id_calendario_lunar } = req.params;
         const { fecha, descripcion, evento } = req.body;
-        const sql = 'UPDATE  calendario_lunar SET  fecha=$2, descripcion=$3 , evento=$4 WHERE id_calendario_lunar=$1';
+        const sql = 'UPDATE  calendario_lunar SET  fecha=$1, descripcion=$2 , evento=$3 WHERE id_calendario_lunar=$4';
         const values = [id_calendario_lunar,fecha,descripcion, evento];
         const result = await configuracionBD.query(sql, values);
         if(result.rowCount>0){

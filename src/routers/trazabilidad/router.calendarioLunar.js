@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import { createCalendarioLunar, getCalendarioLunar, getCalendarioLunarById, updateCalendarioLunar } from '../../controllers/trazabilidad/controller.calendarioLunar';
+import { createCalendarioLunar, getCalendarioLunar, getCalendarioLunarById, updateCalendarioLunar } from '../../controllers/trazabilidad/controller.calendarioLunar.js';
 
 const routercalendario_lunar = Router();
 routercalendario_lunar.post('/calendario_lunar',createCalendarioLunar)
