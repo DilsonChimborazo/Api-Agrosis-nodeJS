@@ -7,6 +7,7 @@ import routerDesarollan from "./src/router/router.desarrollan.js";
 import routerTipoCultivo from "./src/router/router.tipo_cultivo.js";
 import routerActividad from "./src/router/router.actividad.js";
 import routerResiduos from "./src/router/router.residuos.js";
+import RouterCF from "./src/router/router.controlFitosanitario.js";
 
 const app = express();
 app.use(bodyParser.json());
@@ -19,6 +20,7 @@ app.use(routerDesarollan);
 app.use(routerTipoCultivo);
 app.use(routerActividad);
 app.use(routerResiduos);
+app.use(RouterCF);
 
 app.listen(3000, () => {
   console.log("Servidor corriendo en el puerto 3000");
