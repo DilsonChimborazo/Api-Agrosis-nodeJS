@@ -4,7 +4,7 @@ import routerPlantacion from "./src/router/router.plantacion.js";
 import routerCultivo from "./src/router/router.cultivo.js";
 import routerPea from "./src/router/router.pea.js";
 import routerDesarollan from "./src/router/router.desarrollan.js";
-
+import routerTipoCultivo from "./src/router/router.tipo_cultivo.js";
 
 const app = express();
 app.use(bodyParser.json());
@@ -14,6 +14,7 @@ app.use(routerPlantacion);
 app.use(routerCultivo);
 app.use(routerPea);
 app.use(routerDesarollan);
+app.use(routerTipoCultivo);
 
 
 app.listen(3000, () => {
