@@ -1,4 +1,3 @@
-
 import express from 'express';
 import bodyParser from 'body-parser';
 
@@ -32,12 +31,16 @@ import routerActividad from "./src/router/router.actividad.js";
 import routerResiduos from "./src/router/router.residuos.js";
 import RouterCF from "./src/router/router.controlFitosanitario.js";
 
-
+// Definimos los endpoints para las operaciones CRUD para el modulo Usuarios
+import routerRol from './src/routers/usuarios/router.rol.js';
+import routerUsuarios from './src/routers/usuarios/router.usuarios.js';
+import router from './src/routers/usuarios/router.autenticacion.js';
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
+
 
 
 // Definimos los endpoints para las operaciones CRUD para el modulo IOT
@@ -70,8 +73,14 @@ app.use(routerActividad);
 app.use(routerResiduos);
 app.use(RouterCF);
 
-
+// Definimos los endpoints para las operaciones CRUD para el modulo Usuarios
+app.use(routerRol)
+app.use(routerUsuarios)
+app.use(router)
 
 app.listen(3000, () => {
     console.log("Servidor inicializado en el puerto 3000");
 });
+
+
+
