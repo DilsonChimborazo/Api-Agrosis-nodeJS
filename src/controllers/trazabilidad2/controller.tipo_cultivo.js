@@ -1,4 +1,4 @@
-import { pool } from "../config/conexion.js";
+import { configuracionBD} from "../config/conexion.js";
 
 export const postTipoCultivo = async (req, res) => {
     try {
@@ -22,7 +22,7 @@ export const postTipoCultivo = async (req, res) => {
 export const getTipoCultivo = async (req, res) => {
     try {
         const sql = "SELECT * FROM tipo_cultivo";
-        const result = await pool.query(sql);
+        const result = await configuracionBD.query(sql);
 
         if (result.rows.length > 0) {
             res.status(200).json({ tiposCultivo: result.rows });
@@ -43,7 +43,7 @@ export const actualizarTipoCultivo = async (req, res) => {
         const { id_tipo_cultivo } = req.params;
         const sql = "UPDATE tipo_cultivo SET nombre = $1, descripcion = $2 WHERE id_tipo_cultivo = $3";
 
-        const result = await pool.query(sql, [nombre, descripcion, id_tipo_cultivo]);
+        const result = await configuracionBD.query(sql, [nombre, descripcion, id_tipo_cultivo]);
 
         if (result.rowCount > 0) {
             res.status(200).json({ message: "Tipo de cultivo actualizado correctamente" });
@@ -62,7 +62,7 @@ export const IdTipoCultivo = async (req, res) => {
         const { id_tipo_cultivo } = req.params;
         const sql = "SELECT * FROM tipo_cultivo WHERE id_tipo_cultivo = $1";
 
-        const result = await pool.query(sql, [id_tipo_cultivo]);
+        const result = await configuracionBD.query(sql, [id_tipo_cultivo]);
 
         if (result.rows.length > 0) {
             res.status(200).json({ tipoCultivo: result.rows[0] });

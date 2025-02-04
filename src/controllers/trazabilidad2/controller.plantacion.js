@@ -1,11 +1,11 @@
-import { pool } from "../config/conexion.js";
+import { configuracionBD } from "../config/conexion.js";
 
 
 export const postplantacion = async (req,res) =>{
     try{
         const {fk_id_cultivo, fk_id_era}=req.body
         const sql="INSERT INTO plantacion(fk_id_cultivo,fk_id_era)VALUES($1,$2)";
-        const rows = await pool.query(sql,[fk_id_cultivo, fk_id_era]);
+        const rows = await configuracionBD.query(sql,[fk_id_cultivo, fk_id_era]);
         if (rows.rowCount> 0)
             return res.status(200).json({"message":"plantacion registrado correctamente"});
         else{
@@ -65,7 +65,7 @@ export const getPlantacion = async (req, res) => {
                 JOIN lote l ON er.fk_id_lote = l.id_lote  
                 JOIN ubicacion u ON l.fk_id_ubicacion = u.id_ubicacion`;
 
-        const result = await pool.query(sql);
+        const result = await configuracionBD.query(sql);
 
         if (result.rows.length > 0) {
             const plantaciones = result.rows.map(plant => ({
@@ -128,7 +128,7 @@ export const actualizarPlantacion = async (req, res) => {
         const id = req.params.id_plantacion;
         const sql = "UPDATE plantacion SET fk_id_cultivo=$1, fk_id_era=$2 WHERE id_plantacion=$3";
         
-        const { rowCount } = await pool.query(sql, [fk_id_cultivo, fk_id_era, id]);
+        const { rowCount } = await configuracionBD.query(sql, [fk_id_cultivo, fk_id_era, id]);
         
         if (rowCount > 0) {
             return res.status(200).json({ "message": "Plantación editada correctamente." });
@@ -191,7 +191,7 @@ export const IdPlantacion = async (req, res) => {
                 JOIN ubicacion u ON l.fk_id_ubicacion = u.id_ubicacion
                 WHERE p.id_plantacion = $1`;
 
-        const result = await pool.query(sql, [id_plantacion]);
+        const result = await configuracionBD.query(sql, [id_plantacion]);
 
         if (result.rows.length > 0) {
             const plantacion = result.rows.map(plant => ({

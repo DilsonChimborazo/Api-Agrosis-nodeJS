@@ -1,10 +1,10 @@
-import {pool} from "../config/conexion.js"
+import {configuracionBD} from "../config/conexion.js"
 
 export const postPea = async (req, res) => {
     try {
         const { nombre, descripcion } = req.body;
         const sql = "INSERT INTO pea(nombre, descripcion) VALUES($1, $2)";
-        const rows = await pool.query(sql, [nombre, descripcion]);
+        const rows = await configuracionBD.query(sql, [nombre, descripcion]);
 
         if (rows.rowCount > 0) {
             return res.status(200).json({ "message": "PEA registrado correctamente" });
@@ -26,7 +26,7 @@ export const getPea = async (req, res) => {
                     descripcion 
                 FROM pea`;
 
-        const result = await pool.query(sql);
+        const result = await configuracionBD.query(sql);
 
         if (result.rows.length > 0) {
             const peas = result.rows.map(pea => ({
@@ -52,7 +52,7 @@ export const actualizarPea= async (req, res) => {
         const id = req.params.id_pea;
 
         const sql = `UPDATE pea SET nombre = $1, descripcion = $2 WHERE id_pea = $3`;
-        const { rowCount } = await pool.query(sql, [nombre, descripcion, id]);
+        const { rowCount } = await configuracionBD.query(sql, [nombre, descripcion, id]);
         if (rowCount > 0) {
             return res.status(200).json({ "message": "PEA editada correctamente." });
         } else {
@@ -77,7 +77,7 @@ export const IdPea = async (req, res) => {
                 FROM pea 
                 WHERE id_pea = $1`;
 
-        const result = await pool.query(sql, [id_pea]);
+        const result = await configuracionBD.query(sql, [id_pea]);
 
         if (result.rows.length > 0) {
             const pea = result.rows.map(p => ({

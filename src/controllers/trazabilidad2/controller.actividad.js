@@ -1,10 +1,10 @@
-import {pool} from "../config/conexion.js";
+import {configuracionBD} from "../config/conexion.js";
 
 export const postActividad = async (req , res) => {
     try{
         const {nombre_actividad, descripcion } = req.body
         const sql = "INSERT INTO actividad(nombre_actividad, descripcion) VALUES($1, $2)"
-        const rows = await pool.query(sql, [nombre_actividad, descripcion ]);
+        const rows = await configuracionBD.query(sql, [nombre_actividad, descripcion ]);
 
         if (rows.rowCount > 0) {
             return res.status(200).json({ "message": "Actividad registrado correctamente" });
@@ -23,7 +23,7 @@ export const postActividad = async (req , res) => {
                     nombre_actividad,
                     descripcion
                 FROM actividad`;
-        const result = await pool.query(sql);
+        const result = await configuracionBD.query(sql);
 
         if (result.rows.length > 0){
             const actividad = result.rows.map(actividad => ({
@@ -54,7 +54,7 @@ export const postActividad = async (req , res) => {
                 FROM actividad
                 WHERE id_actividad = $1`;
 
-        const result = await pool.query(sql, [id_actividad]);
+        const result = await configuracionBD.query(sql, [id_actividad]);
 
         if (result.rows.length > 0) {
             const actividad = result.rows.map(a => ({
@@ -80,7 +80,7 @@ export const actualizarActividad = async (req, res) => {
         const id = req.params.id_actividad;
 
         const sql = `UPDATE actividad SET nombre_actividad = $1, descripcion = $2 WHERE id_actividad = $3`;
-        const { rowCount } = await pool.query(sql, [nombre_actividad, descripcion, id]);
+        const { rowCount } = await configuracionBD.query(sql, [nombre_actividad, descripcion, id]);
         if (rowCount > 0) {
             return res.status(200).json({ "message": "Actividad editada correctamente." });
         } else {

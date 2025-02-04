@@ -1,10 +1,10 @@
-import { pool } from "../config/conexion.js";
+import { configuracionBD } from "../config/conexion.js";
 
 export const postCultivo = async (req, res) => {
     try {
         const { fecha_plantacion, nombre_cultivo, descripcion, fk_id_especie, fk_id_semillero } = req.body;
         const sql = "INSERT INTO cultivo(fecha_plantacion, nombre_cultivo, descripcion, fk_id_especie, fk_id_semillero) VALUES($1, $2, $3, $4, $5)";
-        const rows = await pool.query(sql, [fecha_plantacion, nombre_cultivo, descripcion, fk_id_especie, fk_id_semillero]);
+        const rows = await configuracionBD.query(sql, [fecha_plantacion, nombre_cultivo, descripcion, fk_id_especie, fk_id_semillero]);
 
         if (rows.rowCount > 0) {
             return res.status(200).json({ "message": "Cultivo registrado correctamente" });
@@ -47,7 +47,7 @@ export const getCultivo = async (req, res) => {
                 LEFT JOIN tipo_cultivo t ON e.fk_id_tipo_cultivo = t.id_tipo_cultivo
                 LEFT JOIN semilleros s ON c.fk_id_semillero = s.id_semillero`;
 
-        const result = await pool.query(sql);
+        const result = await configuracionBD.query(sql);
 
         if (result.rows.length > 0) {
             const cultivos = result.rows.map(cultivo => ({
@@ -95,7 +95,7 @@ export const actualizarCultivo = async (req, res) => {
         const id = req.params.id_cultivo;
         const sql = "UPDATE cultivo SET fecha_plantacion=$1, nombre_cultivo=$2, descripcion=$3, fk_id_especie=$4, fk_id_semillero=$5 WHERE id_cultivo=$6";
         
-        const { rowCount } = await pool.query(sql, [fecha_plantacion, nombre_cultivo, descripcion, fk_id_especie, fk_id_semillero, id]);
+        const { rowCount } = await configuracionBD.query(sql, [fecha_plantacion, nombre_cultivo, descripcion, fk_id_especie, fk_id_semillero, id]);
         
         if (rowCount > 0) {
             return res.status(200).json({ "message": "Cultivo editado correctamente." });
@@ -140,7 +140,7 @@ export const IdCultivo = async (req, res) => {
                 JOIN semilleros s ON c.fk_id_semillero = s.id_semillero
                 WHERE c.id_cultivo = $1`;
 
-        const result = await pool.query(sql, [id_cultivo]);
+        const result = await configuracionBD.query(sql, [id_cultivo]);
 
         if (result.rows.length > 0) {
             const cultivo = result.rows.map(plant => ({
