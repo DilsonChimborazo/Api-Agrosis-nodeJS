@@ -11,6 +11,7 @@ export const configuracionBD = new Pool({
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
     database: process.env.DB_NAME,
+
 });
 
 export const conectarBD = async () => {
