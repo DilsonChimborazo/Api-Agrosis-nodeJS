@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { postControlFitosanitario, getControlFitosanitario, IdControlFitosanitario, actualizarControlFitosanitario } from "../controller/controller.controlFitosanitario.js";
+import { postControlFitosanitario, getControlFitosanitario, IdControlFitosanitario, actualizarControlFitosanitario } from "../../controllers/trazabilidad/controller.controlFitosanitario.js";
 const RouterCF = Router();
 
 RouterCF.post("/controlfitosanitario", postControlFitosanitario);

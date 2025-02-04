@@ -22,14 +22,13 @@ import routerProgramacion from './src/routers/trazabilidad/router.programacion.j
 import routerRealiza from './src/routers/trazabilidad/router.realiza.js';
 import routerSemillero from './src/routers/trazabilidad/router.semillero.js';
 import routerTipoCultivo from './src/routers/trazabilidad/router.tipoCultivo.js';
-import routerPlantacion from "./src/router/router.plantacion.js";
-import routerCultivo from "./src/router/router.cultivo.js";
-import routerPea from "./src/router/router.pea.js";
-import routerDesarollan from "./src/router/router.desarrollan.js";
-import routerTipoCultivo from "./src/router/router.tipo_cultivo.js";
-import routerActividad from "./src/router/router.actividad.js";
-import routerResiduos from "./src/router/router.residuos.js";
-import RouterCF from "./src/router/router.controlFitosanitario.js";
+import routerPlantacion from "./src/routers/trazabilidad/router.plantacion.js";
+import routerCultivo from "./src/routers/trazabilidad/router.cultivo.js";
+import routerPea from "./src/routers/trazabilidad/router.pea.js";
+import routerDesarollan from "./src/routers/trazabilidad/router.desarrollan.js";
+import routerActividad from "./src/routers/trazabilidad/router.actividad.js";
+import routerResiduos from "./src/routers/trazabilidad/router.residuos.js";
+import RouterCF from "./src/routers/trazabilidad/router.controlFitosanitario.js";
 
 // Definimos los endpoints para las operaciones CRUD para el modulo Usuarios
 import routerRol from './src/routers/usuarios/router.rol.js';
@@ -79,7 +78,7 @@ app.use(routerUsuarios)
 app.use(router)
 
 app.listen(3000, () => {
-    console.log("Servidor inicializado en el puerto 3000");
+    console.log("Servidor inicializado en el puerto http://localhost:3000");
 });
 
 

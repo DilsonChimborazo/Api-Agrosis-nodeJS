@@ -1,5 +1,5 @@
 import { Router} from "express";
-import { postDesarrollan,getDesarrollan,actualizarDesarrollan,IdDesarrollan } from "../controller/controller.desarrollan.js";
+import { postDesarrollan,getDesarrollan,actualizarDesarrollan,IdDesarrollan } from "../../controllers/trazabilidad/controller.desarrollan.js";
 
 const routerDesarollan = Router();
 routerDesarollan.post('/desarrollan',postDesarrollan);

@@ -1,10 +1,10 @@
-import { pool } from "../config/conexion.js";
+import { configuracionBD } from "../../config/conexion.js";
 
 export const postDesarrollan = async (req, res) => {
     try {
         const { fk_id_cultivo, fk_id_pea } = req.body;
         const sql = "INSERT INTO desarrollan (fk_id_cultivo, fk_id_pea) VALUES ($1, $2)";
-        const { rowCount } = await pool.query(sql, [fk_id_cultivo, fk_id_pea]);
+        const { rowCount } = await configuracionBD.query(sql, [fk_id_cultivo, fk_id_pea]);
 
         if (rowCount > 0) {
             return res.status(200).json({ "message": "Registro en desarrollan creado correctamente" });
@@ -32,7 +32,7 @@ export const getDesarrollan = async (req, res) => {
                     JOIN cultivo c ON d.fk_id_cultivo = c.id_cultivo
                     JOIN pea p ON d.fk_id_pea = p.id_pea`;
 
-        const result = await pool.query(sql);
+        const result = await configuracionBD.query(sql);
 
         if (result.rows.length > 0) {
             const desarrollan = result.rows.map(d => ({
@@ -65,7 +65,7 @@ export const actualizarDesarrollan = async (req, res) => {
         const id = req.params.id_desarrollan;
         const sql = "UPDATE desarrollan SET fk_id_cultivo=$1, fk_id_pea=$2 WHERE id_desarrollan=$3";
 
-        const { rowCount } = await pool.query(sql, [fk_id_cultivo, fk_id_pea, id]);
+        const { rowCount } = await configuracionBD.query(sql, [fk_id_cultivo, fk_id_pea, id]);
 
         if (rowCount > 0) {
             return res.status(200).json({ "message": "Registro en desarrollan actualizado correctamente." });
@@ -118,7 +118,7 @@ export const IdDesarrollan = async (req, res) => {
                     JOIN pea p ON d.fk_id_pea = p.id_pea
                     WHERE d.id_desarrollan = $1`;
 
-        const result = await pool.query(sql, [id_desarrollan]);
+        const result = await configuracionBD.query(sql, [id_desarrollan]);
 
         if (result.rows.length > 0) {
             const desarrollan = result.rows.map(d => ({

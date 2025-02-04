@@ -6,11 +6,11 @@ const { Pool } = pkg;
 dotenv.config({ path: './env/.env' });
 
 export const configuracionBD = new Pool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
-    database: process.env.DB_NAME,
+    host: process.env.PGHOST,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    port: process.env.PGPORT,
+    database: process.env.PGDATABASE,
 });
 
 export const conectarBD = async () => {

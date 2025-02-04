@@ -1,11 +1,11 @@
-import {pool} from "../config/conexion.js";
+import {configuracionBD} from "../../config/conexion.js";
 
 export const postResiduos = async (req, res) => {
     try {
         const { nombre, fecha, descripcion, fk_id_tipo_residuo, fk_id_cultivo } = req.body;
 
         const sql = "INSERT INTO residuos(nombre, fecha, descripcion, fk_id_tipo_residuo, fk_id_cultivo) VALUES ($1, $2, $3, $4, $5)";
-        const result = await pool.query(sql, [nombre, fecha, descripcion, fk_id_tipo_residuo, fk_id_cultivo]);
+        const result = await configuracionBD.query(sql, [nombre, fecha, descripcion, fk_id_tipo_residuo, fk_id_cultivo]);
 
         if (result.rowCount > 0) {
             return res.status(200).json({ "message": "Residuos registrados correctamente" });
@@ -59,7 +59,7 @@ export const getResiduos = async (req, res) => {
          
                 JOIN tipo_residuos tr ON r.fk_id_tipo_residuo = tr.id_tipo_residuo`;
 
-        const result = await pool.query(sql);
+        const result = await configuracionBD.query(sql);
 
         if(result.rows.length > 0){
             const residuos = result.rows.map(r => ({
@@ -145,7 +145,7 @@ export const IdResiduos = async (req, res) => {
      JOIN tipo_residuos tr ON r.fk_id_tipo_residuo = tr.id_tipo_residuo
      WHERE r.id_residuo =$1`;
 
-const result = await pool.query(sql,[id_residuo]);
+const result = await configuracionBD.query(sql,[id_residuo]);
 
 if(result.rows.length > 0){
  const residuos = result.rows.map(r => ({
@@ -196,7 +196,7 @@ export const actualizarResiduos = async (req, res) => {
         const {nombre, fecha, descripcion, fk_id_tipo_residuo, fk_id_cultivo}=req.body;
         const id =req.params.id_residuo;
         const sql = "UPDATE residuos SET nombre = $1, fecha = $2, descripcion = $3, fk_id_tipo_residuo = $4, fk_id_cultivo = $5 WHERE id_residuo = $6";
-        const { rowCount } = await pool.query(sql, [nombre, fecha, descripcion, fk_id_tipo_residuo, fk_id_cultivo, id])
+        const { rowCount } = await configuracionBD.query(sql, [nombre, fecha, descripcion, fk_id_tipo_residuo, fk_id_cultivo, id])
 
         if (rowCount > 0) {
             return res.status(200).json({"message": "Residuos editado correctamente"});

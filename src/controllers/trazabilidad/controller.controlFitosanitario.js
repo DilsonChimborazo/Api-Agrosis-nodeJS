@@ -1,10 +1,10 @@
-import {pool} from "../config/conexion.js";
+import {configuracionBD} from "../../config/conexion.js";
 
 export const postControlFitosanitario = async (req, res) => {
     try{
         const {fecha_control, descripcion, fk_id_desarrollan}= req.body;
         const sql ="INSERT INTO control_fitosanitario(fecha_control, descripcion, fk_id_desarrollan)VALUES ($1, $2, $3)";
-        const rows = await pool.query(sql,[fecha_control, descripcion, fk_id_desarrollan]);
+        const rows = await configuracionBD.query(sql,[fecha_control, descripcion, fk_id_desarrollan]);
         if (rows.rowCount >0)
             return res.status(200).json({"message":"Control fitosanitrio registrados correctamente"});
         else{
@@ -58,7 +58,7 @@ export const getControlFitosanitario = async (req, res) => {
                 JOIN tipo_cultivo tc ON e.fk_id_tipo_cultivo = tc.id_tipo_cultivo
                 JOIN semilleros s ON c.fk_id_semillero = s.id_semillero`;
 
-        const result = await pool.query(sql);
+        const result = await configuracionBD.query(sql);
 
         if (result.rows.length > 0) {
             const controles = result.rows.map(cf => ({
@@ -156,7 +156,7 @@ export const IdControlFitosanitario = async (req, res) => {
                 JOIN semilleros s ON c.fk_id_semillero = s.id_semillero
                 WHERE cf.id_control_fitosanitario = $1`;
 
-        const result = await pool.query(sql, [id_control_fitosanitario]);
+        const result = await configuracionBD.query(sql, [id_control_fitosanitario]);
 
         if (result.rows.length > 0) {
             const controles = result.rows.map(cf => ({
@@ -215,7 +215,7 @@ export const actualizarControlFitosanitario = async (req, res) => {
         const {fecha_control, descripcion, fk_id_desarrollan}= req.body;
         const id = req.params.id_control_fitosanitario;
         const sql = "UPDATE control_fitosanitario SET fecha_control = $1, descripcion = $2, fk_id_desarrollan = $3 WHERE id_control_fitosanitario = $4";
-        const { rowCount } = await pool.query(sql, [fecha_control, descripcion, fk_id_desarrollan, id]);
+        const { rowCount } = await configuracionBD.query(sql, [fecha_control, descripcion, fk_id_desarrollan, id]);
         if (rowCount > 0) {
             return res.status(200).json({"message": "Control fitosanitario editado correctamente"});
         }else{

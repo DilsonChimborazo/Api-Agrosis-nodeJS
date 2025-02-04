@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { postActividad, getActividad, IdActividad, actualizarActividad } from "../controller/controller.actividad.js";
+import { postActividad, getActividad, IdActividad, actualizarActividad } from "../../controllers/trazabilidad/controller.actividad.js";
 const routerActividad = Router();
 
 routerActividad.post("/actividad", postActividad);

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { postTipoCultivo, IdTipoCultivo, actualizarTipoCultivo, getTipoCultivo } from "../controller/controller.tipo_cultivo.js";
+import { postTipoCultivo, IdTipoCultivo, actualizarTipoCultivo, getTipoCultivo } from "../../controllers/trazabilidad/controller.tipoCultivo.js";
 
 const routerTipoCultivo = Router();
 
