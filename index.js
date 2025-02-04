@@ -11,7 +11,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-// Definimos los endpoints para las operaciones CRUD
+// Definimos los endpoints para las operaciones CRUD para el modulo IOT
 app.use(routerSensores)
 app.use(routerUbicacion)
 app.use(routerLotes)
