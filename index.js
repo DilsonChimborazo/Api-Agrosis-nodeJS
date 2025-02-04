@@ -1,13 +1,13 @@
 import bodyParser from "body-parser";
 import express from "express";
-import routerPlantacion from "./src/router/router.plantacion.js";
-import routerCultivo from "./src/router/router.cultivo.js";
-import routerPea from "./src/router/router.pea.js";
-import routerDesarollan from "./src/router/router.desarrollan.js";
-import routerTipoCultivo from "./src/router/router.tipo_cultivo.js";
-import routerActividad from "./src/router/router.actividad.js";
-import routerResiduos from "./src/router/router.residuos.js";
-import RouterCF from "./src/router/router.controlFitosanitario.js";
+import routerPlantacion from "./src/routers/trazabilidad2/router.plantacion.js";
+import routerCultivo from "./src/routers/trazabilidad2/router.cultivo.js";
+import routerPea from "./src/routers/trazabilidad2/router.pea.js";
+import routerDesarollan from "./src/routers/trazabilidad2/router.desarrollan.js";
+import routerTipoCultivo from "./src/routers/trazabilidad2/router.tipo_cultivo.js";
+import routerActividad from "./src/routers/trazabilidad2/router.actividad.js";
+import routerResiduos from "./src/routers/trazabilidad2/router.residuos.js";
+import RouterCF from "./src/routers/trazabilidad2/router.controlFitosanitario.js";
 
 const app = express();
 app.use(bodyParser.json());

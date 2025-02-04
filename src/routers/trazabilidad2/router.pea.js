@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { postPea, IdPea, actualizarPea, getPea } from "../controller/controller.pea.js";
+import { postPea, IdPea, actualizarPea, getPea } from "../controllers/trazabilidad2/controller.pea.js";
 
 const routerPea = Router();
 routerPea.post("/pea", postPea);

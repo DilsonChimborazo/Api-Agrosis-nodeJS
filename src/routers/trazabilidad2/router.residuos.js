@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { postResiduos, getResiduos, IdResiduos, actualizarResiduos,  } from "../controller/controller.residuos.js";
+import { postResiduos, getResiduos, IdResiduos, actualizarResiduos,  } from "../controllers/trazabilidad2/controller.residuos.js";
 const routerResiduos = Router();
 
 routerResiduos.post("/residuos", postResiduos);

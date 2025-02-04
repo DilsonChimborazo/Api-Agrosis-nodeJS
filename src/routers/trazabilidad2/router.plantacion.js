@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { postplantacion,IdPlantacion,actualizarPlantacion, getPlantacion } from "../controller/controller.plantacion.js";
+import { postplantacion,IdPlantacion,actualizarPlantacion, getPlantacion } from "../controllers/trazabilidad2/controller.plantacion.js";
 
 const routerPlantacion = Router();
 routerPlantacion.post("/plantacion", postplantacion);
