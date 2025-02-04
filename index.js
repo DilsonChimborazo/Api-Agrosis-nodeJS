@@ -1,3 +1,4 @@
+
 import express from 'express';
 import bodyParser from 'body-parser';
 
@@ -22,6 +23,14 @@ import routerProgramacion from './src/routers/trazabilidad/router.programacion.j
 import routerRealiza from './src/routers/trazabilidad/router.realiza.js';
 import routerSemillero from './src/routers/trazabilidad/router.semillero.js';
 import routerTipoCultivo from './src/routers/trazabilidad/router.tipoCultivo.js';
+import routerPlantacion from "./src/router/router.plantacion.js";
+import routerCultivo from "./src/router/router.cultivo.js";
+import routerPea from "./src/router/router.pea.js";
+import routerDesarollan from "./src/router/router.desarrollan.js";
+import routerTipoCultivo from "./src/router/router.tipo_cultivo.js";
+import routerActividad from "./src/router/router.actividad.js";
+import routerResiduos from "./src/router/router.residuos.js";
+import RouterCF from "./src/router/router.controlFitosanitario.js";
 
 
 
@@ -52,9 +61,17 @@ app.use(routerProgramacion)
 app.use(routerRealiza)
 app.use(routerSemillero)
 app.use(routerTipoCultivo)
+app.use(routerPlantacion);
+app.use(routerCultivo);
+app.use(routerPea);
+app.use(routerDesarollan);
+app.use(routerTipoCultivo);
+app.use(routerActividad);
+app.use(routerResiduos);
+app.use(RouterCF);
+
+
 
 app.listen(3000, () => {
     console.log("Servidor inicializado en el puerto 3000");
 });
-
-
