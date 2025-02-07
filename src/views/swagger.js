@@ -4,7 +4,7 @@ const options = {
     definition: {
         openapi: "3.0.0",
         info: {
-            title: "Agrosis API",
+            title: "Agrosis API", 
             version: "1.0.0",
             description: "Documentación de la API de Agrosis",
             contact:{
