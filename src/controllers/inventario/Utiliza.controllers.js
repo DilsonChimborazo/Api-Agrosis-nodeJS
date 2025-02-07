@@ -1,74 +1,152 @@
-import { configuracionBD } from "../../config/conexion.js";
+import {configuracionBD} from '../../config/conexion.js';
 
-// Obtener todos los registros de 'utiliza' con los datos relacionados de 'insumo' y 'asignacion_actividades'
+export const addUtiliza = async (req, res) =>{
+    try{
+        const {fk_id_insumo, fk_id_asignacion_actividad} = req.body;
+        const sql = 'INSERT INTO utiliza (fk_id_insumo, fk_id_asignacion_actividad) VALUES($1, $2)';
+        const values = [fk_id_insumo, fk_id_asignacion_actividad];
+        const result = await configuracionBD.query(sql, values);
+        if(result.rowCount>0){
+            res.status(200).json({msg:'utilizacion registrada con éxito'});
+        }else{
+            res.status(400).json({msg:'Error al registrar utiliza'});
+        }
+    }catch(err){
+        console.log(err);
+        res.status(500).json({msg:'Error en el servidor'});
+    }
+}
+
 export const getUtiliza = async (req, res) => {
-  try {
-    const [rows] = await configuracionBD.query(
-      `SELECT u.*, i.nombre AS insumo_nombre, i.descripcion AS insumo_descripcion, 
-              a.nombre AS asignacion_nombre, a.descripcion AS asignacion_descripcion
-       FROM utiliza u
-       LEFT JOIN insumo i ON u.fk_id_insumo = i.id_insumo
-       LEFT JOIN asignacion_actividades a ON u.fk_id_asignacion_actividades = a.id_asignacion_actividades`
-    );
-    res.status(200).json(rows);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener la lista de utiliza', error });
-  }
-};
-
-// Agregar un nuevo registro a 'utiliza' con claves foráneas
-export const addUtiliza = async (req, res) => {
-  try {
-    const { nombre, descripcion, fk_id_insumo, fk_id_asignacion_actividades } = req.body; 
-    const [result] = await configuracionBD.query(
-      'INSERT INTO utiliza (nombre, descripcion, fk_id_insumo, fk_id_asignacion_actividades) VALUES (?, ?, ?, ?)',
-      [nombre, descripcion, fk_id_insumo, fk_id_asignacion_actividades]
-    );
-    res.status(201).json({ message: 'Registro creado exitosamente', id: result.insertId });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al crear el registro', error });
-  }
-};
-
-// Obtener un registro por ID de 'utiliza' con los datos relacionados de 'insumo' y 'asignacion_actividades'
-export const IdUtiliza = async (req, res) => {
-  try {
-    const { id_utiliza } = req.params;
-    const [rows] = await configuracionBD.query(
-      `SELECT u.*, i.nombre AS insumo_nombre, i.descripcion AS insumo_descripcion, 
-              a.nombre AS asignacion_nombre, a.descripcion AS asignacion_descripcion
-       FROM utiliza u
-       LEFT JOIN insumo i ON u.fk_id_insumo = i.id_insumo
-       LEFT JOIN asignacion_actividades a ON u.fk_id_asignacion_actividades = a.id_asignacion_actividades
-       WHERE u.id_utiliza = ?`, [id_utiliza]
-    );
-    if (rows.length === 0) {
-      return res.status(404).json({ message: `No se encontró el registro con id: ${id_utiliza}` });
+    try{
+        const sql = ` SELECT utiliza.fk_id_insumo, utiliza.fk_id_asignacion_actividad,
+        insumos.id_insumo, insumos.nombre, insumos.tipo, insumos.precio_unidad, insumos.cantidad, insumos.unidad_medida
+        asignacion_actividad.id_asignacion_actividad, asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad, asignacion_actividad.fk_identificacion
+        actividad.id_actividad, actividad.nombre, actividad.descripcion,
+        usuarios.identificacion, usuarios.nombre, usuarios.contraseña, usuarios.email, usuarios.fk_id_rol
+        rol.id_rol, rol.nombre_rol, rol.fecha_creacion
+        FROM utiliza
+        JOIN insumos ON utiliza.fk_id_insumo = insumos.id_insumo
+        JOIN asignacion_actividad ON utiliza.fk_id_asignacion_actividad = asignacion_actividad.id_asignacion_actividad
+        JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
+        JOIN usuarios ON asignacion_actividad.fk_identificaacion = usuarios.identificacion
+        JOIN rol ON usuarios.fk_id_rol = rol.id_rol`;
+        const result = await configuracionBD.query(sql);
+        if (result.rows.length > 0) {
+            const utiliza = result.rows.map(utiliza => ({
+                id: utiliza.id_utiliza,
+                fk_id_insumo:{
+                  id: utiliza.id_insumo,
+                  nombre: utiliza.nombre,
+                  tipo: utiliza.tipo,
+                  precio_unidad: utiliza.precio_unidad,
+                  cantidad: utiliza.cantidad,
+                  unidad_medida: utiliza.unidad_medida
+                },
+              fk_id_asignacion_actividad:{
+                id: utiliza.id_asignacion_actividad,
+                fecha: utiliza.fecha,
+                fk_id_actividad:{
+                  id: utiliza.id_actividad,
+                  nombre: utiliza.nombre,
+                  descripcion: utiliza.descripcion
+                },
+                fk_identificacion:{
+                  identificacion: utiliza.identificacion,
+                  nombre: utiliza.nombre,
+                  contraseña: utiliza.contraseña,
+                  email: utiliza.email,
+                  fk_id_rol:{
+                    id: utiliza.id_rol,
+                    nombre_rol: utiliza.nombre_rol,
+                    fecha_creacion: utiliza.fecha_creacion
+                  }
+                }
+          }}
+        ));
+            res.status(200).json(utiliza);
+        } else{
+            res.status(404).json({msg:'No hay utilizaciones registradas'})
+        }
+    }catch(err){
+        console.log(err);
+        res.status(500).json({msg:'Error en el servidor'});
     }
-    res.status(200).json(rows[0]);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener el registro', error });
-  }
 };
 
-// Actualizar un registro existente en 'utiliza' con claves foráneas
-export const actualizarUtiliza = async (req, res) => {
-  try {
-    const { id_utiliza } = req.params;
-    const { nombre, descripcion, fk_id_insumo, fk_id_asignacion_actividades } = req.body; 
-    const [result] = await configuracionBD.query(
-      'UPDATE utiliza SET nombre = ?, descripcion = ?, fk_id_insumo = ?, fk_id_asignacion_actividades = ? WHERE id_utiliza = ?',
-      [nombre, descripcion, fk_id_insumo, fk_id_asignacion_actividades, id_utiliza]
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: `No se encontró el registro con id: ${id_utiliza}` });
+export const IdUtiliza= async(req, res) =>{
+    try{
+        const {id_utiliza} = req.params;
+        const sql = `SELECT utiliza.fk_id_insumo, utiliza.fk_id_asignacion_actividad,
+        insumos.id_insumo, insumos.nombre, insumos.tipo, insumos.precio_unidad, insumos.cantidad, insumos.unidad_medida
+        asignacion_actividad.id_asignacion_actividad, asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad, asignacion_actividad.fk_identificacion
+        actividad.id_actividad, actividad.nombre, actividad.descripcion,
+        usuarios.identificacion, usuarios.nombre, usuarios.contraseña, usuarios.email, usuarios.fk_id_rol
+        rol.id_rol, rol.nombre_rol, rol.fecha_creacion
+        FROM utiliza
+        JOIN insumos ON utiliza.fk_id_insumo = insumos.id_insumo
+        JOIN asignacion_actividad ON utiliza.fk_id_asignacion_actividad = asignacion_actividad.id_asignacion_actividad
+        JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
+        JOIN usuarios ON asignacion_actividad.fk_identificaacion = usuarios.identificacion
+        JOIN rol ON usuarios.fk_id_rol = rol.id_rol
+        WHERE id_mide = $1`;
+        const result = await configuracionBD.query(sql, [id_utiliza]);
+        if (result.rows.length > 0) {
+            const utiliza = result.rows.map(utiliza => ({
+                id: utiliza.id_utiliza,
+                fk_id_insumo:{
+                  id: utiliza.id_insumo,
+                  nombre: utiliza.nombre,
+                  tipo: utiliza.tipo,
+                  precio_unidad: utiliza.precio_unidad,
+                  cantidad: utiliza.cantidad,
+                  unidad_medida: utiliza.unidad_medida
+                },
+              fk_id_asignacion_actividad:{
+                id: utiliza.id_asignacion_actividad,
+                fecha: utiliza.fecha,
+                fk_id_actividad:{
+                  id: utiliza.id_actividad,
+                  nombre: utiliza.nombre,
+                  descripcion: utiliza.descripcion
+                },
+                fk_identificacion:{
+                  identificacion: utiliza.identificacion,
+                  nombre: utiliza.nombre,
+                  contraseña: utiliza.contraseña,
+                  email: utiliza.email,
+                  fk_id_rol:{
+                    id: utiliza.id_rol,
+                    nombre_rol: utiliza.nombre_rol,
+                    fecha_creacion: utiliza.fecha_creacion
+                  }
+                }
+          }}
+        ));
+            res.status(200).json(utiliza);
+        } else{
+            res.status(404).json({msg:'No hay utilizaciones registradas'})
+        }
+    }catch(err){
+        console.log(err);
+        res.status(500).json({msg:'Error en el servidor'});
     }
-    res.status(200).json({ message: `Registro con id: ${id_utiliza} actualizado correctamente` });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al actualizar el registro', error });
-  }
 };
 
-
-
+export const actualizarUtiliza = async(req, res) => {
+  try{
+    const {id_utiliza} = req.params;
+    const {fk_id_insumo, fk_id_asignacion_actividad} = req.body;
+    const sql = 'UPDATE utiliza SET fk_id_insumo=$1, fk_id_asignacion_actividad=$2 WHERE id_utiliza=$3';
+    const values = [fk_id_insumo, fk_id_asignacion_actividad, id_utiliza];
+    const result = await configuracionBD.query(sql, values);
+    if(result.rowCount>0){
+      res.status(200).json({msg:'Utilización actualizada con éxito'});
+    } else{
+      res.status(400).json({msg:'Error al actualizar utilización'});
+    }
+  }catch(error){
+    console.log(error);
+    res.status(500).json({msg:'Error en el servidor'});
+  }
+}
