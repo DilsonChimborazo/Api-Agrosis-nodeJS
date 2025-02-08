@@ -34,6 +34,8 @@ import RouterCF from "./src/routers/trazabilidad/router.controlFitosanitario.js"
 import routerRol from './src/routers/usuarios/router.rol.js';
 import routerUsuarios from './src/routers/usuarios/router.usuarios.js';
 import router from './src/routers/usuarios/router.autenticacion.js';
+import swaggerUI from 'swagger-ui-express';
+import swaggerSpec from './src/views/swagger.js';
 
 // Definimos los endpoint para las operaciones CRUD para el modulo Inventario
 import routerInsumo  from './src/routers/Inventario/Insumo.routers.js';
@@ -83,6 +85,8 @@ app.use(RouterCF);
 app.use(routerRol)
 app.use(routerUsuarios)
 app.use(router)
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+
 
 // Definimos los endpoint para las operaciones CRUD para el modulo Inventario
 app.use(routerInsumo);
@@ -91,10 +95,11 @@ app.use(routerHerramientas);
 app.use(routerUtiliza);
 app.use( routerControlUsaInsumo);
 
-app.listen(3000, () => {
-    console.log("Servidor inicializado en el puerto http://localhost:3000");
+app.listen(3000,()=>{
+    console.log("servidor iniciado en el puerto 3000")
+    
+    console.log(
+        `Version 1 de documentacion dsiponible en url http://localhost:3000/api-docs`
+    )
 });
-
-
-
 

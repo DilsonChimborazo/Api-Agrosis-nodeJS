@@ -11,7 +11,7 @@ export const createUsuarios = async (req, res) =>{
         if(result.rowCount>0){
             res.status(200).json({msg:'Usuario registrado con exito'})
         }else{
-            res.status(400).json({msg:'Error     al registrar usuario'})
+            res.status(400).json({msg:'Error al registrar usuario'})
         }
     } catch(error){
         console.log(error)
