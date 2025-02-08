@@ -35,6 +35,12 @@ import routerRol from './src/routers/usuarios/router.rol.js';
 import routerUsuarios from './src/routers/usuarios/router.usuarios.js';
 import router from './src/routers/usuarios/router.autenticacion.js';
 
+// Definimos los endpoint para las operaciones CRUD para el modulo Inventario
+import routerInsumo  from './src/routers/Inventario/Insumo.routers.js';
+import routerHerramientas  from './src/routers/Inventario/Herramientas.routers.js';
+import routerRequiere  from './src/routers/Inventario/Requiere.routers.js';
+import routerUtiliza  from './src/routers/Inventario/Utiliza.routers.js';
+import routerControlUsaInsumo from './src/routers/Inventario/Control_Usa_Insumo.routers.js';
 const app = express();
 
 app.use(bodyParser.json());
@@ -77,9 +83,17 @@ app.use(routerRol)
 app.use(routerUsuarios)
 app.use(router)
 
+// Definimos los endpoint para las operaciones CRUD para el modulo Inventario
+app.use(routerInsumo);
+app.use( routerHerramientas);
+app.use( routerRequiere);
+app.use(routerUtiliza);
+app.use( routerControlUsaInsumo);
+
 app.listen(3000, () => {
     console.log("Servidor inicializado en el puerto http://localhost:3000");
 });
+
 
 
 
