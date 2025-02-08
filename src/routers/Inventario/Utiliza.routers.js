@@ -1,9 +1,9 @@
 
 import {Router} from 'express';
 import { getUtiliza, addUtiliza, IdUtiliza, actualizarUtiliza  } from '../../controllers/inventario/Utiliza.controllers.js';
-const routerUtiliza = Router();
 
-// Definir las rutas
+
+const routerUtiliza = Router();
 routerUtiliza.get('/utiliza', getUtiliza);
 routerUtiliza.post('/utiliza', addUtiliza);
 routerUtiliza.get("/utiliza/:id_utiliza", IdUtiliza);
