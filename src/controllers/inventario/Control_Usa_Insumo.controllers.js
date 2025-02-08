@@ -28,47 +28,47 @@ export const getControlUsaInsumo = async (req, res) =>{
         id: control_usa_insumo.id_control_usa_insumo,
         cantidad: control_usa_insumo.cantidad,
         fk_id_insumo:{
-          id: insumos.id_insumo,
-          nombre: insumos.nombre,
-          tipo: insumos.tipo,
-          precio_unidad: insumos.precio_unidad,
-          cantidad: insumos.cantidad,
-          unidad_medida: insumos.unidad_medida
+          id: control_usa_insumo.id_insumo,
+          nombre: control_usa_insumo.nombre,
+          tipo: control_usa_insumo.tipo,
+          precio_unidad: control_usa_insumo.precio_unidad,
+          cantidad: control_usa_insumo.cantidad,
+          unidad_medida: control_usa_insumo.unidad_medida
         },
         fk_id_control_fitosanitario:{
-          id: control_fitosanitario.id_control_fitosanitario,
-          fecha_control: control_fitosanitario.fecha_control,
-          descripcion: control_fitosanitario.descripcion,
+          id: control_usa_insumo.id_control_fitosanitario,
+          fecha_control: control_usa_insumo.fecha_control,
+          descripcion: control_usa_insumo.descripcion,
           fk_id_desarrollan:{
-            id: desarrollan.id_desarrollan,
+            id: control_usa_insumo.id_desarrollan,
             fk_id_cultivo:{
               id: cultivo.id_cultivo,
-              fecha_plantacion: cultivo.fecha_plantacion,
-              nombre: cultivo.nombre,
-              descripcion: cultivo.descripcion,
+              fecha_plantacion: control_usa_insumo.fecha_plantacion,
+              nombre: control_usa_insumo.nombre,
+              descripcion: control_usa_insumo.descripcion,
               fk_id_especie:{
-                id: especie.id_especie,
-                nombre_comun: especie.nombre_comun,
-                nombre_cientifico: especie.nombre_cientifico,
-                descripcion: especie.descripcion,
+                id: control_usa_insumo.id_especie,
+                nombre_comun: control_usa_insumo.nombre_comun,
+                nombre_cientifico: control_usa_insumo.nombre_cientifico,
+                descripcion: control_usa_insumo.descripcion,
                 fk_id_tipo_cultivo:{
-                  id: tipo_cultivo.id_tipo_cultivo,
-                  nombre: tipo_cultivo.nombre,
-                  descripcion: tipo_cultivo.descripcion
+                  id: control_usa_insumo.id_tipo_cultivo,
+                  nombre: control_usa_insumo.nombre,
+                  descripcion: control_usa_insumo.descripcion
                 },
               },
               fk_id_semillero:{
-                id: semilleros.id_semillero,
-                nombre_semilla: semilleros.nombre_semilla,
-                fecha_siembra: semilleros.fecha_siembra,
-                fecha_estimada: semilleros.fecha_estimada,
-                cantidad: semilleros.cantidad
+                id: control_usa_insumo.id_semillero,
+                nombre_semilla: control_usa_insumo.nombre_semilla,
+                fecha_siembra: control_usa_insumo.fecha_siembra,
+                fecha_estimada: control_usa_insumo.fecha_estimada,
+                cantidad: control_usa_insumo.cantidad
               },
             },
             fk_id_pea:{
-              id: pea.id_pea,
-              nombre: pea.nombre,
-              descripcion: pea.descripcion
+              id: control_usa_insumo.id_pea,
+              nombre: control_usa_insumo.nombre,
+              descripcion: control_usa_insumo.descripcion
             },
           },
         },
@@ -127,47 +127,47 @@ export const IdControlUsaInsumo = async (req, res) => {
         id: control_usa_insumo.id_control_usa_insumo,
         cantidad: control_usa_insumo.cantidad,
         fk_id_insumo:{
-          id: insumos.id_insumo,
-          nombre: insumos.nombre,
-          tipo: insumos.tipo,
-          precio_unidad: insumos.precio_unidad,
-          cantidad: insumos.cantidad,
-          unidad_medida: insumos.unidad_medida
+          id: control_usa_insumo.id_insumo,
+          nombre: control_usa_insumo.nombre,
+          tipo: control_usa_insumo.tipo,
+          precio_unidad: control_usa_insumo.precio_unidad,
+          cantidad: control_usa_insumo.cantidad,
+          unidad_medida: control_usa_insumo.unidad_medida
         },
         fk_id_control_fitosanitario:{
-          id: control_fitosanitario.id_control_fitosanitario,
-          fecha_control: control_fitosanitario.fecha_control,
-          descripcion: control_fitosanitario.descripcion,
+          id: control_usa_insumo.id_control_fitosanitario,
+          fecha_control: control_usa_insumo.fecha_control,
+          descripcion: control_usa_insumo.descripcion,
           fk_id_desarrollan:{
-            id: desarrollan.id_desarrollan,
+            id: control_usa_insumo.id_desarrollan,
             fk_id_cultivo:{
               id: cultivo.id_cultivo,
-              fecha_plantacion: cultivo.fecha_plantacion,
-              nombre: cultivo.nombre,
-              descripcion: cultivo.descripcion,
+              fecha_plantacion: control_usa_insumo.fecha_plantacion,
+              nombre: control_usa_insumo.nombre,
+              descripcion: control_usa_insumo.descripcion,
               fk_id_especie:{
-                id: especie.id_especie,
-                nombre_comun: especie.nombre_comun,
-                nombre_cientifico: especie.nombre_cientifico,
-                descripcion: especie.descripcion,
+                id: control_usa_insumo.id_especie,
+                nombre_comun: control_usa_insumo.nombre_comun,
+                nombre_cientifico: control_usa_insumo.nombre_cientifico,
+                descripcion: control_usa_insumo.descripcion,
                 fk_id_tipo_cultivo:{
-                  id: tipo_cultivo.id_tipo_cultivo,
-                  nombre: tipo_cultivo.nombre,
-                  descripcion: tipo_cultivo.descripcion
+                  id: control_usa_insumo.id_tipo_cultivo,
+                  nombre: control_usa_insumo.nombre,
+                  descripcion: control_usa_insumo.descripcion
                 },
               },
               fk_id_semillero:{
-                id: semilleros.id_semillero,
-                nombre_semilla: semilleros.nombre_semilla,
-                fecha_siembra: semilleros.fecha_siembra,
-                fecha_estimada: semilleros.fecha_estimada,
-                cantidad: semilleros.cantidad
+                id: control_usa_insumo.id_semillero,
+                nombre_semilla: control_usa_insumo.nombre_semilla,
+                fecha_siembra: control_usa_insumo.fecha_siembra,
+                fecha_estimada: control_usa_insumo.fecha_estimada,
+                cantidad: control_usa_insumo.cantidad
               },
             },
             fk_id_pea:{
-              id: pea.id_pea,
-              nombre: pea.nombre,
-              descripcion: pea.descripcion
+              id: control_usa_insumo.id_pea,
+              nombre: control_usa_insumo.nombre,
+              descripcion: control_usa_insumo.descripcion
             },
           },
         },
