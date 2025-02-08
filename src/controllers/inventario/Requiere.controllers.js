@@ -3,69 +3,155 @@ import { configuracionBD } from "../../config/conexion.js";
 // Obtener todos los registros de 'requiere' con los datos relacionados de 'herramientas' y 'asignacion_actividades'
 export const getRequiere = async (req, res) => {
   try {
-    const [rows] = await configuracionBD.query(
-      `SELECT r.*, h.nombre AS herramienta_nombre, h.descripcion AS herramienta_descripcion, 
-              a.nombre AS asignacion_nombre, a.descripcion AS asignacion_descripcion
-       FROM requiere r
-       LEFT JOIN herramientas h ON r.fk_id_herramientas = h.id_herramientas
-       LEFT JOIN asignacion_actividades a ON r.fk_id_asignacion_actividades = a.id_asignacion_actividades`
-    );
-    res.status(200).json(rows);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener la lista de requiere', error });
-  }
-};
+    const sql = `SELECT requiere.id_requiere, requiere.fk_id_herramienta, requiere.fk_id_asignacion_actividad,
+    herramientas.id_herramienta, herramientas.nombre_h, herramientas.fecha_prestamo, herramientas.estado,
+    asignacion_actividad.id_asignacion_actividad, asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad, asignacion_actividad.fk_identificacion,
+    actividad.id_actividad, actividad.nombre_actividad, actividad.descripcion,
+    usuarios.identificacion, usuarios.nombre, usuarios.contrasena, usuarios.email, usuarios.fk_id_rol,
+    rol.id_rol, rol.nombre_rol, rol.fecha_creacion
+    FROM requiere 
+    JOIN herramientas ON requiere.fk_id_herramienta = herramientas.id_herramienta
+    JOIN asignacion_actividad ON requiere.fk_id_asignacion_actividad = asignacion_actividad.id_asignacion_actividad
+    JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
+    JOIN usuarios ON asignacion_actividad.fk_identificaacion = usuarios.identificacion
+    JOIN rol ON usuarios.fk_id_rol = rol.id_rol`
+    const result = await configuracionBD.query(sql);
+    if (result.rows.length > 0) {
+        const requiere = result.rows.map(requiere => ({
+            id: requiere.id_requiere,
+            fk_id_insumo:{
+              id: requiere.id_insumo,
+              nombre: requiere.nombre,
+              tipo: requiere.tipo,
+              precio_unidad: requiere.precio_unidad,
+              cantidad: requiere.cantidad,
+              unidad_medida: requiere.unidad_medida
+            },
+          fk_id_asignacion_actividad:{
+            id: requiere.id_asignacion_actividad,
+            fecha: requiere.fecha,
+            fk_id_actividad:{
+              id: requiere.id_actividad,
+              nombre: requiere.nombre,
+              descripcion: requiere.descripcion
+            },
+            fk_identificacion:{
+              identificacion: requiere.identificacion,
+              nombre: requiere.nombre,
+              contraseña: requiere.contraseña,
+              email: requiere.email,
+              fk_id_rol:{
+                id: utiliza.id_rol,
+                nombre_rol: requiere.nombre_rol,
+                fecha_creacion: requiere.fecha_creacion
+              }
+            }
+      }}
+    ));
+        res.status(200).json(requiere);
+    } else{
+        res.status(404).json({msg:'No hay utilizaciones registradas'})
+    }
+}catch(err){
+    console.log(err);
+    res.status(500).json({msg:'Error en el servidor'});
+}
+}
+
 
 // Agregar un nuevo registro a 'requiere' con claves foráneas
-export const addRequiere = async (req, res) => {
-  try {
-    const { nombre, descripcion, fk_id_herramientas, fk_id_asignacion_actividades } = req.body;
-    const [result] = await configuracionBD.query(
-      'INSERT INTO requiere (nombre, descripcion, fk_id_herramientas, fk_id_asignacion_actividades) VALUES (?, ?, ?, ?)',
-      [nombre, descripcion, fk_id_herramientas, fk_id_asignacion_actividades]
-    );
-    res.status(201).json({ message: 'Registro creado exitosamente', id: result.insertId });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al crear el registro', error });
+export const addRequiere = async (req, res) =>{
+  try{
+      const {fk_id_herramienta, fk_id_asignacion_actividad} = req.body;
+      const sql = 'INSERT INTO requiere (fk_id_herramienta, fk_id_asignacion_actividad) VALUES($1, $2)';
+      const values = [fk_id_herramienta, fk_id_asignacion_actividad];
+      const result = await configuracionBD.query(sql, values);
+      if(result.rowCount>0){
+          res.status(200).json({msg:'utilizacion registrada con éxito'});
+      }else{
+          res.status(400).json({msg:'Error al registrar utiliza'});
+      }
+  }catch(err){
+      console.log(err);
+      res.status(500).json({msg:'Error en el servidor'});
   }
-};
+}
 
 // Obtener un registro por ID de 'requiere' con los datos relacionados de 'herramientas' y 'asignacion_actividades'
-export const IdRequiere = async (req, res) => {
-  try {
-    const { id_requiere } = req.params;
-    const [rows] = await configuracionBD.query(
-      `SELECT r.*, h.nombre AS herramienta_nombre, h.descripcion AS herramienta_descripcion, 
-              a.nombre AS asignacion_nombre, a.descripcion AS asignacion_descripcion
-       FROM requiere r
-       LEFT JOIN herramientas h ON r.fk_id_herramientas = h.id_herramientas
-       LEFT JOIN asignacion_actividades a ON r.fk_id_asignacion_actividades = a.id_asignacion_actividades
-       WHERE r.id_requiere = ?`, [id_requiere]
-    );
-    if (rows.length === 0) {
-      return res.status(404).json({ message: `No se encontró el registro con id: ${id_requiere}` });
+export const IdRequiere= async(req, res) =>{
+  try{
+      const {id_requiere} = req.params;
+      const sql = `SELECT requiere.id_requiere, requiere.fk_id_herramienta, requiere.fk_id_asignacion_actividad,
+    herramientas.id_herramienta, herramientas.nombre_h, herramientas.fecha_prestamo, herramientas.estado,
+    asignacion_actividad.id_asignacion_actividad, asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad, asignacion_actividad.fk_identificacion,
+    actividad.id_actividad, actividad.nombre_actividad, actividad.descripcion,
+    usuarios.identificacion, usuarios.nombre, usuarios.contrasena, usuarios.email, usuarios.fk_id_rol,
+    rol.id_rol, rol.nombre_rol, rol.fecha_creacion
+    FROM requiere 
+    JOIN herramientas ON requiere.fk_id_herramienta = herramientas.id_herramienta
+    JOIN asignacion_actividad ON requiere.fk_id_asignacion_actividad = asignacion_actividad.id_asignacion_actividad
+    JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
+    JOIN usuarios ON asignacion_actividad.fk_identificaacion = usuarios.identificacion
+    JOIN rol ON usuarios.fk_id_rol = rol.id_rol
+      WHERE requiere.id_requiere = $1`;
+      const result = await configuracionBD.query(sql, [id_requiere]);
+      if (result.rows.length > 0) {
+        const requiere = result.rows.map(requiere => ({
+            id: requiere.id_requiere,
+            fk_id_insumo:{
+              id: requiere.id_insumo,
+              nombre: requiere.nombre,
+              tipo: requiere.tipo,
+              precio_unidad: requiere.precio_unidad,
+              cantidad: requiere.cantidad,
+              unidad_medida: requiere.unidad_medida
+            },
+          fk_id_asignacion_actividad:{
+            id: requiere.id_asignacion_actividad,
+            fecha: requiere.fecha,
+            fk_id_actividad:{
+              id: requiere.id_actividad,
+              nombre: requiere.nombre,
+              descripcion: requiere.descripcion
+            },
+            fk_identificacion:{
+              identificacion: requiere.identificacion,
+              nombre: requiere.nombre,
+              contraseña: requiere.contraseña,
+              email: requiere.email,
+              fk_id_rol:{
+                id: utiliza.id_rol,
+                nombre_rol: requiere.nombre_rol,
+                fecha_creacion: requiere.fecha_creacion
+              }
+            }
+      }}
+    ));
+        res.status(200).json(requiere);
+    } else{
+        res.status(404).json({msg:'No hay utilizaciones registradas'})
     }
-    res.status(200).json(rows[0]);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener el registro', error });
-  }
+}catch(err){
+    console.log(err);
+    res.status(500).json({msg:'Error en el servidor'});
+}
 };
 
 // Actualizar un registro existente en 'requiere' con claves foráneas
-export const actualizarRequiere = async (req, res) => {
-  try {
-    const { id_requiere } = req.params;
-    const { nombre, descripcion, fk_id_herramientas, fk_id_asignacion_actividades } = req.body;
-    const [result] = await configuracionBD.query(
-      'UPDATE requiere SET nombre = ?, descripcion = ?, fk_id_herramientas = ?, fk_id_asignacion_actividades = ? WHERE id_requiere = ?',
-      [nombre, descripcion, fk_id_herramientas, fk_id_asignacion_actividades, id_requiere]
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: `No se encontró el registro con id: ${id_requiere}` });
+export const actualizarRequiere = async(req, res) => {
+  try{
+    const {id_requiere} = req.params;
+    const {fk_id_herramienta, fk_id_asignacion_actividad} = req.body;
+    const sql = 'UPDATE requiere SET fk_id_herramienta=$1, fk_id_asignacion_actividad=$2 WHERE id_requiere=$3';
+    const values = [fk_id_herramienta, fk_id_asignacion_actividad, fk_id_herramienta];
+    const result = await configuracionBD.query(sql, values);
+    if(result.rowCount>0){
+      res.status(200).json({msg:'Utilización actualizada con éxito'});
+    } else{
+      res.status(400).json({msg:'Error al actualizar utilización'});
     }
-    res.status(200).json({ message: `Registro con id: ${id_requiere} actualizado correctamente` });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al actualizar el registro', error });
+  }catch(error){
+    console.log(error);
+    res.status(500).json({msg:'Error en el servidor'});
   }
-};
+}
