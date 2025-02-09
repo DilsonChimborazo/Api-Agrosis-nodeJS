@@ -24,12 +24,13 @@ export const addInsumo = async (req, res) => {
    const values = [nombre, tipo, precio_unidad, cantidad, unidad_medida];
    const result = await configuracionBD.query(sql);
    if(result.rows.length > 0){
-    res.status(200).json(result)
+    res.status(200).json("Insumo registrado con exito")
    }else{
     res.status(400).json({msg:'Error al registrar insumo'});
    }
   } catch (error) {
-    res.status(500).json({ message: 'Error al crear el registro', error });
+    console.log(error);
+    res.status(500).json({ message: 'Error en el servidor'});
   }
 };
 
@@ -57,12 +58,12 @@ export const actualizarInsumo = async (req, res) => {
     const sql = `UPDATE insumos set nombre = $1, tipo = $2, precio_unidad = $3, cantidad = $4, unidad_medida = $5 WHERE id_insumo = $6`;
     const result = await configuracionBD.query(sql, [nombre, tipo, precio_unidad, cantidad, unidad_medida, id_insumo]);
     if (result.rowCount > 0) {
-      res.status(200).json(result)
+      res.status(200).json("Insumo actualizado con exito")
     }else{
       res.status(400).json({msg:'Error al actualizar insumo'})
     }
   } catch (error) {
-    res.status(500).json({ message: 'Error al actualizar el registro', error });
+    res.status(500).json({ message: 'Error en el servidor'});
   }
 };
 

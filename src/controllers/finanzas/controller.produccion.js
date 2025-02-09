@@ -15,7 +15,7 @@ export const createProduccion = async (req, res) => {
         console.log(err);
         res.status(500).json({ msg: 'Error en el servidor' });
     }
-}
+};
 
 export const getProducciones = async (req, res) => {
     try {
@@ -214,18 +214,3 @@ export const updateProduccion = async (req, res) => {
     }
 }
 
-export const deleteProduccion = async (req, res) => {
-    try {
-        const { id_produccion } = req.params;
-        const sql = 'DELETE FROM produccion WHERE id_produccion=$1';
-        const result = await configuracionBD.query(sql, [id_produccion]);
-        if (result.rowCount > 0) {
-            res.status(200).json({ msg: 'Producción eliminada con éxito' });
-        } else {
-            res.status(404).json({ msg: 'No se encontró la producción' });
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: 'Error en el servidor' });
-    }
-}
