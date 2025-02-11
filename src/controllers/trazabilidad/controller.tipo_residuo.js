@@ -25,7 +25,7 @@ export const getTipoResiduo = async (req, res) => {
         const result = await configuracionBD.query(sql);
 
         if (result.rows.length > 0) {
-            res.status(200).json({ tiposResiduos: result.rows });
+            res.status(200).json(result);
         } else {
             res.status(404).json({ message: "No hay tipos de cultivo registrados" });
         }
