@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { postTipoCultivo, IdTipoCultivo, actualizarTipoCultivo, getTipoCultivo } from "../../controllers/trazabilidad/controller.tipoCultivo.js";
 
+
 const routerTipoCultivo = Router();
 
 routerTipoCultivo.post("/tipocultivo", postTipoCultivo);

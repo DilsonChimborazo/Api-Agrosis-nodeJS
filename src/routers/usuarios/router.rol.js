@@ -38,17 +38,54 @@ const routerRol = Router ();
  *               nombre_rol:
  *                 type: string
  *               fecha_creacion: 
- *                 type: date
+ *                 type: string
+ *                 format: date
  *               
  *     responses:
- *       201:
- *         description: Rol registrado con exito
- *       400:
- *         description: Error al registrar rol
- *       403:
- *         description: Token es requerido, token no esta autorizado
+ *       200:
+ *         description: Rol registrado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nombre_rol:
+ *                   type: string
+ *                   example: "aprendiz"
+ *                 fecha_creacion: 
+ *                   type: string
+ *                   format: date
+ *                   example: "2025-02-11"
+ *       404:
+ *         description: No se registro ningun rol en el sistema 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No se pudo registrar un rol en el sistema"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
  *       500:
- *         description: Error en el servidor
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
  */
 routerRol.post('/rol',validarToken,createRol)
 
@@ -70,13 +107,49 @@ routerRol.post('/rol',validarToken,createRol)
  *         description: Token de autenticación JWT
  *     responses:
  *       200:
- *         description: "ok"
- *       400:
- *         description: Error al listar rol
- *       403:
- *         description: Token es requerido, token no esta autorizado
+ *         description: Rol registrado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nombre_rol:
+ *                   type: string
+ *                   example: "aprendiz"
+ *                 fecha_creacion: 
+ *                   type: string
+ *                   format: date
+ *                   example: "2025-02-11"
+ *       404:
+ *         description: No se registro ningun rol en el sistema 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No se pudo registrar un rol en el sistema"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
  *       500:
- *         description: Error en el servidor
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
  */
 routerRol.get('/rol',validarToken,getRol)
 
@@ -104,13 +177,49 @@ routerRol.get('/rol',validarToken,getRol)
  *         description: Token de autenticación JWT
  *     responses:
  *       200:
- *         description: "ok"
- *       400:
- *         description: Error al listar rol
- *       403:
- *         description: Token es requerido, token no esta autorizado
+ *         description: Rol registrado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nombre_rol:
+ *                   type: string
+ *                   example: "aprendiz"
+ *                 fecha_creacion: 
+ *                   type: string
+ *                   format: date
+ *                   example: "2025-02-11"
+ *       404:
+ *         description: No se registro ningun rol en el sistema 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No se pudo registrar un rol en el sistema"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
  *       500:
- *         description: Error en el servidor
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
  */
 routerRol.get('/rol/:id_rol',validarToken,getRolById)
 
@@ -146,16 +255,53 @@ routerRol.get('/rol/:id_rol',validarToken,getRolById)
  *               nombre_rol:
  *                 type: string
  *               fecha_creacion:
- *                 type: date
+ *                 type: string
+ *                 format: date
  *     responses:
  *       200:
- *         description: "ok"
- *       400:
- *         description: Error al actualizar rol
- *       403:
- *         description: Token es requerido, token no esta autorizado
+ *         description: Rol registrado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nombre_rol:
+ *                   type: string
+ *                   example: "aprendiz"
+ *                 fecha_creacion: 
+ *                   type: string
+ *                   format: date
+ *                   example: "2025-02-11"
+ *       404:
+ *         description: No se registro ningun rol en el sistema 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No se pudo registrar un rol en el sistema"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
  *       500:
- *         description: Error en el servidor
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
  */
 routerRol.put('/rol/:id_rol',validarToken,updateRol) 
 

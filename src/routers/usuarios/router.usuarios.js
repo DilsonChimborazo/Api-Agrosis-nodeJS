@@ -46,14 +46,55 @@ const routerUsuarios = Router()
  *                 type: integer
  *               
  *     responses:
- *       201:
- *         description: Usuario registrado con exito
- *       400:
- *         description: Error al registrar usuario
- *       403:
- *         description: Token es requerido, token no esta autorizado
+ *       200:
+ *         description: usuario registrado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nombre:
+ *                   type: string
+ *                   example: "Wilson Eduardo Samboni Rodriguez"
+ *                 email: 
+ *                   type: string
+ *                   example: "samboniwilson09@gmail.com"
+ *                 contrasena:
+ *                   type: string
+ *                   example: "fksdgfashdfjasf-sdasd-sdasd"
+ *                 fk_id_rol: 
+ *                   type: integer
+ *                   example: 1
+ *       404:
+ *         description: No se registro ningun usuario en el sistema 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No se pudo registrar un usuario en el sistema"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
  *       500:
- *         description: Error en el servidor
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
  */
 routerUsuarios.post('/usuarios', validarToken, createUsuarios);
 
@@ -75,13 +116,64 @@ routerUsuarios.post('/usuarios', validarToken, createUsuarios);
  *         description: Token de autenticación JWT
  *     responses:
  *       200:
- *         description: "ok"
- *       400:
- *         description: No hay usuarios registrados
- *       403:
- *         description: Token es requerido, token no esta autorizado
+ *         description: usuario obtenido correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nombre:
+ *                   type: string
+ *                   example: "Wilson Eduardo Samboni Rodriguez"
+ *                 email: 
+ *                   type: string
+ *                   example: "samboniwilson09@gmail.com"
+ *                 contrasena:
+ *                   type: string
+ *                   example: "fksdgfashdfjasf-sdasd-sdasd"
+ *                 fk_id_rol: 
+ *                   type: object
+ *                   properties:
+ *                     id_rol:
+ *                       type: integer
+ *                       example: 1
+ *                     nombre_rol:
+ *                       type: string
+ *                       example: "aprendiz"
+ *                     fecha_creacion:
+ *                       type: string
+ *                       format: date
+ *                       example: "2025-02-11"
+ *       404:
+ *         description: No se obtuvo ningun usuario en el sistema 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No se pudo obtener un usuario en el sistema"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
  *       500:
- *         description: Error en el servidor
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
  */
 routerUsuarios.get('/usuarios', validarToken, getUsuarios);
 
@@ -109,13 +201,64 @@ routerUsuarios.get('/usuarios', validarToken, getUsuarios);
  *         description: Token de autenticación JWT
  *     responses:
  *       200:
- *         description: "ok"
- *       400:
- *         description: No hay usuarios registrados
- *       403:
- *         description: Token es requerido, token no esta autorizado
+ *         description: usuario obtenido correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nombre:
+ *                   type: string
+ *                   example: "Wilson Eduardo Samboni Rodriguez"
+ *                 email: 
+ *                   type: string
+ *                   example: "samboniwilson09@gmail.com"
+ *                 contrasena:
+ *                   type: string
+ *                   example: "fksdgfashdfjasf-sdasd-sdasd"
+ *                 fk_id_rol: 
+ *                   type: object
+ *                   properties:
+ *                     id_rol:
+ *                       type: integer
+ *                       example: 1
+ *                     nombre_rol:
+ *                       type: string
+ *                       example: "aprendiz"
+ *                     fecha_creacion:
+ *                       type: string
+ *                       format: date
+ *                       example: "2025-02-11"
+ *       404:
+ *         description: No se registro ningun usuario en el sistema 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No se pudo obtener un usuario en el sistema"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
  *       500:
- *         description: Error en el servidor
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
  */
 routerUsuarios.get('/usuarios/:identificacion', validarToken, getUsuariosById);
 
@@ -158,13 +301,64 @@ routerUsuarios.get('/usuarios/:identificacion', validarToken, getUsuariosById);
  *                 type: integer
  *     responses:
  *       200:
- *         description: "ok"
- *       400:
- *         description: Erro al actualizar usuario
- *       403:
- *         description: Token es requerido, token no esta autorizado
+ *         description: usuario actualizado correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nombre:
+ *                   type: string
+ *                   example: "karina danitza arteaga"
+ *                 email: 
+ *                   type: string
+ *                   example: "karina@gmail.com"
+ *                 contrasena:
+ *                   type: string
+ *                   example: "fksdgfashdfjasf-sdasd-sdasd"
+ *                 fk_id_rol: 
+ *                   type: object
+ *                   properties:
+ *                     id_rol:
+ *                       type: integer
+ *                       example: 1
+ *                     nombre_rol:
+ *                       type: string
+ *                       example: "aprendiz"
+ *                     fecha_creacion:
+ *                       type: string
+ *                       format: date
+ *                       example: "2025-02-11"
+ *       404:
+ *         description: No se actualizo ningun usuario en el sistema 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No se pudo actualizar un usuario en el sistema"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
  *       500:
- *         description: Error en el servidor
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
  */
 routerUsuarios.put('/usuarios/:identificacion', validarToken, updateUsuarios);
 
