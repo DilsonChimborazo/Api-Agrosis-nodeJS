@@ -104,7 +104,7 @@ export const getControlFitosanitario = async (req, res) => {
         } else  {
             res.status(404).json({ message: "No hay controles fitosanitarios registrados"
                 
-             });
+            });
         }
     } catch (error) {
         console.error(error);

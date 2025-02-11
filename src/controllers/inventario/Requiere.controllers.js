@@ -13,7 +13,7 @@ export const getRequiere = async (req, res) => {
     JOIN herramientas ON requiere.fk_id_herramienta = herramientas.id_herramienta
     JOIN asignacion_actividad ON requiere.fk_id_asignacion_actividad = asignacion_actividad.id_asignacion_actividad
     JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
-    JOIN usuarios ON asignacion_actividad.fk_identificaacion = usuarios.identificacion
+    JOIN usuarios ON asignacion_actividad.fk_identificacion = usuarios.identificacion
     JOIN rol ON usuarios.fk_id_rol = rol.id_rol`
     const result = await configuracionBD.query(sql);
     if (result.rows.length > 0) {
@@ -50,7 +50,7 @@ export const getRequiere = async (req, res) => {
     ));
         res.status(200).json(requiere);
     } else{
-        res.status(404).json({msg:'No hay utilizaciones registradas'})
+        res.status(404).json({msg:'No hay datos registrados'})
     }
 }catch(err){
     console.log(err);
@@ -67,9 +67,9 @@ export const addRequiere = async (req, res) =>{
       const values = [fk_id_herramienta, fk_id_asignacion_actividad];
       const result = await configuracionBD.query(sql, values);
       if(result.rowCount>0){
-          res.status(200).json({msg:'utilizacion registrada con éxito'});
+          res.status(200).json({msg:'requiere registrada con éxito'});
       }else{
-          res.status(400).json({msg:'Error al registrar utiliza'});
+          res.status(400).json({msg:'Error al registrar requiere'});
       }
   }catch(err){
       console.log(err);
@@ -91,7 +91,7 @@ export const IdRequiere= async(req, res) =>{
     JOIN herramientas ON requiere.fk_id_herramienta = herramientas.id_herramienta
     JOIN asignacion_actividad ON requiere.fk_id_asignacion_actividad = asignacion_actividad.id_asignacion_actividad
     JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
-    JOIN usuarios ON asignacion_actividad.fk_identificaacion = usuarios.identificacion
+    JOIN usuarios ON asignacion_actividad.fk_identificacion = usuarios.identificacion
     JOIN rol ON usuarios.fk_id_rol = rol.id_rol
       WHERE requiere.id_requiere = $1`;
       const result = await configuracionBD.query(sql, [id_requiere]);
@@ -143,7 +143,7 @@ export const actualizarRequiere = async(req, res) => {
     const {id_requiere} = req.params;
     const {fk_id_herramienta, fk_id_asignacion_actividad} = req.body;
     const sql = 'UPDATE requiere SET fk_id_herramienta=$1, fk_id_asignacion_actividad=$2 WHERE id_requiere=$3';
-    const values = [fk_id_herramienta, fk_id_asignacion_actividad, fk_id_herramienta];
+    const values = [fk_id_herramienta, fk_id_asignacion_actividad, id_requiere];
     const result = await configuracionBD.query(sql, values);
     if(result.rowCount>0){
       res.status(200).json({msg:'Utilización actualizada con éxito'});

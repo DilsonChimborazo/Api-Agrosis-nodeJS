@@ -29,6 +29,7 @@ import routerDesarollan from "./src/routers/trazabilidad/router.desarrollan.js";
 import routerActividad from "./src/routers/trazabilidad/router.actividad.js";
 import routerResiduos from "./src/routers/trazabilidad/router.residuos.js";
 import RouterCF from "./src/routers/trazabilidad/router.controlFitosanitario.js";
+import routerTipoResiduo from './src/routers/trazabilidad/router.tipo_residuo.js';
 
 // Definimos los endpoints para las operaciones CRUD para el modulo Usuarios
 import routerRol from './src/routers/usuarios/router.rol.js';
@@ -80,6 +81,7 @@ app.use(routerTipoCultivo);
 app.use(routerActividad);
 app.use(routerResiduos);
 app.use(RouterCF);
+app.use(routerTipoResiduo);
 
 // Definimos los endpoints para las operaciones CRUD para el modulo Usuarios
 app.use(routerRol)
@@ -96,7 +98,7 @@ app.use(routerUtiliza);
 app.use( routerControlUsaInsumo);
 
 app.listen(3000,()=>{
-    console.log("servidor iniciado en el puerto 3000")
+    console.log("servidor iniciado en el puerto http://localhost:3000")
     
     console.log(
         `Version 1 de documentacion dsiponible en url http://localhost:3000/api-docs`

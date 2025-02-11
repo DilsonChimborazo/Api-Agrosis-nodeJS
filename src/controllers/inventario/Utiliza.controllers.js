@@ -29,7 +29,7 @@ export const getUtiliza = async (req, res) => {
         JOIN insumos ON utiliza.fk_id_insumo = insumos.id_insumo
         JOIN asignacion_actividad ON utiliza.fk_id_asignacion_actividad = asignacion_actividad.id_asignacion_actividad
         JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
-        JOIN usuarios ON asignacion_actividad.fk_identificaacion = usuarios.identificacion
+        JOIN usuarios ON asignacion_actividad.fk_identificacion = usuarios.identificacion
         JOIN rol ON usuarios.fk_id_rol = rol.id_rol`;
         const result = await configuracionBD.query(sql);
         if (result.rows.length > 0) {
@@ -87,7 +87,7 @@ export const IdUtiliza= async(req, res) =>{
         JOIN insumos ON utiliza.fk_id_insumo = insumos.id_insumo
         JOIN asignacion_actividad ON utiliza.fk_id_asignacion_actividad = asignacion_actividad.id_asignacion_actividad
         JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
-        JOIN usuarios ON asignacion_actividad.fk_identificaacion = usuarios.identificacion
+        JOIN usuarios ON asignacion_actividad.fk_identificacion = usuarios.identificacion
         JOIN rol ON usuarios.fk_id_rol = rol.id_rol
         WHERE id_mide = $1`;
         const result = await configuracionBD.query(sql, [id_utiliza]);
