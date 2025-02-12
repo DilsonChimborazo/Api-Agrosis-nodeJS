@@ -15,11 +15,12 @@ export const validarUsuario = async (req, resp) => {
                 throw new Error('Contraseña incorrecta');
             }
 
-            let token = jwt.sign(
-                { user: rows[0] },
+            const token = jwt.sign(
+                { identificacion: rows[0].identificacion, nombre: rows[0].nombre, rol: rows[0].fk_id_rol },
                 process.env.AUTH_SECRET,
                 { expiresIn: process.env.AUTH_EXPIRES }
             );
+            
             return resp.status(200).json({ msg: 'Usuario autorizado', token });
         } else {
             throw new Error('Usuario no encontrado');
@@ -41,6 +42,7 @@ export const validarToken = (req, resp, next) => {
 
     jwt.verify(token_usuario, process.env.AUTH_SECRET, (error, decoded) => {
         if (error) {
+            console.log(error);
             return resp.status(403).json({ msg: 'El token no está autorizado' });
         } else {
             req.user = decoded;

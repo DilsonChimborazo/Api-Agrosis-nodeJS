@@ -1,23 +1,46 @@
 import { configuracionBD } from "../../config/conexion.js";
-import bycriptjs from 'bcryptjs';
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-export const createUsuarios = async (req, res) =>{
-    try{
-        const {identificacion, nombre, contrasena, email, fk_id_rol} = req.body;
-        const hashedContrasena = await bycriptjs.hash(contrasena, 10)
-        const sql = 'INSERT INTO usuarios (identificacion, nombre, contrasena, email, fk_id_rol) VALUES ($1, $2, $3, $4, $5)';
-        const values = [identificacion, nombre, hashedContrasena, email, fk_id_rol];
-        const result = await configuracionBD.query(sql, values);
-        if(result.rowCount>0){
-            res.status(200).json({msg:'Usuario registrado con exito'})
-        }else{
-            res.status(400).json({msg:'Error al registrar usuario'})
+export const createUsuarios = async (req, res) => {
+    try {
+        const { identificacion, nombre, contrasena, email, fk_id_rol } = req.body;
+        const token = req.headers.authorization?.split(" ")[1];
+
+        // Verifica si ya hay usuarios en la BD
+        const checkUsers = await configuracionBD.query(`SELECT COUNT(*) FROM usuarios`);
+        const hayUsuarios = parseInt(checkUsers.rows[0].count) > 0;
+
+        if (hayUsuarios) {
+            if (!token) {
+                return res.status(401).json({ msg: "Acceso no autorizado" });
+            }
+
+            const decoded = jwt.verify(token, process.env.AUTH_SECRET);
+            if (decoded.rol !== 1) {
+                return res.status(403).json({ msg: "No tienes permisos para crear usuarios" });
+            }
         }
-    } catch(error){
-        console.log(error)
-        res.status(500).json({msg:'Error en el servidor'});
+
+        const hashedContrasena = await bcrypt.hash(contrasena, 10);
+        const sql = `INSERT INTO usuarios (identificacion, nombre, contrasena, email, fk_id_rol)
+                     VALUES ($1, $2, $3, $4, $5)`;
+        const values = [identificacion, nombre, hashedContrasena, email, fk_id_rol];
+
+        const result = await configuracionBD.query(sql, values);
+
+        if (result.rowCount > 0) {
+            res.status(201).json({ msg: "Usuario registrado con éxito" });
+        } else {
+            res.status(400).json({ msg: "Error al registrar usuario" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Error en el servidor" });
     }
 };
+
+
 
 export const getUsuarios = async (req, res) =>{
     try{

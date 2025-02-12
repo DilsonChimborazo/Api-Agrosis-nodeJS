@@ -98,7 +98,7 @@ const routerUsuarios = Router()
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerUsuarios.post('/usuarios', createUsuarios);
+routerUsuarios.post('/usuarios',validarToken, createUsuarios);
 
 /**
  * @swagger
