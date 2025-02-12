@@ -325,6 +325,6 @@ routerInsumo.get("/insumo/:id_insumo",validarToken, IdInsumo);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerInsumo.put("/iniumo /:id_insumo",validarToken, actualizarInsumo);
+routerInsumo.put("/insumo/:id_insumo",validarToken, actualizarInsumo);
 
 export default routerInsumo;

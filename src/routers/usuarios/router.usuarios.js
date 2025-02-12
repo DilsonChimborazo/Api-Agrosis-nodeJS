@@ -36,6 +36,8 @@ const routerUsuarios = Router()
  *           schema:
  *             type: object
  *             properties:
+ *               identificacion:
+ *                 type: integer
  *               nombre:
  *                 type: string
  *               email:
@@ -96,7 +98,7 @@ const routerUsuarios = Router()
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerUsuarios.post('/usuarios', validarToken, createUsuarios);
+routerUsuarios.post('/usuarios', createUsuarios);
 
 /**
  * @swagger
@@ -175,7 +177,7 @@ routerUsuarios.post('/usuarios', validarToken, createUsuarios);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerUsuarios.get('/usuarios', validarToken, getUsuarios);
+routerUsuarios.get('/usuarios', getUsuarios);
 
 /**
  * @swagger

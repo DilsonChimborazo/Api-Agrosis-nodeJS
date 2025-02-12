@@ -22,7 +22,7 @@ export const getRol = async (req, res) =>{
         const sql = "select * from rol";
         const result = await configuracionBD.query(sql);
         if(result.rows.length > 0) {
-            res.status(200).json(result)
+            res.status(200).json(result.rows)
         }else{
             res.status(400).json({msg:'Error al listar rol'});
         }
@@ -51,10 +51,13 @@ export const updateRol = async (req, res)=>{
     try{
         const {nombre_rol, fecha_creacion} = req.body;
         const {id_rol} = req.params;
-        const sql = `UPDATE rol set nombre_rol = $1 , fecha_creacion = $2 where id_rol =$3`;
+        const sql = `UPDATE rol set nombre_rol = $1 , fecha_creacion = $2 where id_rol =$3 RETURNING *`;
         const result = await configuracionBD.query(sql, [nombre_rol,fecha_creacion, id_rol]);
-        if(result.rowCount > 0){
-            res.status(200).json(result)
+        if (result.rowCount > 0) {
+            res.status(200).json({
+                msg: 'Rol actualizado correctamente',
+                rol_actualizado: result.rows[0]
+            });
         }else{
             res.status(400).json({msg:'Error al actualizar rol'})
         }

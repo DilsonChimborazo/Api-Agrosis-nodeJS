@@ -2,10 +2,10 @@ import { configuracionBD } from "../../config/conexion.js";
 
 export const postTipoResiduo = async (req, res) => {
     try {
-        const { nombre, descripcion } = req.body;
-        const sql = "INSERT INTO tipo_residuos (nombre, descripcion) VALUES ($1, $2)";
+        const { nombre_residuo, descripcion } = req.body;
+        const sql = "INSERT INTO tipo_residuos (nombre_residuo, descripcion) VALUES ($1, $2)";
         
-        const result = await configuracionBD.query(sql, [nombre, descripcion]);
+        const result = await configuracionBD.query(sql, [nombre_residuo, descripcion]);
 
         if (result.rowCount > 0) {
             res.status(201).json({ message: "Tipo de residuo registrado correctamente" });
@@ -39,11 +39,11 @@ export const getTipoResiduo = async (req, res) => {
 
 export const actualizarTipoResiduo = async (req, res) => {
     try {
-        const { nombre, descripcion } = req.body;
+        const { nombre_residuo, descripcion } = req.body;
         const { id_tipo_residuo} = req.params;
-        const sql = "UPDATE tipo_residuos SET nombre = $1, descripcion = $2 WHERE id_tipo_residuo = $3";
+        const sql = "UPDATE tipo_residuos SET nombre_residuo = $1, descripcion = $2 WHERE id_tipo_residuo = $3";
 
-        const result = await configuracionBD.query(sql, [nombre, descripcion, id_tipo_residuo]);
+        const result = await configuracionBD.query(sql, [nombre_residuo, descripcion, id_tipo_residuo]);
 
         if (result.rowCount > 0) {
             res.status(200).json({ message: "Tipo de cultivo actualizado correctamente" });

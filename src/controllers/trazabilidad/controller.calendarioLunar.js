@@ -2,9 +2,9 @@ import {configuracionBD} from '../../config/conexion.js';
 
 export const createCalendarioLunar = async (req, res) => {
     try{
-        const {fecha, descripcion, evento} = req.body;
-        const sql = 'INSERT INTO calendario_lunar (fecha, descripcion, evento) VALUES($1, $2, $3)';
-        const values = [fecha, descripcion, evento];
+        const {fecha, descripcion_evento, evento} = req.body;
+        const sql = 'INSERT INTO calendario_lunar (fecha, descripcion_evento, evento) VALUES($1, $2, $3)';
+        const values = [fecha, descripcion_evento, evento];
         const result = await configuracionBD.query(sql, values);
         if(result.rowCount>0){
             res.status(200).json({msg:'Evento en calendario lunar registrado con éxito'});
@@ -22,7 +22,7 @@ export const getCalendarioLunar = async (req, res)=>{
         const result = await configuracionBD.query(sql);
         if (result.rows.length > 0) {
            
-            res.status(200).json(result);
+            res.status(200).json(result.rows);
         } else{
             res.status(404).json({msg:'No hay eventos en  calendario lunar registrados'})
         }
@@ -52,9 +52,9 @@ export const getCalendarioLunarById = async (req, res) => {
 export const updateCalendarioLunar= async (req, res) => {
     try{
         const { id_calendario_lunar } = req.params;
-        const { fecha, descripcion, evento } = req.body;
-        const sql = 'UPDATE  calendario_lunar SET  fecha=$1, descripcion=$2 , evento=$3 WHERE id_calendario_lunar=$4';
-        const values = [id_calendario_lunar,fecha,descripcion, evento];
+        const { fecha, descripcion_evento, evento } = req.body;
+        const sql = 'UPDATE  calendario_lunar SET  fecha=$1, descripcion_evento=$2 , evento=$3 WHERE id_calendario_lunar=$4';
+        const values = [id_calendario_lunar,fecha,descripcion_evento, evento];
         const result = await configuracionBD.query(sql, values);
         if(result.rowCount>0){
             res.status(200).json({msg:'asignacion de actividad actualizada con éxito'});

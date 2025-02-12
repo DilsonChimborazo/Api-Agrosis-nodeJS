@@ -1,23 +1,36 @@
 import { configuracionBD } from "../../config/conexion.js";
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'; 
 
-export const validarUsuario = async (req, resp)=>{
-    try{
-        const {login, password} = req.body;
-        const sql = `SELECT identificacion, nombre, contrasena, email, fk_id_rol FROM usuarios WHERE identificacion = $1 and contrasena = $2 `;
-        const result = await configuracionBD.query(sql,[login, password]);
+export const validarUsuario = async (req, resp) => {
+    try {
+        const { login, password } = req.body;
+        const sql = `SELECT identificacion, nombre, contrasena, email, fk_id_rol FROM usuarios WHERE identificacion = $1`;
+        const result = await configuracionBD.query(sql, [login]);
         const rows = result.rows;
-        if(rows.length>0){
-            let token = jwt.sign({user:rows[0]}, process.env.AUTH_SECRET,{expiresIn:process.env.AUTH_EXPIRES});
-            return resp.status(200).json({msg:'Usuario autorizado',result,token})
-        }else{
-            return resp.status(404).json({msg:'Usuario no autorizado'});
+
+        if (rows.length > 0) {
+            const passwordValida = await bcrypt.compare(password, rows[0].contrasena);
+            if (!passwordValida) {
+                throw new Error('Contraseña incorrecta');
+            }
+
+            let token = jwt.sign(
+                { user: rows[0] },
+                process.env.AUTH_SECRET,
+                { expiresIn: process.env.AUTH_EXPIRES }
+            );
+            return resp.status(200).json({ msg: 'Usuario autorizado', token });
+        } else {
+            throw new Error('Usuario no encontrado');
         }
-    } catch(error){
-        console.log(error)
-        resp.status(500).json({msg:'Error al autorizar'});
+    } catch (error) {
+        console.error(error);
+        resp.status(500).json({ msg: error.message });
     }
 };
+
+
 
 export const validarToken = (req, resp, next) => {
     let token_usuario = req.headers['authorization']?.split(" ")[1];

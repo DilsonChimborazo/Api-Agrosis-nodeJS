@@ -34,7 +34,8 @@ const routerasignacion_actividad = Router();
  *             type: object
  *             properties:
  *               fecha:
- *                 type: date
+ *                 type: string
+ *                 format: date
  *                 description: Fecha de la asignacion de una actividad
  *               fk_id_actividad:
  *                 type: integer

@@ -6,7 +6,7 @@ export const getInsumo = async (req, res) => {
     const sql = 'select * from insumos';
     const result = await configuracionBD.query(sql);
     if(result.rows.length > 0){
-      res.status(200).json(result)
+      res.status(200).json(result.rows)
     }else{
       res.status(400).json({msg: 'Error al obtener el insumo'});
     }
@@ -19,20 +19,30 @@ export const getInsumo = async (req, res) => {
 // Agregar un nuevo registro a 'insumo' con claves foráneas
 export const addInsumo = async (req, res) => {
   try {
-   const {nombre, tipo, precio_unidad, cantidad, unidad_medida} = req.body;
-   const sql = 'INSERT INTO insumos (nombre, tipo, precio_unidad, cantidad, unidad_medida) VALUES ($1, $2, $3, $4, $5)';
-   const values = [nombre, tipo, precio_unidad, cantidad, unidad_medida];
-   const result = await configuracionBD.query(sql);
-   if(result.rows.length > 0){
-    res.status(200).json("Insumo registrado con exito")
-   }else{
-    res.status(400).json({msg:'Error al registrar insumo'});
-   }
+    const { nombre, tipo, precio_unidad, cantidad, unidad_medida } = req.body;
+
+    // Verificar que todos los campos están presentes
+    if (!nombre || !tipo || !precio_unidad || !cantidad || !unidad_medida) {
+      return res.status(400).json({ msg: "Todos los campos son obligatorios" });
+    }
+
+    const sql = `INSERT INTO insumos (nombre, tipo, precio_unidad, cantidad, unidad_medida) 
+                 VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+    const values = [nombre, tipo, precio_unidad, cantidad, unidad_medida];
+    
+    const result = await configuracionBD.query(sql, values);
+
+    if (result.rowCount > 0) {
+      res.status(201).json({ msg: "Insumo registrado con éxito" });
+    } else {
+      res.status(400).json({ msg: "Error al registrar insumo" });
+    }
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: 'Error en el servidor'});
+    console.error("Error en addInsumo:", error);
+    res.status(500).json({ msg: "Error en el servidor", error: error.message });
   }
 };
+
 
 // Obtener un registro por ID de 'insumo' con los datos relacionados
 export const IdInsumo = async (req, res) => {

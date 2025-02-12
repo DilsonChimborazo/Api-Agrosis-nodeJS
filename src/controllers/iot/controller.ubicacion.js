@@ -54,7 +54,7 @@ export const updateUbicacion = async (req, res) => {
         const values = [latitud, longitud, id_ubicacion];
         const result = await configuracionBD.query(sql, values);
         if(result.rowCount>0){
-            res.status(200).json({msg:'Ubicación actualizada con éxito', result});
+            res.status(200).json({msg:'Ubicación actualizada con éxito'});
         }else{
             res.status(404).json({msg:'Ubicación no encontrada para actualizar'})
         }

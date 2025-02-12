@@ -87,7 +87,7 @@ const routerRol = Router ();
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerRol.post('/rol',validarToken,createRol)
+routerRol.post('/rol',createRol)
 
 /**
  * @swagger
@@ -151,7 +151,7 @@ routerRol.post('/rol',validarToken,createRol)
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerRol.get('/rol',validarToken,getRol)
+routerRol.get('/rol',getRol)
 
 /**
  * @swagger

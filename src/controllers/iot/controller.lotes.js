@@ -11,7 +11,8 @@ export const createLotes = async(req, res)=>{
         }else{
             res.status(400).json({msg:'Error al registrar el lote'});
         }
-    }catch{
+    }catch(e){
+        console.log(e);
         res.status(500).json({msg:'Error en el servidor '})
     }
 }

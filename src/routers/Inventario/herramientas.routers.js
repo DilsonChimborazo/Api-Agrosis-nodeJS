@@ -88,7 +88,7 @@ const routerHerramientas = Router();
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerHerramientas.get('herramientas',validarToken, getHerramientas);
+routerHerramientas.get('/herramientas',validarToken, getHerramientas);
 
 /**
  * @swagger
@@ -155,7 +155,7 @@ routerHerramientas.get('herramientas',validarToken, getHerramientas);
  *                   example: "Error al obtener la herramienta"
  */
 
-routerHerramientas.post('herramientas',validarToken, addHerramientas);
+routerHerramientas.post('/herramientas',validarToken, addHerramientas);
 
 /**
  * @swagger
@@ -292,6 +292,6 @@ routerHerramientas.get("/herramientas/:id_herramienta",validarToken, IdHerramien
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerHerramientas.put("/herramientas /:id_herramienta",validarToken, actualizarHerramientas);
+routerHerramientas.put("/herramientas/:id_herramienta",validarToken, actualizarHerramientas);
 
 export default routerHerramientas;

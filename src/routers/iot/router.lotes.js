@@ -37,9 +37,9 @@ const routerLotes = Router();
  *             type: object
  *             properties:
  *               dimension:
- *                 type: string
+ *                 type: integer
  *                 description: Dimensión del lote
- *                 example: "100x200m"
+ *                 example: 100
  *               nombre_lote:
  *                 type: string
  *                 description: Nombre del lote
@@ -123,9 +123,9 @@ routerLotes.post('/lotes',validarToken, createLotes);
  *                         description: ID del lote
  *                         example: 1
  *                       dimension:
- *                         type: string
+ *                         type: integer
  *                         description: Dimensión del lote
- *                         example: "100x200m"
+ *                         example: 100
  *                       nombre_lote:
  *                         type: string
  *                         description: Nombre del lote
@@ -211,9 +211,9 @@ routerLotes.get('/lotes',validarToken, getLotes);
  *                         description: ID del lote
  *                         example: 1
  *                       dimension:
- *                         type: string
+ *                         type: integer
  *                         description: Dimensión del lote
- *                         example: "100x200m"
+ *                         example: 100
  *                       nombre_lote:
  *                         type: string
  *                         description: Nombre del lote
@@ -288,9 +288,9 @@ routerLotes.get('/lotes/:id_lote',validarToken, getLoteById);
  *             type: object
  *             properties:
  *               dimension:
- *                 type: string
+ *                 type: integer
  *                 description: Dimensión del lote
- *                 example: "100x200m"
+ *                 example: 100
  *               nombre_lote:
  *                 type: string
  *                 description: Nombre del lote

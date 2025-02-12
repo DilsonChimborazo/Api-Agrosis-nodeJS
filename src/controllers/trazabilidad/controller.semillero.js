@@ -21,7 +21,7 @@ export const getSemilleros = async (req, res) => {
         const sql = `SELECT * from  semilleros`;
         const result = await configuracionBD.query(sql)
         if(result.rows.length >0){
-            res.status(200).json(result);
+            res.status(200).json(result.rows);
         } else {
             res.status(404).json({ msg: 'No hay semilleros registrados' });
         }
@@ -37,7 +37,7 @@ export const getSemillerosById = async (req, res) => {
         const sql = `SELECT * FROM semilleros WHERE id_semillero = $1`;
         const result = await configuracionBD.query(sql, [id_semillero]);
         if (result.rows.length > 0) {
-            res.status(200).json(result.rows[0]); // Devuelve solo el registro encontrado
+            res.status(200).json(result.rows[0]); 
         } else {
             res.status(404).json({ msg: 'Semillero no encontrado' });
         }

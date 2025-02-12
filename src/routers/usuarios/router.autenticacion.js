@@ -33,8 +33,9 @@ const router = Router();
  *             type: object
  *             properties:
  *               login:
- *                 type: string
+ *                 type: integer
  *                 description: Identificación del usuario
+ *                 example: 123456
  *               password:
  *                 type: string
  *                 description: Contraseña del usuario
