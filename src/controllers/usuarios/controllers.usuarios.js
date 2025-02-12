@@ -6,8 +6,6 @@ export const createUsuarios = async (req, res) => {
     try {
         const { identificacion, nombre, contrasena, email, fk_id_rol } = req.body;
         const token = req.headers.authorization?.split(" ")[1];
-
-        // Verifica si ya hay usuarios en la BD
         const checkUsers = await configuracionBD.query(`SELECT COUNT(*) FROM usuarios`);
         const hayUsuarios = parseInt(checkUsers.rows[0].count) > 0;
 
@@ -24,7 +22,7 @@ export const createUsuarios = async (req, res) => {
 
         const hashedContrasena = await bcrypt.hash(contrasena, 10);
         const sql = `INSERT INTO usuarios (identificacion, nombre, contrasena, email, fk_id_rol)
-                     VALUES ($1, $2, $3, $4, $5)`;
+                    VALUES ($1, $2, $3, $4, $5)`;
         const values = [identificacion, nombre, hashedContrasena, email, fk_id_rol];
 
         const result = await configuracionBD.query(sql, values);
@@ -60,7 +58,7 @@ export const getUsuarios = async (req, res) =>{
                 nombre_rol: usuarios.nombre_rol,
                 fecha_creacion: usuarios.fecha_creacion
             }
-  
+
         }));
         res.status(200).json({usuarios})
     }else{
@@ -91,7 +89,7 @@ export const getUsuariosById = async (req, res) =>{
                 nombre_rol: usuarios.nombre_rol,
                 fecha_creacion: usuarios.fecha_creacion
             }
-  
+
         }));
         res.status(200).json({usuarios})
     }else{
