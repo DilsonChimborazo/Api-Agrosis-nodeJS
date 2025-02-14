@@ -1,8 +1,10 @@
 import {Router} from 'express';
-import { createEspecie, getEspecieById, getEspecie, updateEspecie } from '../../controllers/trazabilidad/controller.especie.js';
+import { createEspecie, getEspecieById, getEspecie, updateEspecie, getReporteEspeciesPorTipoCultivo } from '../../controllers/trazabilidad/controller.especie.js';
 import { validarToken } from "../../controllers/usuarios/controllers.autenticacion.js";
 
 const routerEspecie = Router();
+
+routerEspecie.get('/especie/reporte',getReporteEspeciesPorTipoCultivo)
 
 /**
  * @swagger
@@ -97,7 +99,7 @@ const routerEspecie = Router();
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerEspecie.post('/especie',validarToken,createEspecie)
+routerEspecie.post('/especie',createEspecie)
 
 /**
  * @swagger
@@ -181,7 +183,7 @@ routerEspecie.post('/especie',validarToken,createEspecie)
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerEspecie.get('/especie',validarToken,getEspecie)
+routerEspecie.get('/especie',getEspecie)
 
 /**
  * @swagger
@@ -249,7 +251,7 @@ routerEspecie.get('/especie',validarToken,getEspecie)
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerEspecie.get('/especie/:id_especie',validarToken,getEspecie)
+routerEspecie.get('/especie/:id_especie',getEspecie)
 
 /**
  * @swagger
@@ -353,6 +355,6 @@ routerEspecie.get('/especie/:id_especie',validarToken,getEspecie)
  *                   example: "Error en el servidor"
  */
 
-routerEspecie.put('/especie/:id_especie',validarToken,updateEspecie)
+routerEspecie.put('/especie/:id_especie',updateEspecie)
 
 export default routerEspecie;

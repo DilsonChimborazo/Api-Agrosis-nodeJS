@@ -247,3 +247,30 @@ export const IdPlantacion = async (req, res) => {
         res.status(500).json({ "message": "Error en el servidor." });
     }
 };
+
+
+export const getReportePlantaciones = async (req, res) => {
+    try {
+      const sql = `
+        SELECT 
+            c.id_cultivo,
+            c.nombre_cultivo,
+            e.id_eras,
+            e.descripcion AS nombre_era,
+            COUNT(p.id_plantacion) AS total_plantaciones
+        FROM plantacion p
+        JOIN cultivo c ON p.fk_id_cultivo = c.id_cultivo
+        JOIN eras e ON p.fk_id_era = e.id_eras
+        GROUP BY c.id_cultivo, c.nombre_cultivo, e.id_eras, e.descripcion
+        ORDER BY c.nombre_cultivo, e.descripcion;
+      `;
+  
+      const result = await configuracionBD.query(sql);
+  
+      res.status(200).json({ reporte: result.rows });
+    } catch (error) {
+      console.error('Error en getReportePlantacionesPorCultivo:', error);
+      res.status(500).json({ msg: 'Error en el servidor' });
+    }
+  };
+  

@@ -1,10 +1,11 @@
 import {Router} from 'express';
-import { createEras, getEraById, getEras, updateEra, getTotalErasPorLote} from '../../controllers/iot/controller.eras.js';
+import { createEras, getEraById, getEras, updateEra, getTotalEras} from '../../controllers/iot/controller.eras.js';
 import { validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 
 const routerEras = Router();
 
-routerEras.get('/eras/reporte', validarToken, getTotalErasPorLote)
+routerEras.get('/eras/reporte', validarToken, getTotalEras)
+
 
 /**
  * @swagger

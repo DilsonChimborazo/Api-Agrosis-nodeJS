@@ -1,8 +1,10 @@
 import { Router} from "express";
-import { postDesarrollan,getDesarrollan,actualizarDesarrollan,IdDesarrollan } from "../../controllers/trazabilidad/controller.desarrollan.js";
+import { postDesarrollan,getDesarrollan,actualizarDesarrollan,IdDesarrollan, getReporteCultivosPEA } from "../../controllers/trazabilidad/controller.desarrollan.js";
 import { validarToken } from "../../controllers/usuarios/controllers.autenticacion.js";
 
 const routerDesarollan = Router();
+
+routerDesarollan.get('/desarrollan/reporte',validarToken,getReporteCultivosPEA);
 
 /**
  * @swagger

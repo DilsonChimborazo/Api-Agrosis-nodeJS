@@ -69,3 +69,26 @@ export const updateEspecie = async (req, res) => {
         res.status(500).json({ msg: 'Error al actualizar la especie' });
     }
 };
+
+export const getReporteEspeciesPorTipoCultivo = async (req, res) => {
+    try {
+      const sql = `
+        SELECT 
+            tc.id_tipo_cultivo,
+            tc.nombre AS tipo_cultivo,
+            COUNT(e.id_especie) AS total_especies
+        FROM tipo_cultivo tc
+        LEFT JOIN especie e ON tc.id_tipo_cultivo = e.fk_id_tipo_cultivo
+        GROUP BY tc.id_tipo_cultivo, tc.nombre
+        ORDER BY total_especies DESC;
+      `;
+  
+      const result = await configuracionBD.query(sql);
+  
+      res.status(200).json({ reporte: result.rows });
+    } catch (error) {
+      console.error('Error en getReporteEspeciesPorTipoCultivo:', error);
+      res.status(500).json({ msg: 'Error en el servidor' });
+    }
+  };
+  

@@ -109,12 +109,12 @@ export const getReporteLotes = async (req, res) => {
     const result = await configuracionBD.query(sql);
 
     if (result.rows.length > 0) {
-      const lotesPorEstado = result.rows.map(row => ({
+      const lotes = result.rows.map(row => ({
         estado: row.estado,
         lotes: row.lotes
       }));
 
-      res.status(200).json({ lotesPorEstado });
+      res.status(200).json({ lotes });
     } else {
       res.status(400).json({ msg: 'No hay lotes registrados' });
     }

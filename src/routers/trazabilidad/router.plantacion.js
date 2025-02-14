@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { postplantacion,IdPlantacion,actualizarPlantacion, getPlantacion } from "../../controllers/trazabilidad/controller.plantacion.js";
+import { postplantacion,IdPlantacion,actualizarPlantacion, getPlantacion, getReportePlantaciones } from "../../controllers/trazabilidad/controller.plantacion.js";
 import { validarToken } from "../../controllers/usuarios/controllers.autenticacion.js";
 
 const routerPlantacion = Router();
+
+routerPlantacion.get("/plantacion/reporte",validarToken, getReportePlantaciones);
 
 /**
  * @swagger

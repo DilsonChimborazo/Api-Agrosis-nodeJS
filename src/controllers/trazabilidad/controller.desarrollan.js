@@ -163,3 +163,29 @@ export const IdDesarrollan = async (req, res) => {
         res.status(500).json({ "message": "Error en el servidor." });
     }
 };
+
+
+export const getReporteCultivosPEA = async (req, res) => {
+    try {
+      const sql = `
+        SELECT 
+            d.id_desarrollan,
+            c.id_cultivo,
+            c.nombre_cultivo,
+            p.id_pea,
+            p.nombre AS nombre_pea,
+            p.descripcion AS descripcion_pea
+        FROM desarrollan d
+        JOIN cultivo c ON d.fk_id_cultivo = c.id_cultivo
+        JOIN PEA p ON d.fk_id_pea = p.id_pea;
+      `;
+  
+      const result = await configuracionBD.query(sql);
+  
+      res.status(200).json({ reporte: result.rows });
+    } catch (error) {
+      console.error('Error en getReporteCultivosPEA:', error);
+      res.status(500).json({ msg: 'Error en el servidor' });
+    }
+  };
+  

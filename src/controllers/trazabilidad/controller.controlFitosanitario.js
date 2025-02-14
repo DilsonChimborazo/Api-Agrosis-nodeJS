@@ -245,7 +245,7 @@ export const getTotalControlesFitosanitarios  = async (req, res) => {
 
     const result = await configuracionBD.query(sql);
 
-    res.status(200).json({ report: result.rows });
+    res.status(200).json({ reporte: result.rows });
   } catch (error) {
     console.error('Error en getReporteEnfermedadesCultivo:', error);
     res.status(500).json({ msg: 'Error en el servidor' });
