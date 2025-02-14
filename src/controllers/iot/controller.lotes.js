@@ -96,3 +96,30 @@ export const updateLote = async (req, res) => {
     }
 }
 
+
+export const getReporteLotes = async (req, res) => {
+  try {
+    const sql = `SELECT 
+        estado, 
+        STRING_AGG(nombre_lote, ', ') AS lotes
+      FROM lote
+      GROUP BY estado
+      ORDER BY estado;`;
+
+    const result = await configuracionBD.query(sql);
+
+    if (result.rows.length > 0) {
+      const lotesPorEstado = result.rows.map(row => ({
+        estado: row.estado,
+        lotes: row.lotes
+      }));
+
+      res.status(200).json({ lotesPorEstado });
+    } else {
+      res.status(400).json({ msg: 'No hay lotes registrados' });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Error en el servidor' });
+  }
+};

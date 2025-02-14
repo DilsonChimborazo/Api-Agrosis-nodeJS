@@ -1,8 +1,10 @@
 import {Router} from 'express';
-import { createEras, getEraById, getEras, updateEra } from '../../controllers/iot/controller.eras.js';
+import { createEras, getEraById, getEras, updateEra, getTotalErasPorLote} from '../../controllers/iot/controller.eras.js';
 import { validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 
 const routerEras = Router();
+
+routerEras.get('/eras/reporte', validarToken, getTotalErasPorLote)
 
 /**
  * @swagger
@@ -84,7 +86,7 @@ const routerEras = Router();
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerEras.post('/eras',validarToken, createEras)
+routerEras.post('/eras', validarToken, createEras)
 
 /**
  * @swagger
@@ -182,7 +184,7 @@ routerEras.post('/eras',validarToken, createEras)
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerEras.get('/eras',validarToken, getEras)
+routerEras.get('/eras', validarToken, getEras)
 
 /**
  * @swagger
@@ -281,7 +283,7 @@ routerEras.get('/eras',validarToken, getEras)
  *                   example: "Error en el servidor"
  */
 
-routerEras.get('/eras/:id_eras',validarToken, getEraById)
+routerEras.get('/eras/:id_eras', validarToken, getEraById)
 
 /**
  * @swagger
@@ -346,6 +348,6 @@ routerEras.get('/eras/:id_eras',validarToken, getEraById)
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerEras.put('/eras/:id_eras',validarToken, updateEra)
+routerEras.put('/eras/:id_eras', validarToken, updateEra)
 
 export default routerEras;

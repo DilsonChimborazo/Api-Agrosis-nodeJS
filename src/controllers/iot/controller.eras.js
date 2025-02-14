@@ -105,3 +105,34 @@ export const updateEra = async (req, res) => {
         res.status(500).json({msg: 'Error en el servidor'});
     }
 }
+
+export const getTotalErasPorLote = async (req, res) => {
+    try {
+      const sql = `SELECT 
+            lote.id_lote, 
+            lote.nombre_lote,
+            COUNT(*) AS total_eras
+        FROM eras
+        JOIN lote ON eras.fk_id_lote = lote.id_lote
+        GROUP BY lote.id_lote, lote.nombre_lote  -- ✅ Agrupar por id_lote y nombre_lote
+        ORDER BY total_eras DESC;`;
+  
+      const result = await configuracionBD.query(sql);
+  
+      if (result.rows.length > 0) {
+        const totalErasPorLote = result.rows.map(lote => ({
+          id_lote: lote.id_lote,
+          nombre: lote.nombre_lote,
+          total_eras: lote.total_eras
+        }));
+  
+        res.status(200).json({ totalErasPorLote });
+      } else {
+        res.status(400).json({ msg: 'No hay eras registradas' });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ msg: 'Error en el servidor' });
+    }
+  };
+  

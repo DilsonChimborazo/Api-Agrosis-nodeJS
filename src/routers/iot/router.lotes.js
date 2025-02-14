@@ -1,8 +1,10 @@
 import {Router} from 'express';
-import { createLotes, getLoteById, getLotes, updateLote } from '../../controllers/iot/controller.lotes.js';
+import { createLotes, getLoteById, getLotes, updateLote, getReporteLotes } from '../../controllers/iot/controller.lotes.js';
 import { validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 
 const routerLotes = Router();
+
+routerLotes.get('/lotes/reporte', getReporteLotes);
 
 /**
  * @swagger
@@ -95,7 +97,7 @@ const routerLotes = Router();
  *                   example: "Error en el servidor"
  */
 
-routerLotes.post('/lotes',validarToken, createLotes);
+routerLotes.post('/lotes', createLotes);
 
 /**
  * @swagger
@@ -183,7 +185,7 @@ routerLotes.post('/lotes',validarToken, createLotes);
  *                   example: "Error en el servidor"
  */
 
-routerLotes.get('/lotes',validarToken, getLotes);
+routerLotes.get('/lotes', getLotes);
 
 /**
  * @swagger
@@ -270,7 +272,7 @@ routerLotes.get('/lotes',validarToken, getLotes);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerLotes.get('/lotes/:id_lote',validarToken, getLoteById);
+routerLotes.get('/lotes/:id_lote', getLoteById);
 
 /**
  * @swagger
@@ -345,6 +347,6 @@ routerLotes.get('/lotes/:id_lote',validarToken, getLoteById);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerLotes.put('/lotes/:id_lote',validarToken, updateLote);
+routerLotes.put('/lotes/:id_lote', updateLote);
 
 export default routerLotes;
