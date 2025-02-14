@@ -122,3 +122,21 @@ export const updateUsuarios = async (req, res)=>{
             res.status(500).json({msg:'Error en el servidor'})        
     }   
 };  
+
+
+
+export const getReporteUsuarios = async (req, res) => {
+    try {
+        const sql = `
+            SELECT COUNT(identificacion) AS total_usuarios
+            FROM usuarios;
+        `;
+
+        const result = await configuracionBD.query(sql);
+
+        res.status(200).json({ reporte: result.rows[0] });
+    } catch (error) {
+        console.error('Error en getReporteUsuarios:', error);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};

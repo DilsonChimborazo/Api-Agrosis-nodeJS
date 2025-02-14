@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { createUsuarios, getUsuarios, getUsuariosById, updateUsuarios } from "../../controllers/usuarios/controllers.usuarios.js";
+import { createUsuarios, getUsuarios, getUsuariosById, updateUsuarios, getReporteUsuarios} from "../../controllers/usuarios/controllers.usuarios.js";
 import { validarToken } from "../../controllers/usuarios/controllers.autenticacion.js";
 
 const routerUsuarios = Router()
+
+routerUsuarios.get('/usuarios/reporte', validarToken, getReporteUsuarios);
+
 
 /**
  * @swagger
