@@ -98,7 +98,7 @@ const routerUsuarios = Router()
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerUsuarios.post('/usuarios',validarToken, createUsuarios);
+routerUsuarios.post('/usuarios', validarToken, createUsuarios);
 
 /**
  * @swagger
@@ -177,7 +177,7 @@ routerUsuarios.post('/usuarios',validarToken, createUsuarios);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerUsuarios.get('/usuarios', getUsuarios);
+routerUsuarios.get('/usuarios',validarToken, getUsuarios);
 
 /**
  * @swagger

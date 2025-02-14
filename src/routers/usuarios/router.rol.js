@@ -221,7 +221,7 @@ routerRol.get('/rol',getRol)
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerRol.get('/rol/:id_rol',validarToken,getRolById)
+routerRol.get('/rol/:id_rol',getRolById)
 
 /**
  * @swagger
@@ -303,7 +303,7 @@ routerRol.get('/rol/:id_rol',validarToken,getRolById)
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerRol.put('/rol/:id_rol',validarToken,updateRol) 
+routerRol.put('/rol/:id_rol',updateRol) 
 
 export default routerRol;
 

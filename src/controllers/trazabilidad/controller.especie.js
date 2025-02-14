@@ -1,102 +1,71 @@
 import {configuracionBD} from '../../config/conexion.js';
 
+
+
 export const createEspecie = async (req, res) => {
-    try{
-        const {nombre_comun, nombre_cientifico,descripcion, fk_id_tipo_cultivo} = req.body;
-        const sql = 'INSERT INTO especie (nombre_comun, nombre_cientifico,descripcion, fk_id_tipo_cultivo) VALUES($1, $2, $3, $4)';
-        const values = [nombre_comun, nombre_cientifico,descripcion, fk_id_tipo_cultivo];
-        const result = await configuracionBD.query(sql, values);
-        if(result.rowCount>0){
-            res.status(200).json({msg:'Especie registrada con éxito'});
-        }else{
-            res.status(400).json({msg:'Error al registrar la Especie'});
-        }
-    }catch (erro){
-        console.log(erro)
-        res.status(500).json({msg: 'Error en el servidor'});
+    const { nombre_comun, nombre_cientifico, descripcion, fk_id_tipo_cultivo } = req.body;
+    try {
+        const query = `INSERT INTO especies (nombre_comun, nombre_cientifico, descripcion, fk_id_tipo_cultivo)
+                       VALUES ($1, $2, $3, $4) RETURNING *`;
+        const values = [nombre_comun, nombre_cientifico, descripcion, fk_id_tipo_cultivo];
+        const result = await configuracionBD.query(query, values);
+        res.status(201).json({ msg: 'Especie registrada con éxito', especie: result.rows[0] });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Error al registrar la especie' });
     }
-}
+};
 
-export const getEspecie = async (req, res)=>{
-    try{
-        const sql = ` SELECT especie.id_especie, especie.nombre_comun, especie.nombre_cientifico, especie.descripcion, especie.fk_id_tipo_cultivo,
-        tipo_cultivo.id_tipo_cultivo, tipo_cultivo.nombre, tipo_cultivo.descripcion
-        
-    FROM especie
-    JOIN tipo_cultivo ON especie.fk_id_tipo_cultivo = tipo_cultivo.id_tipo_cultivo
-    WHERE especie.id_especie =$1`;
-    const result = await configuracionBD.query(sql);
-    if (result.rows.length > 0) {
-        const especie = result.rows.map(especie => ({
-            id: especie.id_especie,
-            nombre_comun: especie.nombre_comun,
-            nombre_cientifico: especie.nombre_cientifico,
-            descripcion: especie.descripcion,
-            fk_id_tipo_cultivo: {
-                id: especie.fk_id_tipo_cultivo,
-                nombre: especie.nombre,
-                descripcion: especie.descripcion,
-                
-            },
-            }));
-            res.status(200).json({especie});
-        } else{
-            res.status(404).json({msg:'No hay especies registradas'})
-        }
-    }catch(err){
-        console.log(err);
-        res.status(500).json({msg:'Error en el servidor'});
+export const getEspecie = async (req, res) => {
+    try {
+        const query = `SELECT e.id_especie, e.nombre_comun, e.nombre_cientifico, e.descripcion, 
+                              t.id_tipo_cultivo, t.nombre, t.descripcion
+                       FROM especie e
+                       JOIN tipo_cultivo t ON e.fk_id_tipo_cultivo = t.id_tipo_cultivo`;
+        const result = await configuracionBD.query(query);
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Error al obtener las especies' });
     }
-}
+};
 
-
-
-export const getEspecieById = async (req, res)=>{
-    try{
-        const {id_especie}=req.params;
-        const sql = ` SELECT especie.id_especie, especie.nombre_comun, especie.nombre_cientifico, especie.descripcion, especie.fk_id_tipo_cultivo,
-        tipo_cultivo.id_tipo_cultivo, tipo_cultivo.nombre, tipo_cultivo.descripcion
-        
-    FROM especie
-    JOIN tipo_cultivo ON especie.fk_id_tipo_cultivo = tipo_cultivo.id_tipo_cultivo
-    WHERE especie.id_especie =$1`;
-    const result = await configuracionBD.query(sql,[id_especie]);
-    if (result.rows.length > 0) {
-        const especie = result.rows.map(especie => ({
-            id: especie.id_especie,
-            nombre_comun: especie.nombre_comun,
-            nombre_cientifico: especie.nombre_cientifico,
-            descripcion: especie.descripcion,
-            fk_id_tipo_cultivo: {
-                id: especie.fk_id_tipo_cultivo,
-                nombre: especie.nombre,
-                descripcion: especie.descripcion,
-                
-            },
-            }));
-            res.status(200).json({especie});
-        } else{
-            res.status(404).json({msg:'No hay especies registradas'})
+export const getEspecieById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const query = `SELECT e.id_especie, e.nombre_comun, e.nombre_cientifico, e.descripcion, 
+                              t.id_tipo_cultivo, t.nombre, t.descripcion
+                       FROM especie e
+                       JOIN tipo_cultivo t ON e.fk_id_tipo_cultivo = t.id_tipo_cultivo
+                       WHERE e.id_especie = $1`;
+        const result = await configuracionBD.query(query, [id]);
+        if (result.rows.length > 0) {
+            res.status(200).json(result.rows[0]);
+        } else {
+            res.status(404).json({ msg: 'Especie no encontrada' });
         }
-    }catch(err){
-        console.log(err);
-        res.status(500).json({msg:'Error en el servidor'});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Error al obtener la especie' });
     }
-}
+};
 
-export const updateEspecie= async (req, res) => {
-    try{
-        const { id_especie } = req.params;
-        const { nombre_comun, nombre_cientifico,descripcion, fk_id_tipo_cultivo} = req.body;
-        const sql = 'UPDATE especie SET nombre_comun=$2, nombre_cientifico=$3 ,descripcion=$4 , fk_id_tipo_cultivo=$5 WHERE id_especie=$1';
-        const values = [id_especie, nombre_comun, nombre_cientifico,descripcion, fk_id_tipo_cultivo];
-        const result = await configuracionBD.query(sql, values);
-        if(result.rowCount>0){
-            res.status(200).json({msg:'Especie actualizada con éxito'});
-        }else{
-            res.status(404).json({msg:'No se encontró la Especie'});
+export const updateEspecie = async (req, res) => {
+    const { id } = req.params;
+    const { nombre_comun, nombre_cientifico, descripcion, fk_id_tipo_cultivo } = req.body;
+    try {
+        const query = `UPDATE especie
+                       SET nombre_comun = $1, nombre_cientifico = $2, descripcion = $3, fk_id_tipo_cultivo = $4
+                       WHERE id_especie = $5 RETURNING *`;
+        const values = [nombre_comun, nombre_cientifico, descripcion, fk_id_tipo_cultivo, id];
+        const result = await configuracionBD.query(query, values);
+        if (result.rows.length > 0) {
+            res.status(200).json({ msg: 'Especie actualizada con éxito', especie: result.rows[0] });
+        } else {
+            res.status(404).json({ msg: 'Especie no encontrada' });
         }
-    }catch{
-        res.status(500).json({msg: 'Error en el servidor'});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: 'Error al actualizar la especie' });
     }
-}
+};

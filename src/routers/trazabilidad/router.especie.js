@@ -181,7 +181,7 @@ routerEspecie.post('/especie',validarToken,createEspecie)
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerEspecie.get('/especie',validarToken,getEspecieById)
+routerEspecie.get('/especie',validarToken,getEspecie)
 
 /**
  * @swagger

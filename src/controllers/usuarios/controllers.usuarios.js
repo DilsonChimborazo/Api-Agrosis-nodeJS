@@ -8,6 +8,7 @@ export const createUsuarios = async (req, res) => {
         const token = req.headers.authorization?.split(" ")[1];
         const checkUsers = await configuracionBD.query(`SELECT COUNT(*) FROM usuarios`);
         const hayUsuarios = parseInt(checkUsers.rows[0].count) > 0;
+        
 
         if (hayUsuarios) {
             if (!token) {
@@ -112,7 +113,7 @@ export const updateUsuarios = async (req, res)=>{
         const sql = `UPDATE usuarios set nombre = $1 , contrasena = $2, email = $3, fk_id_rol = $4 where identificacion =$5`;
         const result = await configuracionBD.query(sql, [nombre, hashedContrasena, email, fk_id_rol, identificacion]);
         if(result.rowCount > 0){
-            res.status(200).json(result)
+            res.status(200).json({msg: "Usuario actualizado correctamente"})
         }else{
             res.status(400).json({msg:'Error al actualizar usuario'})
         }

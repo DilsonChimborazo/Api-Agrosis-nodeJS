@@ -11,7 +11,8 @@ export const createNotificacion = async (req, res) => {
         }else{
             res.status(400).json({msg:'Error al registrar la notificacion'});
         }
-    }catch{
+    }catch(error){
+        console.log(error)
         res.status(500).json({msg: 'Error en el servidor'});
     }
 }
