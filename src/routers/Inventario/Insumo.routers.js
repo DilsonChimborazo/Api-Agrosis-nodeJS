@@ -1,7 +1,9 @@
 import { Router } from 'express';
-import { getInsumo, addInsumo, IdInsumo, actualizarInsumo } from '../../controllers/inventario/Insumo.controllers.js';
+import { getInsumo, addInsumo, IdInsumo, actualizarInsumo, getTotalInsumosPorTipo } from '../../controllers/inventario/Insumo.controllers.js';
 import { validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 const routerInsumo = Router();
+
+routerInsumo.get('/insumo/reporte', validarToken, getTotalInsumosPorTipo);
 
 /**
  * @swagger

@@ -77,3 +77,33 @@ export const actualizarInsumo = async (req, res) => {
   }
 };
 
+
+
+export const getTotalInsumosPorTipo = async (req, res) => {
+  try {
+    const sql = `SELECT 
+        tipo, 
+        nombre, 
+        SUM(cantidad) AS total_cantidad
+      FROM insumos
+      GROUP BY tipo, nombre
+      ORDER BY tipo, total_cantidad DESC;`;
+
+    const result = await configuracionBD.query(sql);
+
+    if (result.rows.length > 0) {
+      const totalInsumosPorTipo = result.rows.map(insumo => ({
+        tipo: insumo.tipo,
+        nombre: insumo.nombre,
+        total_cantidad: insumo.total_cantidad
+      }));
+
+      res.status(200).json({ totalInsumosPorTipo });
+    } else {
+      res.status(400).json({ msg: 'No hay registros de insumos' });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Error en el servidor' });
+  }
+};
