@@ -1,8 +1,10 @@
 import {Router} from 'express';
-import { createSemilleros, getSemilleros, getSemillerosById, updateSemilleros } from '../../controllers/trazabilidad/controller.semillero.js';
+import { createSemilleros, getSemilleros, getSemillerosById, updateSemilleros, getTotalSemilleros} from '../../controllers/trazabilidad/controller.semillero.js';
 import { validarToken } from "../../controllers/usuarios/controllers.autenticacion.js";
 
 const routerSemillero = Router();
+
+routerSemillero.get('/semilleros/reporte',validarToken,getTotalSemilleros)
 
 /**
  * @swagger

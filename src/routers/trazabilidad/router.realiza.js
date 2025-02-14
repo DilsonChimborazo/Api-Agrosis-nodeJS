@@ -1,8 +1,11 @@
 import {Router} from 'express';
-import { createRealiza, getRealiza, getRealizaById, updateRealiza } from '../../controllers/trazabilidad/controller.realiza.js';
+import { createRealiza, getRealiza, getRealizaById, updateRealiza, getReporte } from '../../controllers/trazabilidad/controller.realiza.js';
 import { validarToken } from "../../controllers/usuarios/controllers.autenticacion.js";
 
 const routerRealiza = Router();
+
+routerRealiza.get('/realiza/reporte',validarToken,getRealiza)
+
 
 /**
  * @swagger

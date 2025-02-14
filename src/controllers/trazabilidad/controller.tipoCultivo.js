@@ -79,3 +79,23 @@ export const updateTipoCultivo  = async (req, res) => {
         res.status(500).json({msg: 'Error en el servidor'});
     }
 }
+
+
+
+export const getReporteTiposCultivos = async (req, res) => {
+    try {
+        const sql = `
+            SELECT 
+                COUNT(id_tipo_cultivo) AS total_tipos_cultivos,
+                STRING_AGG(nombre, ', ') AS nombres_cultivos
+            FROM tipo_cultivo;
+        `;
+
+        const result = await configuracionBD.query(sql);
+
+        res.status(200).json({ reporte: result.rows[0] });
+    } catch (error) {
+        console.error('Error en getReporteTiposCultivos:', error);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};

@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { actualizarTipoResiduo, getTipoResiduo, IdTipoCultivo, postTipoResiduo } from "../../controllers/trazabilidad/controller.tipo_residuo.js";
+import { actualizarTipoResiduo, getTipoResiduo, IdTipoCultivo, postTipoResiduo, getReporteTiposResiduos } from "../../controllers/trazabilidad/controller.tipo_residuo.js";
 import { validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 
 const routerTipoResiduo = Router();
+
+routerTipoResiduo.get("/tiporesiduo/reporte",validarToken,getReporteTiposResiduos );
 
 /**
  * @swagger

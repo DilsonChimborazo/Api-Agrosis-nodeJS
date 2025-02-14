@@ -64,3 +64,23 @@ export const updateSemilleros = async (req, res) => {
         res.status(500).json({ msg: 'Error en el servidor' });
     }
 }
+
+
+
+export const getTotalSemilleros = async (req, res) => {
+    try {
+        const sql = `
+            SELECT 
+                COUNT(id_semillero) AS total_semilleros,
+                STRING_AGG(nombre_semilla, ', ') AS nombres_semilleros
+            FROM semilleros;
+        `;
+
+        const result = await configuracionBD.query(sql);
+
+        res.status(200).json({ reporte: result.rows[0] });
+    } catch (error) {
+        console.error('Error en getReporteSemilleros:', error);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};

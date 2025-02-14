@@ -102,3 +102,27 @@ export const updateRealiza = async (req, res) => {
         res.status(500).json({msg: 'Error en el servidor'});
     }
 }
+
+
+
+export const getReporte = async (req, res) => {
+    try {
+        const sql = `
+            SELECT 
+                a.id_actividad,
+                a.nombre_actividad, 
+                COUNT(DISTINCT r.fk_id_cultivo) AS total_cultivos
+            FROM realiza r
+            JOIN actividad a ON r.fk_id_actividad = a.id_actividad
+            GROUP BY a.id_actividad, a.nombre_actividad
+            ORDER BY total_cultivos DESC;
+        `;
+
+        const result = await configuracionBD.query(sql);
+
+        res.status(200).json({ reporte: result.rows });
+    } catch (error) {
+        console.error('Error en getReporteActividadesPorCultivo:', error);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};

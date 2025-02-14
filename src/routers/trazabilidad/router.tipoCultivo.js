@@ -1,8 +1,10 @@
 import {Router} from 'express';
-import { createTipoCultivo, getTipoCultivo, getTipoCultivoById, updateTipoCultivo } from '../../controllers/trazabilidad/controller.tipoCultivo.js';
+import { createTipoCultivo, getTipoCultivo, getTipoCultivoById, updateTipoCultivo, getReporteTiposCultivos } from '../../controllers/trazabilidad/controller.tipoCultivo.js';
 import { validarToken } from "../../controllers/usuarios/controllers.autenticacion.js";
 
 const routerTipoCultivo = Router();
+
+routerTipoCultivo.get('/tipo_cultivo/reporte',validarToken,getReporteTiposCultivos)
 
 /**
  * @swagger
