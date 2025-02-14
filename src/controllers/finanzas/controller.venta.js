@@ -230,3 +230,107 @@ export const updateVenta = async (req, res) => {
         res.status(500).json({ msg: 'Error en el servidor' });
     }
 };
+
+
+//REPORTES
+
+export const getReporteVentas = async (req, res) => {
+    try {
+        const sql = `
+            SELECT 
+                p.id_produccion,
+                p.descripcion_produccion,
+                SUM(v.cantidad) AS total_cantidad_vendida,
+                SUM(v.total_venta) AS total_recaudado
+            FROM venta v
+            JOIN produccion p ON v.fk_id_produccion = p.id_produccion
+            GROUP BY p.id_produccion, p.descripcion_produccion
+            ORDER BY total_recaudado DESC;
+        `;
+
+        const result = await configuracionBD.query(sql);
+
+        if (result.rows.length > 0) {
+            const reporteVentas = result.rows.map(venta => ({
+                id_produccion: venta.id_produccion,
+                descripcion_produccion: venta.descripcion_produccion,
+                total_cantidad_vendida: venta.total_cantidad_vendida,
+                total_recaudado: venta.total_recaudado
+            }));
+
+            res.status(200).json({ reporteVentas });
+        } else {
+            res.status(404).json({ msg: 'No hay ventas registradas' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};
+
+
+export const getReporteVentasPorMes = async (req, res) => {
+    try {
+        const sql = `
+            SELECT 
+                EXTRACT(YEAR FROM fecha_venta) AS anio,
+                EXTRACT(MONTH FROM fecha_venta) AS mes,
+                SUM(total_venta) AS total_recaudado
+            FROM venta
+            GROUP BY anio, mes
+            ORDER BY anio DESC, mes DESC;
+        `;
+
+        const result = await configuracionBD.query(sql);
+
+        if (result.rows.length > 0) {
+            const reporteVentas = result.rows.map(reporte => ({
+                anio: reporte.anio,
+                mes: reporte.mes,
+                total_recaudado: reporte.total_recaudado
+            }));
+
+            res.status(200).json({ reporteVentas });
+        } else {
+            res.status(404).json({ msg: 'No hay datos de ventas registrados' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};
+
+
+export const getReporteVentasPorProduccion = async (req, res) => {
+    try {
+        const sql = `
+            SELECT 
+                p.id_produccion,
+                p.descripcion_produccion,
+                SUM(v.cantidad) AS total_cantidad_vendida,
+                SUM(v.total_venta) AS total_recaudado
+            FROM venta v
+            JOIN produccion p ON v.fk_id_produccion = p.id_produccion
+            GROUP BY p.id_produccion, p.descripcion_produccion
+            ORDER BY total_recaudado DESC;
+        `;
+
+        const result = await configuracionBD.query(sql);
+
+        if (result.rows.length > 0) {
+            const reporteVentas = result.rows.map(venta => ({
+                id_produccion: venta.id_produccion,
+                descripcion_produccion: venta.descripcion_produccion,
+                total_ventas: venta.total_ventas,
+                total_recaudado: venta.total_recaudado
+            }));
+
+            res.status(200).json({ reporteVentas });
+        } else {
+            res.status(404).json({ msg: 'No hay datos de ventas registradas' });
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};

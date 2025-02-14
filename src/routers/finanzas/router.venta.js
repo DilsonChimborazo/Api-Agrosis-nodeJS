@@ -1,8 +1,12 @@
 import { Router } from 'express';
-import { createVenta, getVentas, getVentaById, updateVenta } from '../../controllers/finanzas/controller.venta.js';
+import { createVenta, getVentas, getVentaById, updateVenta, getReporteVentasPorMes, getReporteVentas, getReporteVentasPorProduccion } from '../../controllers/finanzas/controller.venta.js';
 import { validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 
 const routerVenta = Router();
+
+routerVenta.get('/venta/reporte_ventas', validarToken, getReporteVentas); 
+routerVenta.get('/venta/reporte_mes', validarToken, getReporteVentasPorMes); 
+routerVenta.get('/venta/reporte_produccion', validarToken, getReporteVentasPorProduccion); 
 
 /**
  * @swagger
@@ -266,7 +270,7 @@ routerVenta.post('/venta', createVenta);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerVenta.get('/venta', getVentas);
+routerVenta.get('/venta', validarToken, getVentas);
 
 /**
  * @swagger
@@ -439,7 +443,7 @@ routerVenta.get('/venta', getVentas);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerVenta.get('/venta/:id_venta', getVentaById); 
+routerVenta.get('/venta/:id_venta', validarToken, getVentaById); 
 
 /**
  * @swagger
@@ -513,6 +517,6 @@ routerVenta.get('/venta/:id_venta', getVentaById);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerVenta.put('/venta/:id_venta', updateVenta); 
+routerVenta.put('/venta/:id_venta', validarToken, updateVenta); 
 
 export default routerVenta;
