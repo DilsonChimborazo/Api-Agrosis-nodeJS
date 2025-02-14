@@ -1,7 +1,9 @@
 import { Router} from 'express';
-import { getControlUsaInsumo, addControlUsaInsumo, IdControlUsaInsumo, actualizarControlUsaInsumo } from '../../controllers/inventario/Control_Usa_Insumo.controllers.js';
-import { validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
+import { getControlUsaInsumo, addControlUsaInsumo, IdControlUsaInsumo, getTotalInsumosPorControl, actualizarControlUsaInsumo } from '../../controllers/inventario/Control_Usa_Insumo.controllers.js';
+import {  validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 const routerControl_Usa_Insumo = Router();
+
+routerControl_Usa_Insumo.get('/Control_Usa_Insumo/reporte', validarToken, getTotalInsumosPorControl);
 
 /**
  * @swagger
@@ -77,7 +79,7 @@ const routerControl_Usa_Insumo = Router();
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerControl_Usa_Insumo.post('/Control_Usa_Insumo',validarToken, addControlUsaInsumo);
+routerControl_Usa_Insumo.post('/Control_Usa_Insumo',  validarToken, addControlUsaInsumo);
 
 
 /**
@@ -254,7 +256,7 @@ routerControl_Usa_Insumo.post('/Control_Usa_Insumo',validarToken, addControlUsaI
  *                   example: "Error en el servidor"
  */
 
-routerControl_Usa_Insumo.get('/Control_Usa_Insumo',validarToken, getControlUsaInsumo);
+routerControl_Usa_Insumo.get('/Control_Usa_Insumo',  validarToken, getControlUsaInsumo);
 
 /**
  * @swagger
@@ -430,7 +432,7 @@ routerControl_Usa_Insumo.get('/Control_Usa_Insumo',validarToken, getControlUsaIn
  *                   example: "Error en el servidor"
  */
 
-routerControl_Usa_Insumo.get("/Control_Usa_Insumo/:Control_Usa_Insumo",validarToken, IdControlUsaInsumo);
+routerControl_Usa_Insumo.get("/Control_Usa_Insumo/:Control_Usa_Insumo",  IdControlUsaInsumo);
 
 /**
  * @swagger
@@ -489,6 +491,6 @@ routerControl_Usa_Insumo.get("/Control_Usa_Insumo/:Control_Usa_Insumo",validarTo
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerControl_Usa_Insumo.put("/Control_Usa_Insumo/:id_control_usa_insumo",validarToken, actualizarControlUsaInsumo);
+routerControl_Usa_Insumo.put("/Control_Usa_Insumo/:id_control_usa_insumo",  actualizarControlUsaInsumo);
 
 export default routerControl_Usa_Insumo;

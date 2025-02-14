@@ -76,3 +76,64 @@ export const actualizarHerramientas = async (req, res) => {
     res.status(500).json({ msg: "Error en el servidor", error: error.message });
   }
 };
+
+
+//REPORTES
+
+export const getTotalHerramientasPorEstado = async (req, res) => {
+  try {
+    const sql = `SELECT 
+        estado, 
+        COUNT(*) AS total_herramientas
+      FROM herramientas
+      GROUP BY estado;`;
+
+    const result = await configuracionBD.query(sql);
+
+    if (result.rows.length > 0) {
+      const totalHerramientasPorEstado = result.rows.map(herramienta => ({
+        estado: herramienta.estado,
+        total_herramientas: herramienta.total_herramientas
+      }));
+
+      res.status(200).json({ totalHerramientasPorEstado });
+    } else {
+      res.status(400).json({ msg: 'No hay herramientas registradas' });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Error en el servidor' });
+  }
+};
+
+
+export const getHerramientasPrestadas = async (req, res) => {
+  try {
+    const sql = `SELECT 
+        id_herramienta, 
+        nombre_h, 
+        fecha_prestamo, 
+        estado
+      FROM herramientas
+      WHERE estado = 'Prestado'
+      ORDER BY fecha_prestamo DESC;`;
+
+    const result = await configuracionBD.query(sql);
+
+    if (result.rows.length > 0) {
+      const herramientasPrestadas = result.rows.map(herramienta => ({
+        id_herramienta: herramienta.id_herramienta,
+        nombre: herramienta.nombre_h,
+        fecha_prestamo: herramienta.fecha_prestamo,
+        estado: herramienta.estado
+      }));
+
+      res.status(200).json({ herramientasPrestadas });
+    } else {
+      res.status(400).json({ msg: 'No hay herramientas prestadas registradas' });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Error en el servidor' });
+  }
+};

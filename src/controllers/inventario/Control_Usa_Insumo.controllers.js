@@ -207,3 +207,37 @@ export const actualizarControlUsaInsumo = async (req, res) => {
     res.status(500).json({ message: 'Error al actualizar el registro', error });
   }
 };
+
+
+
+export const getTotalInsumosPorControl = async (req, res) => {
+  try {
+    const sql = `SELECT 
+        control_fitosanitario.id_control_fitosanitario, 
+        control_fitosanitario.fecha_control, 
+        control_fitosanitario.descripcion,
+        SUM(control_usa_insumo.cantidad) AS total_insumos_usados
+      FROM control_usa_insumo
+      JOIN control_fitosanitario ON control_usa_insumo.fk_id_control_fitosanitario = control_fitosanitario.id_control_fitosanitario
+      GROUP BY control_fitosanitario.id_control_fitosanitario, control_fitosanitario.fecha_control, control_fitosanitario.descripcion
+      ORDER BY total_insumos_usados DESC;`;
+
+    const result = await configuracionBD.query(sql);
+
+    if (result.rows.length > 0) {
+      const totalInsumosPorControl = result.rows.map(control => ({
+        id_control_fitosanitario: control.id_control_fitosanitario,
+        fecha_control: control.fecha_control,
+        descripcion: control.descripcion,
+        total_insumos_usados: control.total_insumos_usados
+      }));
+
+      res.status(200).json({ totalInsumosPorControl });
+    } else {
+      res.status(400).json({ msg: 'No hay registros de insumos usados en controles fitosanitarios' });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: 'Error en el servidor' });
+  }
+};

@@ -1,7 +1,10 @@
 import { Router} from 'express';
-import { getHerramientas, addHerramientas, IdHerramientas, actualizarHerramientas } from '../../controllers/inventario/Herramientas.controllers.js';
+import { getHerramientas, addHerramientas, IdHerramientas, actualizarHerramientas, getHerramientasPrestadas, getTotalHerramientasPorEstado} from '../../controllers/inventario/Herramientas.controllers.js';
 import { validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 const routerHerramientas = Router();
+
+routerHerramientas.get('/herramientas/reporte_prestadas', validarToken,getHerramientasPrestadas);
+routerHerramientas.get('/herramientas/reporte_estado', validarToken, getTotalHerramientasPorEstado);
 
 /**
  * @swagger
@@ -88,7 +91,7 @@ const routerHerramientas = Router();
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerHerramientas.get('/herramientas',validarToken, getHerramientas);
+routerHerramientas.get('/herramientas', validarToken, getHerramientas);
 
 /**
  * @swagger
@@ -155,7 +158,7 @@ routerHerramientas.get('/herramientas',validarToken, getHerramientas);
  *                   example: "Error al obtener la herramienta"
  */
 
-routerHerramientas.post('/herramientas',validarToken, addHerramientas);
+routerHerramientas.post('/herramientas', validarToken, addHerramientas);
 
 /**
  * @swagger
@@ -222,7 +225,7 @@ routerHerramientas.post('/herramientas',validarToken, addHerramientas);
  *                   example: "Error al obtener la herramienta"
  */
 
-routerHerramientas.get("/herramientas/:id_herramienta",validarToken, IdHerramientas);
+routerHerramientas.get("/herramientas/:id_herramienta", validarToken, IdHerramientas);
 
 /**
  * @swagger
@@ -292,6 +295,6 @@ routerHerramientas.get("/herramientas/:id_herramienta",validarToken, IdHerramien
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerHerramientas.put("/herramientas/:id_herramienta",validarToken, actualizarHerramientas);
+routerHerramientas.put("/herramientas/:id_herramienta", validarToken, actualizarHerramientas);
 
 export default routerHerramientas;
