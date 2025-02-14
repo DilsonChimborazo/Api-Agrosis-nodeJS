@@ -1,8 +1,11 @@
 import {Router} from 'express';
-import { createAsignacionActividad, getAsignacionActividadById, getAsignacionActividad, updateAsignacionActividad } from '../../controllers/trazabilidad/controller.asignacionActividad.js';
+import { createAsignacionActividad, getAsignacionActividadById, getAsignacionActividad, updateAsignacionActividad, getReporteAsignaciones } from '../../controllers/trazabilidad/controller.asignacionActividad.js';
 import { validarToken } from "../../controllers/usuarios/controllers.autenticacion.js";
 
 const routerasignacion_actividad = Router();
+
+routerasignacion_actividad.get('/asignacion_actividad/reporte',validarToken, getReporteAsignaciones)
+
 /**
  * @swagger
  * tags:

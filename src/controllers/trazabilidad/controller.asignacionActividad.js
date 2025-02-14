@@ -119,3 +119,43 @@ export const updateAsignacionActividad = async (req, res) => {
         res.status(500).json({msg: 'Error en el servidor'});
     }
 }
+
+
+export const getReporteAsignaciones = async (req, res) => {
+  try {
+    const sql = `
+      SELECT 
+          usuarios.identificacion,
+          usuarios.nombre AS nombre_usuario,
+          rol.nombre_rol AS rol,  -- Cambio aquí
+          COUNT(asignacion_actividad.id_asignacion_actividad) AS total_actividades,
+          STRING_AGG(actividad.nombre_actividad, ' | ') AS actividades_asignadas
+      FROM asignacion_actividad
+      JOIN usuarios ON asignacion_actividad.fk_identificacion = usuarios.identificacion
+      JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
+      JOIN rol ON usuarios.fk_id_rol = rol.id_rol
+      GROUP BY usuarios.identificacion, usuarios.nombre, usuarios.email, rol.nombre_rol  -- Cambio aquí
+      ORDER BY total_actividades DESC;
+    `;
+
+    const result = await configuracionBD.query(sql);
+
+    if (result.rows.length > 0) {
+      const reporteAsignaciones = result.rows.map(asignacion => ({
+        identificacion: asignacion.identificacion,
+        nombre_usuario: asignacion.nombre_usuario,
+        email: asignacion.email,
+        rol: asignacion.rol,
+        total_actividades: asignacion.total_actividades,
+        actividades_asignadas: asignacion.actividades_asignadas
+      }));
+
+      res.status(200).json({ reporteAsignaciones });
+    } else {
+      res.status(400).json({ msg: 'No hay asignaciones de actividades registradas' });
+    }
+  } catch (error) {
+    console.error('Error en getReporteAsignaciones:', error);
+    res.status(500).json({ msg: 'Error en el servidor' });
+  }
+};
