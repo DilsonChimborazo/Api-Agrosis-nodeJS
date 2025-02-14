@@ -4,7 +4,7 @@ import { validarToken } from '../../controllers/usuarios/controllers.autenticaci
 
 const routerLotes = Router();
 
-routerLotes.get('/lotes/reporte', getReporteLotes);
+routerLotes.get('/lotes/reporte',validarToken, getReporteLotes);
 
 /**
  * @swagger
@@ -97,7 +97,7 @@ routerLotes.get('/lotes/reporte', getReporteLotes);
  *                   example: "Error en el servidor"
  */
 
-routerLotes.post('/lotes', createLotes);
+routerLotes.post('/lotes',validarToken, createLotes);
 
 /**
  * @swagger
@@ -185,7 +185,7 @@ routerLotes.post('/lotes', createLotes);
  *                   example: "Error en el servidor"
  */
 
-routerLotes.get('/lotes', getLotes);
+routerLotes.get('/lotes',validarToken, getLotes);
 
 /**
  * @swagger
@@ -272,7 +272,7 @@ routerLotes.get('/lotes', getLotes);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerLotes.get('/lotes/:id_lote', getLoteById);
+routerLotes.get('/lotes/:id_lote',validarToken, getLoteById);
 
 /**
  * @swagger
@@ -347,6 +347,6 @@ routerLotes.get('/lotes/:id_lote', getLoteById);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerLotes.put('/lotes/:id_lote', updateLote);
+routerLotes.put('/lotes/:id_lote',validarToken, updateLote);
 
 export default routerLotes;

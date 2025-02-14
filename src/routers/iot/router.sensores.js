@@ -1,9 +1,11 @@
 import {Router} from 'express'
-import { createSensores, getSensorById, getSensores, updateSensor } from '../../controllers/iot/controller.sensores.js';
+import { createSensores, getSensorById, getSensores, updateSensor, getReporteSensores } from '../../controllers/iot/controller.sensores.js';
 import { validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 
 
 const routerSensores = Router();
+
+routerSensores.get('/sensores/reporte',validarToken, getReporteSensores);
 
 /**
  * @swagger

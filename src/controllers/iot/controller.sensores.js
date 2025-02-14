@@ -82,3 +82,39 @@ export const updateSensor = async (req, res) => {
         res.status(500).json({ error: 'Error al actualizar el sensor' });
     }
 };
+
+
+export const getReporteSensores = async (req, res) => {
+  try {
+    const sql = `
+      SELECT 
+          tipo_sensor,
+          STRING_AGG(nombre_sensor, ', ') AS sensores,
+          COUNT(*) AS total_sensores,
+          MIN(medida_minima) AS min_medida,
+          MAX(medida_maxima) AS max_medida
+      FROM sensores
+      GROUP BY tipo_sensor
+      ORDER BY tipo_sensor;
+    `;
+
+    const result = await configuracionBD.query(sql);
+
+    if (result.rows.length > 0) {
+      const sensoresPorTipo = result.rows.map(sensor => ({
+        tipo_sensor: sensor.tipo_sensor,
+        sensores: sensor.sensores,
+        total_sensores: sensor.total_sensores,
+        min_medida: sensor.min_medida,
+        max_medida: sensor.max_medida
+      }));
+
+      res.status(200).json({ sensoresPorTipo });
+    } else {
+      res.status(400).json({ msg: 'No hay sensores registrados' });
+    }
+  } catch (error) {
+    console.error('Error en getReporteSensores:', error);
+    res.status(500).json({ msg: 'Error en el servidor' });
+  }
+};
