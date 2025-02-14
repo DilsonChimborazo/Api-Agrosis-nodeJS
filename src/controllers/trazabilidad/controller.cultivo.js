@@ -178,3 +178,24 @@ export const IdCultivo = async (req, res) => {
         res.status(500).json({ "message": "Error en el servidor." });
     }
 };
+
+export const getReporteCultivosActivos = async (req, res) => {
+  try {
+    const sql = `
+      SELECT 
+          COUNT(c.id_cultivo) AS total_cultivos,
+          STRING_AGG(DISTINCT c.nombre_cultivo, ', ') AS nombres_cultivos,
+          STRING_AGG(DISTINCT tc.nombre, ', ') AS tipos_cultivo
+      FROM cultivo c
+      JOIN especie e ON c.fk_id_especie = e.id_especie
+      JOIN tipo_cultivo tc ON e.fk_id_tipo_cultivo = tc.id_tipo_cultivo;
+    `;
+
+    const result = await configuracionBD.query(sql);
+
+    res.status(200).json({ reporte: result.rows[0] });
+  } catch (error) {
+    console.error('Error en getReporteCultivosActivos:', error);
+    res.status(500).json({ msg: 'Error en el servidor' });
+  }
+};

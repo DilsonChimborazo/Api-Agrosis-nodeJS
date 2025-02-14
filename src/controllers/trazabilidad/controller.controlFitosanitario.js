@@ -228,22 +228,26 @@ export const actualizarControlFitosanitario = async (req, res) => {
 }
 
 
-export const getTotalControlesFitosanitarios = async (req, res) => {
+export const getTotalControlesFitosanitarios  = async (req, res) => {
   try {
     const sql = `
-      SELECT COUNT(*) AS total_controles_realizados 
-      FROM control_fitosanitario;
+      SELECT 
+          c.id_cultivo,
+          c.nombre_cultivo,
+          TO_CHAR(cf.fecha_control, 'YYYY-MM') AS mes,
+          COUNT(cf.id_control_fitosanitario) AS total_enfermedades_reportadas
+      FROM control_fitosanitario cf
+      JOIN desarrollan d ON cf.fk_id_desarrollan = d.id_desarrollan
+      JOIN cultivo c ON d.fk_id_cultivo = c.id_cultivo
+      GROUP BY c.id_cultivo, c.nombre_cultivo, TO_CHAR(cf.fecha_control, 'YYYY-MM')
+      ORDER BY mes DESC, total_enfermedades_reportadas DESC;
     `;
 
     const result = await configuracionBD.query(sql);
 
-    if (result.rows.length > 0) {
-      res.status(200).json({ total_controles_realizados: result.rows[0].total_controles_realizados });
-    } else {
-      res.status(400).json({ msg: 'No hay registros de controles fitosanitarios' });
-    }
+    res.status(200).json({ report: result.rows });
   } catch (error) {
-    console.error('Error en getTotalControlesFitosanitarios:', error);
+    console.error('Error en getReporteEnfermedadesCultivo:', error);
     res.status(500).json({ msg: 'Error en el servidor' });
   }
 };

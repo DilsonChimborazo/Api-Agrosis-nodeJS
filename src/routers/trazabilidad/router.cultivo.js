@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { postCultivo,IdCultivo,actualizarCultivo,getCultivo } from "../../controllers/trazabilidad/controller.cultivo.js";
+import { postCultivo,IdCultivo,actualizarCultivo,getCultivo, getReporteCultivosActivos } from "../../controllers/trazabilidad/controller.cultivo.js";
 import { validarToken } from "../../controllers/usuarios/controllers.autenticacion.js";
 
 const routerCultivo = Router();
+
+routerCultivo.get("/cultivo/reporte",validarToken, getReporteCultivosActivos);
 
 /**
  * @swagger
