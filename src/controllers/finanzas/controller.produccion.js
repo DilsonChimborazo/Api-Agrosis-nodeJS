@@ -214,3 +214,37 @@ export const updateProduccion = async (req, res) => {
     }
 }
 
+export const getReporteProduccion = async (req, res) => {
+    try {
+        const sql = `
+            SELECT 
+                c.id_cultivo,
+                c.nombre_cultivo, 
+                COALESCE(SUM(p.cantidad_producida), 0) AS total_producido
+            FROM produccion p
+            JOIN cultivo c ON p.fk_id_cultivo = c.id_cultivo
+            GROUP BY c.id_cultivo, c.nombre_cultivo
+            ORDER BY c.nombre_cultivo;
+        `;
+
+        const result = await configuracionBD.query(sql);
+
+        if (!result.rows || result.rows.length === 0) {
+            return res.status(404).json({ msg: 'No hay producciones registradas' });
+        }
+
+        const producciones = result.rows.map(produccion => ({
+            fk_id_cultivo: {
+                id: produccion.id_cultivo,
+                nombre_cultivo: produccion.nombre_cultivo
+            },
+            cantidad_producida: Number(produccion.total_producido) // Asegura que sea un número
+        }));
+
+        res.status(200).json({ producciones });
+
+    } catch (err) {
+        console.error("Error en getReporteProduccion:", err);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
+};

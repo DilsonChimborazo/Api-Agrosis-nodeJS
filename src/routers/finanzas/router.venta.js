@@ -93,7 +93,7 @@ const routerVenta = Router();
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerVenta.post('/venta',validarToken, createVenta);
+routerVenta.post('/venta', createVenta);
 
 /**
  * @swagger
@@ -266,7 +266,7 @@ routerVenta.post('/venta',validarToken, createVenta);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerVenta.get('/venta',validarToken, getVentas);
+routerVenta.get('/venta', getVentas);
 
 /**
  * @swagger
@@ -439,7 +439,7 @@ routerVenta.get('/venta',validarToken, getVentas);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerVenta.get('/venta/:id_venta',validarToken, getVentaById); 
+routerVenta.get('/venta/:id_venta', getVentaById); 
 
 /**
  * @swagger
@@ -513,6 +513,6 @@ routerVenta.get('/venta/:id_venta',validarToken, getVentaById);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerVenta.put('/venta/:id_venta',validarToken, updateVenta); 
+routerVenta.put('/venta/:id_venta', updateVenta); 
 
 export default routerVenta;

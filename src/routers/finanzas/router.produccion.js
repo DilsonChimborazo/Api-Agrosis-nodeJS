@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createProduccion, getProducciones, getProduccionById, updateProduccion } from '../../controllers/finanzas/controller.produccion.js';
+import { createProduccion, getProducciones, getReporteProduccion, getProduccionById, updateProduccion } from '../../controllers/finanzas/controller.produccion.js';
 import { validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 
 const routerProduccion = Router();
@@ -522,6 +522,7 @@ routerProduccion.get('/produccion/:id_produccion',validarToken, getProduccionByI
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerProduccion.put('/produccion/:id_produccion',validarToken, updateProduccion); 
+routerProduccion.put('/produccion/:id_produccion',validarToken, updateProduccion);
+routerProduccion.get('/produccion/reporte', getReporteProduccion);
 
 export default routerProduccion;

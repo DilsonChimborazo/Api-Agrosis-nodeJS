@@ -362,6 +362,6 @@ routerUsuarios.get('/usuarios/:identificacion', validarToken, getUsuariosById);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerUsuarios.put('/usuarios/:identificacion', validarToken, updateUsuarios);
+routerUsuarios.put('/usuarios/:identificacion', updateUsuarios);
 
 export default routerUsuarios;
