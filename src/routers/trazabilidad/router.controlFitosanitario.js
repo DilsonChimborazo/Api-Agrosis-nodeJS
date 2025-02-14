@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { postControlFitosanitario, getControlFitosanitario, IdControlFitosanitario, actualizarControlFitosanitario } from "../../controllers/trazabilidad/controller.controlFitosanitario.js";
+import { postControlFitosanitario, getControlFitosanitario, IdControlFitosanitario, actualizarControlFitosanitario, getTotalControlesFitosanitarios } from "../../controllers/trazabilidad/controller.controlFitosanitario.js";
 import { validarToken } from "../../controllers/usuarios/controllers.autenticacion.js";
 
 const RouterCF = Router();
+
+RouterCF.get("/controlfitosanitario/reporte",validarToken, getTotalControlesFitosanitarios);
 
 /**
  * @swagger

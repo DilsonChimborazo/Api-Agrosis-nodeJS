@@ -226,3 +226,24 @@ export const actualizarControlFitosanitario = async (req, res) => {
         return res.status(500).json({"message":"error en el servidor"})
     }
 }
+
+
+export const getTotalControlesFitosanitarios = async (req, res) => {
+  try {
+    const sql = `
+      SELECT COUNT(*) AS total_controles_realizados 
+      FROM control_fitosanitario;
+    `;
+
+    const result = await configuracionBD.query(sql);
+
+    if (result.rows.length > 0) {
+      res.status(200).json({ total_controles_realizados: result.rows[0].total_controles_realizados });
+    } else {
+      res.status(400).json({ msg: 'No hay registros de controles fitosanitarios' });
+    }
+  } catch (error) {
+    console.error('Error en getTotalControlesFitosanitarios:', error);
+    res.status(500).json({ msg: 'Error en el servidor' });
+  }
+};
