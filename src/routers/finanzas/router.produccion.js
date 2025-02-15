@@ -36,10 +36,6 @@ routerProduccion.get('/produccion/reporte', validarToken, getReporteProduccion);
  *           schema:
  *             type: object
  *             properties:
- *               fk_id_cultivo:
- *                 type: integer
- *                 description: Llave foránea que viene desde cultivo
- *                 example: 1
  *               cantidad_producida:
  *                 type: number
  *                 description: Cantidad producida en la cosecha
@@ -132,60 +128,6 @@ routerProduccion.post('/produccion',validarToken, createProduccion);
  *                         type: integer
  *                         description: ID de la producción
  *                         example: 1
- *                       fk_id_cultivo:
- *                         type: object
- *                         properties:
- *                           id:
- *                             type: integer
- *                             description: ID del cultivo asociado
- *                             example: 1
- *                           fecha_plantacion:
- *                             type: string
- *                             format: date
- *                             description: Fecha de plantación del cultivo
- *                             example: "2024-01-15"
- *                           nombre_cultivo:
- *                             type: string
- *                             description: Nombre del cultivo
- *                             example: "Tomate Cherry"
- *                           descripcion:
- *                             type: string
- *                             description: Descripción del cultivo
- *                             example: "Cultivo en invernadero"
- *                           fk_id_especie:
- *                             type: object
- *                             properties:
- *                               id_especie:
- *                                 type: integer
- *                                 description: ID de la especie
- *                                 example: 2
- *                               nombre_comun:
- *                                 type: string
- *                                 description: Nombre común de la especie
- *                                 example: "Tomate"
- *                               nombre_cientifico:
- *                                 type: string
- *                                 description: Nombre científico de la especie
- *                                 example: "Solanum lycopersicum"
- *                               descripcion:
- *                                 type: string
- *                                 description: Descripción de la especie
- *                                 example: "Planta herbácea anual"
- *                               fk_id_tipo_cultivo:
- *                                 type: object
- *                                 properties:
- *                                   id_tipo_cultivo:
- *                                     type: integer
- *                                     description: ID del tipo de cultivo
- *                                     example: 1
- *                                   nombre:
- *                                     type: string
- *                                     description: Nombre del tipo de cultivo
- *                                     example: "Hortalizas"
- *                                   descripcion:
- *                                     type: string
- *                                     description: Descripción del tipo de cultivo
- *                                     example: "Cultivo de hortalizas en suelos fértiles"
  *                       cantidad_producida:
  *                         type: number
  *                         description: Cantidad de producción obtenida
@@ -297,60 +239,6 @@ routerProduccion.get('/produccion',validarToken, getProducciones);
  *                         type: integer
  *                         description: ID de la producción
  *                         example: 1
- *                       fk_id_cultivo:
- *                         type: object
- *                         properties:
- *                           id:
- *                             type: integer
- *                             description: ID del cultivo asociado
- *                             example: 1
- *                           fecha_plantacion:
- *                             type: string
- *                             format: date
- *                             description: Fecha de plantación del cultivo
- *                             example: "2024-01-15"
- *                           nombre_cultivo:
- *                             type: string
- *                             description: Nombre del cultivo
- *                             example: "Tomate Cherry"
- *                           descripcion:
- *                             type: string
- *                             description: Descripción del cultivo
- *                             example: "Cultivo en invernadero"
- *                           fk_id_especie:
- *                             type: object
- *                             properties:
- *                               id_especie:
- *                                 type: integer
- *                                 description: ID de la especie
- *                                 example: 2
- *                               nombre_comun:
- *                                 type: string
- *                                 description: Nombre común de la especie
- *                                 example: "Tomate"
- *                               nombre_cientifico:
- *                                 type: string
- *                                 description: Nombre científico de la especie
- *                                 example: "Solanum lycopersicum"
- *                               descripcion:
- *                                 type: string
- *                                 description: Descripción de la especie
- *                                 example: "Planta herbácea anual"
- *                               fk_id_tipo_cultivo:
- *                                 type: object
- *                                 properties:
- *                                   id_tipo_cultivo:
- *                                     type: integer
- *                                     description: ID del tipo de cultivo
- *                                     example: 1
- *                                   nombre:
- *                                     type: string
- *                                     description: Nombre del tipo de cultivo
- *                                     example: "Hortalizas"
- *                                   descripcion:
- *                                     type: string
- *                                     description: Descripción del tipo de cultivo
- *                                     example: "Cultivo de hortalizas en suelos fértiles"
  *                       cantidad_producida:
  *                         type: number
  *                         description: Cantidad de producción obtenida
@@ -452,10 +340,6 @@ routerProduccion.get('/produccion/:id_produccion',validarToken, getProduccionByI
  *           schema:
  *             type: object
  *             properties:
- *               fk_id_cultivo:
- *                 type: integer
- *                 description: Llave foránea que viene desde cultivo
- *                 example: 1
  *               cantidad_producida:
  *                 type: number
  *                 description: Cantidad producida en la cosecha
