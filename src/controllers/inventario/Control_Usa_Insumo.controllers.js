@@ -91,7 +91,7 @@ export const getControlUsaInsumo = async (req, res) => {
 export const addControlUsaInsumo = async (req, res) => {
   try {
     const { fk_id_control_fitosanitario, fk_id_insumo, cantidad } = req.body; 
-    const [result] = await configuracionBD.query(
+    const result = await configuracionBD.query(
       'INSERT INTO control_usa_insumo (fk_id_control_fitosanitario, fk_id_insumo, cantidad) VALUES ($1, $2, $3)',
       [fk_id_control_fitosanitario, fk_id_insumo, cantidad]
     );
