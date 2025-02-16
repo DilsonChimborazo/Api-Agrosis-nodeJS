@@ -4,7 +4,7 @@ export const postDesarrollan = async (req, res) => {
     try {
         const { fk_id_cultivo, fk_id_pea } = req.body;
         const sql = "INSERT INTO desarrollan (fk_id_cultivo, fk_id_pea) VALUES ($1, $2)";
-        const { rowCount } = await configuracionBD.query(sql, [fk_id_cultivo, fk_id_pea]);
+        const rowCount  = await configuracionBD.query(sql, [fk_id_cultivo, fk_id_pea]);
 
         if (rowCount > 0) {
             return res.status(200).json({ "message": "Registro en desarrollan creado correctamente" });

@@ -35,10 +35,11 @@ const router = Router();
  *               login:
  *                 type: integer
  *                 description: Identificación del usuario
- *                 example: 123456
+ *                 example: 1004268551
  *               password:
  *                 type: string
  *                 description: Contraseña del usuario
+ *                 example: 123456  
  *     responses:
  *       200:
  *         description: Usuario autenticado correctamente
