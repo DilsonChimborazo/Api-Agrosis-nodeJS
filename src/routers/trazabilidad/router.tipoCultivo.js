@@ -4,6 +4,57 @@ import { validarToken } from "../../controllers/usuarios/controllers.autenticaci
 
 const routerTipoCultivo = Router();
 
+/**
+ * @swagger
+ * /tipo_cultivo/reporte:
+ *   get:
+ *     summary: Se obtiene un reporte tipo de cultivo con validacion de token JWT
+ *     tags: [Reporte de tipo_cultivo]
+ *     responses:
+ *       200:
+ *         description: Reporte de tipo_cultivo obtenido correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total_tipo_cultivos:
+ *                   type: integer
+ *                   example: 5
+ *                 nombres_cultivos:
+ *                   type: string
+ *                   example: "Hortalizas"
+ *       404:
+ *         description: No se obtuvo el reporte tipo de cultivo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No se pudo obtener el reporte de tipo de cultivo"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
 routerTipoCultivo.get('/tipo_cultivo/reporte',validarToken,getReporteTiposCultivos)
 
 /**

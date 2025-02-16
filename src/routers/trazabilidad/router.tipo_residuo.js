@@ -4,6 +4,61 @@ import { validarToken } from '../../controllers/usuarios/controllers.autenticaci
 
 const routerTipoResiduo = Router();
 
+/**
+ * @swagger
+ * /tiporesiduo/reporte:
+ *   get:
+ *     summary: Obtiene un reporte de tipos de residuos registrados
+ *     tags: [Reporte de Tipo Residuo]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Reporte de tipos de residuos obtenida correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   total_tipos_residuos:
+ *                     type: integer
+ *                     example: 4
+ *                   nombres_residuos:
+ *                     type: string
+ *                     example: "Orgánico"
+ *       404:
+ *         description: No hay reporte de tipos de residuos registrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "No hay reporte de tipos de residuos registrados"
+ *       401:
+ *         description: Token requerido o token no autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Token requerido o token no autorizado"
+ *       500:
+ *         description: Error en el servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
 routerTipoResiduo.get("/tiporesiduo/reporte",validarToken,getReporteTiposResiduos );
 
 /**

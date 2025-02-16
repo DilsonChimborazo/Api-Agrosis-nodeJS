@@ -519,4 +519,222 @@ routerVenta.get('/venta/:id_venta', validarToken, getVentaById);
  */
 routerVenta.put('/venta/:id_venta', validarToken, updateVenta); 
 
+/**
+ * @swagger
+ * /venta/reporte_ventas:
+ *   get:
+ *     summary: Obtiene todos los reportes de ventas registradas
+ *     tags: [Reporte de ventas]
+ *     responses:
+ *       200:
+ *         description: reporte de ventas obtenida con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ventas:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id_venta:
+ *                         type: integer
+ *                         description: ID de la venta
+ *                         example: 1
+ *                       fk_id_produccion:
+ *                         type: object
+ *                         properties:
+ *                           id_produccion:
+ *                             type: integer
+ *                             description: ID de la producción asociada
+ *                             example: 10
+ *                           descripcion_produccion: 
+ *                             type: string
+ *                             description: "Maiz"
+ *                       total_cantidad_vendida:
+ *                         type: number
+ *                         description: Cantidad de productos vendidos
+ *                         example: 500
+ *                       total_recaudo:
+ *                         type: number
+ *                         description: Total de la venta calculado
+ *                         example: 1250
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       404:
+ *         description: No se encontraron reportes de venta registrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No hay reporte de ventas registradas"
+ *       500:
+ *         description: Error en el servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
+routerVenta.get('/venta/reporte_ventas', validarToken, getReporteVentas); 
+
+/**
+ * @swagger
+ * /venta/reporte_mes:
+ *   get:
+ *     summary: Obtiene todos los reportes de ventas registradas por mes
+ *     tags: [Reporte de ventas por mes]
+ *     responses:
+ *       200:
+ *         description: reporte de ventas por mes obtenida con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ventas:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id_venta:
+ *                         type: integer
+ *                         description: ID de la venta
+ *                         example: 1
+ *                       anio:
+ *                         type: string
+ *                         format: date
+ *                         description: Fecha en la que se realizó la venta
+ *                         example: "2024-03-10"
+ *                       mes:
+ *                         type: string
+ *                         format: date
+ *                         description: Fecha en la que se realizó la venta
+ *                         example: "2024-03-10"
+ *                       total_recaudo:
+ *                         type: number
+ *                         description: Total de la venta calculado
+ *                         example: 1250
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       404:
+ *         description: No se encontraron reportes de venta por mes registrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No hay reporte de ventas por mes registradas"
+ *       500:
+ *         description: Error en el servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
+routerVenta.get('/venta/reporte_mes', validarToken, getReporteVentasPorMes); 
+
+/**
+ * @swagger
+ * /venta/reporte_produccion:
+ *   get:
+ *     summary: Obtiene todos los reportes de ventas por produccion registradas
+ *     tags: [Reporte de ventas por produccion]
+ *     responses:
+ *       200:
+ *         description: reporte de ventas por produccion obtenida con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ventas:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id_venta:
+ *                         type: integer
+ *                         description: ID de la venta
+ *                         example: 1
+ *                       fk_id_produccion:
+ *                         type: object
+ *                         properties:
+ *                           id_produccion:
+ *                             type: integer
+ *                             description: ID de la producción asociada
+ *                             example: 10
+ *                           descripcion_produccion: 
+ *                             type: string
+ *                             description: "Maiz"
+ *                       total_cantidad_vendida:
+ *                         type: number
+ *                         description: Cantidad de productos vendidos
+ *                         example: 500
+ *                       total_recaudo:
+ *                         type: number
+ *                         description: Total de la venta calculado
+ *                         example: 1250
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       404:
+ *         description: No se encontraron reportes de venta por produccion registrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No hay reporte de ventas por produccion registradas"
+ *       500:
+ *         description: Error en el servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
+routerVenta.get('/venta/reporte_produccion', validarToken, getReporteVentasPorProduccion);
+
 export default routerVenta;

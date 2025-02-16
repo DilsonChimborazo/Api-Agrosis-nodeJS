@@ -4,6 +4,57 @@ import { validarToken } from "../../controllers/usuarios/controllers.autenticaci
 
 const routerSemillero = Router();
 
+/**
+ * @swagger
+ * /semilleros/reporte:
+ *   get:
+ *     summary: Se obtiene un reporte semillero con validacion de token JWT
+ *     tags: [Reporte de semilleros]
+ *     responses:
+ *       200:
+ *         description: Reporte de Semillero obtenido correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total_semilleros:
+ *                   type: integer
+ *                   example: 4
+ *                 nombres_semilleros:
+ *                   type: string
+ *                   example: "maiz"
+ *       404:
+ *         description: No se obtuvo el reporte de semillero 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No se pudo obtener el reporte semillero"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
 routerSemillero.get('/semilleros/reporte',validarToken,getTotalSemilleros)
 
 /**

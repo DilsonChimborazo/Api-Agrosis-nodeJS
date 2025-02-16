@@ -4,6 +4,73 @@ import { validarToken } from "../../controllers/usuarios/controllers.autenticaci
 
 const routerPlantacion = Router();
 
+/**
+ * @swagger
+ * /plantacion/reporte:
+ *   get:
+ *     summary: Se obtiene un reporte de una plantacion por medio de ID con validacion de token JWT
+ *     tags: [Reporte de plantacion]
+ 
+ *     responses:
+ *       200:
+ *         description: Reporte de plantacion obtenida correctamente 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 fk_id_cultivo:
+ *                   type: object
+ *                   properties:
+ *                     id_cultivo:
+ *                       type: integer
+ *                       example: 4
+ *                     nombre_cultivo:
+ *                       type: string
+ *                       example: "cebolla"
+ *                 fk_id_era:
+ *                   type: object
+ *                   properties:
+ *                     id_eras:
+ *                       type: integer
+ *                       example: 1
+ *                     nombre_era:
+ *                       type: string
+ *                       example: "era 1 ubicado en el lote 1"
+ *                 total_plantaciones:
+ *                   type: integer
+ *                   example: 5
+ *       404:
+ *         description: Error al obtener un reporte de una plantacion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error al obtener un reporte de plantacion"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
 routerPlantacion.get("/plantacion/reporte",validarToken, getReportePlantaciones);
 
 /**

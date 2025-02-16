@@ -4,7 +4,6 @@ import { validarToken } from '../../controllers/usuarios/controllers.autenticaci
 
 const routerLotes = Router();
 
-routerLotes.get('/lotes/reporte',validarToken, getReporteLotes);
 
 /**
  * @swagger
@@ -348,5 +347,71 @@ routerLotes.get('/lotes/:id_lote',validarToken, getLoteById);
  *                   example: "Error en el servidor"
  */
 routerLotes.put('/lotes/:id_lote',validarToken, updateLote);
+
+/**
+ * @swagger
+ * /lotes/reporte:
+ *   get:
+ *     summary: Obtiene los reportes de lotes con su ubicación
+ *     tags: [Reporte de lotes]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Reporte de lotes obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 lote:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: ID del lote
+ *                         example: 1
+ *                       estado:
+ *                         type: string
+ *                         description: Estado del lote
+ *                         example: "Activo"
+ *                       lotes:
+ *                         type: string
+ *                         description: Nombre del lote
+ *                         example: "Lote A, lote B"
+ *       404:
+ *         description: No hay reporte de lotes registrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No hay reporte de lotes registrados"
+ *       401:
+ *         description: Token requerido o token no autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no está autorizado"
+ *       500:
+ *         description: Error en el servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
+routerLotes.get('/lotes/reporte',validarToken, getReporteLotes);
 
 export default routerLotes;

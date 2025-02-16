@@ -4,6 +4,71 @@ import { validarToken } from "../../controllers/usuarios/controllers.autenticaci
 
 const routerEspecie = Router();
 
+/**
+ * @swagger
+ * /especie/reporte:
+ *   get:
+ *     summary: Se obtiene un reporte de especie con validacion de token JWT
+ *     tags: [Reporte de especie]
+ *     responses:
+ *       200:
+ *         description: Reporte de especie obtenida correctamente 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 fk_id_tipo_cultivo:
+ *                   type: object
+ *                   properties:
+ *                     id_tipo_cultivo:
+ *                       type: integer
+ *                       example: 2
+ *                     tipo_cultivo:
+ *                       type: string
+ *                       example: "Hortaliza"
+ *                     fk_id_tipo_cultivo:
+ *                       type: integer
+ *                       properties: 
+ *                         tipo_cultivo:
+ *                           type: string
+ *                           example: "verduras"
+ *                 total_especies:
+ *                   type: integer
+ *                   example: 10
+ *                         
+ *                     
+ *       404:
+ *         description: Error al obtener un reporte de una especie
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error al obtener reporte de una especie"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
 routerEspecie.get('/especie/reporte',validarToken,getReporteEspeciesPorTipoCultivo)
 
 /**

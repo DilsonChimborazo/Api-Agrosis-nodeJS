@@ -4,8 +4,6 @@ import { validarToken } from "../../controllers/usuarios/controllers.autenticaci
 
 const RouterCF = Router();
 
-RouterCF.get("/controlfitosanitario/reporte",validarToken, getTotalControlesFitosanitarios);
-
 /**
  * @swagger
  * tags:
@@ -427,4 +425,73 @@ RouterCF.get("/controlfitosanitario/:id_control_fitosanitario",validarToken, IdC
  *                   example: "Error en el servidor"
  */
 RouterCF.put("/controlfitosanitario/:id_control_fitosanitario",validarToken,actualizarControlFitosanitario)
+
+/**
+ * @swagger
+ * /controlFitosanitario/reporte:
+ *   get:
+ *     summary: Se obtiene un reporte del control fitosanitario con validacion de token JWT
+ *     tags: [reporte de controlFitosanitario]
+ *     responses:
+ *       200:
+ *         description: Reporte de Control fitosanitario obtenido correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total_enfermedades_reportadas:
+ *                   type: integer
+ *                   example: 5
+ *                 mes:
+ *                   type: string
+ *                   format: date
+ *                   example: "2025-02-07"
+ *                 fk_id_desarrollan:
+ *                   type: object
+ *                   properties:
+ *                     id_desarrollan:
+ *                       type: integer
+ *                       example: 2     
+ *                     fk_id_cultivo:
+ *                       type: object
+ *                       properties:
+ *                         id_cultivo:
+ *                           type: integer
+ *                           example: 4
+ *                         nombre_cultivo:
+ *                           type: string
+ *                           example: "cebolla"
+ *       404:
+ *         description: Error al obtener reporte del control fitosanitario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error al registrar el control fitosanitario"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
+RouterCF.get("/controlfitosanitario/reporte",validarToken, getTotalControlesFitosanitarios);
 export default RouterCF;

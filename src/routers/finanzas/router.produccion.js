@@ -4,8 +4,6 @@ import { validarToken } from '../../controllers/usuarios/controllers.autenticaci
 
 const routerProduccion = Router();
 
-routerProduccion.get('/produccion/reporte', validarToken, getReporteProduccion);
-
 /**
  * @swagger
  * tags:
@@ -525,6 +523,78 @@ routerProduccion.get('/produccion/:id_produccion',validarToken, getProduccionByI
  *                   example: "Error en el servidor"
  */
 routerProduccion.put('/produccion/:id_produccion',validarToken, updateProduccion);
+
+/**
+ * @swagger
+ * /produccion/reporte:
+ *   get:
+ *     summary: Obtiene todos los reportes de una produccion registrada
+ *     tags: [Reporte de produccion]
+ *     responses:
+ *       200:
+ *         description: Lista de reportes de producciones obtenida con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 producciones:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: ID de la producción
+ *                         example: 1
+ *                       fk_id_cultivo:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             description: ID del cultivo asociado
+ *                             example: 1
+ *                           nombre_cultivo:
+ *                             type: string
+ *                             description: Nombre del cultivo
+ *                             example: "Tomate Cherry"
+ *                       cantidad_producida:
+ *                         type: number
+ *                         description: Cantidad de producción obtenida
+ *                         example: 2000.5
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       404:
+ *         description: No se encontraron reporte de  producciones registradas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No hay reporte de producciones registradas"
+ *       500:
+ *         description: Error en el servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
+routerProduccion.get('/produccion/reporte', validarToken, getReporteProduccion);
+
 
 
 export default routerProduccion;

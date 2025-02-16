@@ -4,8 +4,6 @@ import { validarToken } from "../../controllers/usuarios/controllers.autenticaci
 
 const routerCultivo = Router();
 
-routerCultivo.get("/cultivo/reporte",validarToken, getReporteCultivosActivos);
-
 /**
  * @swagger
  * tags:
@@ -434,4 +432,75 @@ routerCultivo.put("/cultivo/:id_cultivo",validarToken,actualizarCultivo);
  *                   example: "Error en el servidor"
  */
 routerCultivo.get("/cultivo",validarToken, getCultivo);
+
+/**
+ * @swagger
+ * /cultivo/reporte:
+ *   get:
+ *     summary: Se obtiene un reporte de cultivo con validacion de token JWT
+ *     tags: [Reporte de cultivo]
+ *     responses:
+ *       200:
+ *         description: Reporte de cultivo obtenido correctamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total_cultivos:
+ *                   type: integer
+ *                   example: 5
+ *                 nombres_cultivos:
+ *                   type: string
+ *                   example: "cebolla, tomate, lechuga"
+ *                 descripcion:
+ *                   type: string
+ *                   example: "Una cebolla muy grande y fuerte"
+ *                 fk_id_especie:
+ *                   type: object
+ *                   properties:
+ *                     id_especie:
+ *                       type: integer
+ *                       example: 1
+ *                     fk_id_tipo_cultivo:
+ *                       type: object
+ *                       properties:
+ *                         id_tipo_cultivo:
+ *                           type: integer
+ *                           example: 2
+ *                         tipos_cultivo:
+ *                           type: string
+ *                           example: "Hortaliza, sereales"
+ *       404:
+ *         description: Error al obtener reporte de un cultivo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error al obtener reporte de un cultivo"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
+routerCultivo.get("/cultivo/reporte",validarToken, getReporteCultivosActivos);
 export default routerCultivo;

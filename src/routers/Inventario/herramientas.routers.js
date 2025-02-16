@@ -3,8 +3,6 @@ import { getHerramientas, addHerramientas, IdHerramientas, actualizarHerramienta
 import { validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 const routerHerramientas = Router();
 
-routerHerramientas.get('/herramientas/reporte_prestadas', validarToken,getHerramientasPrestadas);
-routerHerramientas.get('/herramientas/reporte_estado', validarToken, getTotalHerramientasPorEstado);
 
 /**
  * @swagger
@@ -296,5 +294,137 @@ routerHerramientas.get("/herramientas/:id_herramienta", validarToken, IdHerramie
  *                   example: "Error en el servidor"
  */
 routerHerramientas.put("/herramientas/:id_herramienta", validarToken, actualizarHerramientas);
+
+/**
+ * @swagger
+ * /herramientas/reporte_prestadas:
+ *   get:
+ *     summary: Reporte de herramientas prestadas
+ *     description: Devuelve un reporte de todas las herramientas prestadas
+ *     tags:
+ *       - Reporte de herramientas prestadas
+ *     responses:
+ *       200:
+ *         description: Reporte de herramientas prestadas obtenida exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 herramientas:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id_herramienta:
+ *                         type: integer
+ *                         example: 1
+ *                       nombre_h:
+ *                         type: string
+ *                         example: "Pala"
+ *                       fecha_prestamo:
+ *                         type: string
+ *                         format: date
+ *                         example: "2025-02-14 "
+ *                       estado:
+ *                         type: string
+ *                         example: "prestado"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       404:
+ *         description: No hay reporte de herramientas prestadas registradas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Reporte de Herramienta prestadas no encontrada"
+ *       500:
+ *         description: Error al obtener las herramientas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error al obtener la herramienta"
+ */
+routerHerramientas.get('/herramientas/reporte_prestadas', validarToken,getHerramientasPrestadas);
+
+
+/**
+ * @swagger
+ * /herramientas/reporte_estado:
+ *   get:
+ *     summary: Reporte de herramientas por estado
+ *     description: Devuelve un reporte de todas las herramientas por estado
+ *     tags:
+ *       - Reporte de herramientas por estado
+ *     responses:
+ *       200:
+ *         description: Reporte de herramientas por estado obtenida exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 herramientas:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id_herramienta:
+ *                         type: integer
+ *                         example: 1
+ *                       total_herramientas:
+ *                         type: integer
+ *                         example: 10
+ *                       estado:
+ *                         type: string
+ *                         example: "prestado"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       404:
+ *         description: No hay reporte de herramientas por estado prestadas registradas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Reporte de Herramienta por estado no encontrada"
+ *       500:
+ *         description: Error al obtener las herramientas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error al obtener la herramienta"
+ */
+routerHerramientas.get('/herramientas/reporte_estado', validarToken, getTotalHerramientasPorEstado);
+
 
 export default routerHerramientas;

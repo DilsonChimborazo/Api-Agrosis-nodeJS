@@ -4,6 +4,72 @@ import { validarToken } from "../../controllers/usuarios/controllers.autenticaci
 
 const routerDesarollan = Router();
 
+/**
+ * @swagger
+ * /desarrollan/reporte:
+ *   get:
+ *     summary: Se obtiene un reporte de desarrollo con validacion de token JWT
+ *     tags: [reporte de desarrollo]
+ *     responses:
+ *       200:
+ *         description: reporte de desarrollo obtenido correctamente 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 fk_id_cultivo:
+ *                   type: object
+ *                   properties:
+ *                     id_cultivo:
+ *                       type: integer
+ *                       example: 4
+ *                     nombre_cultivo:
+ *                       type: string
+ *                       example: "cebolla"
+ *                 fk_id_pea:
+ *                   type: object
+ *                   properties:
+ *                     id_pea: 
+ *                       type: integer
+ *                       example: 3
+ *                     nombre_pea:
+ *                       type: string
+ *                       example: "Mariposas"
+ *                     descripcion_pea:
+ *                       type: string
+ *                       exmaple: "sin comentarios"
+ *       404:
+ *         description: Error al obtener reporte de un desarrollo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error al obtener un reporte de desarrollo"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
 routerDesarollan.get('/desarrollan/reporte',validarToken,getReporteCultivosPEA);
 
 /**

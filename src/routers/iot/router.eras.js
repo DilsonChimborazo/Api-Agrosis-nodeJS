@@ -4,8 +4,6 @@ import { validarToken } from '../../controllers/usuarios/controllers.autenticaci
 
 const routerEras = Router();
 
-routerEras.get('/eras/reporte', validarToken, getTotalEras)
-
 
 /**
  * @swagger
@@ -350,5 +348,78 @@ routerEras.get('/eras/:id_eras', validarToken, getEraById)
  *                   example: "Error en el servidor"
  */
 routerEras.put('/eras/:id_eras', validarToken, updateEra)
+
+/**
+ * @swagger
+ * /eras/reporte:
+ *   get:
+ *     summary: Obtiene todos los reportes de las eras registradas
+ *     tags: [Reporte de eras]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de eras obtenida con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 eras:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: ID de la era
+ *                         example: 1
+ *                       fk_id_lote:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             description: ID del lote al que pertenece la era
+ *                             example: 5
+ *                           nombre_lote:
+ *                             type: string
+ *                             description: Nombre del lote
+ *                             example: "Lote 1"
+ *                       total_eras:
+ *                         type: integer
+ *                         example: 5
+ *       404:
+ *         description: No hay reporte de eras registradas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No hay reporte de eras registradas"
+ *       401:
+ *         description: Token requerido o token no autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no está autorizado"
+ *       500:
+ *         description: Error en el servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
+routerEras.get('/eras/reporte', validarToken, getTotalEras)
+
 
 export default routerEras;

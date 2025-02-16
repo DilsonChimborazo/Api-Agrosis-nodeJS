@@ -3,8 +3,6 @@ import { getControlUsaInsumo, addControlUsaInsumo, IdControlUsaInsumo, getTotalI
 import {  validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 const routerControl_Usa_Insumo = Router();
 
-routerControl_Usa_Insumo.get('/Control_Usa_Insumo/reporte', validarToken, getTotalInsumosPorControl);
-
 /**
  * @swagger
  * tags:
@@ -492,5 +490,79 @@ routerControl_Usa_Insumo.get("/Control_Usa_Insumo/:Control_Usa_Insumo",  IdContr
  *                   example: "Error en el servidor"
  */
 routerControl_Usa_Insumo.put("/Control_Usa_Insumo/:id_control_usa_insumo",  actualizarControlUsaInsumo);
+
+/**
+ * @swagger
+ * /Control_Usa_Insumo/reporte:
+ *   get:
+ *     summary: Se genera reporte de un control de usos de insumos
+ *     description: Devuelve un reporte de todas las relaciones de Control_Usa_Insumo con sus respectivas entidades relacionadas.
+ *     tags:
+ *       - Reporte de control de usos de insumos
+ *     responses:
+ *       200:
+ *         description: Lista de Control_Usa_Insumo obtenida exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 generas:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id_Control_Usa_Insumo:
+ *                         type: integer
+ *                         example: 1
+ *                       fk_id_control_fitosanitario:
+ *                         type: object
+ *                         properties:
+ *                           id_control_fitosanitario:
+ *                             type: integer
+ *                             example: 1
+ *                           fecha_control:
+ *                             type: string
+ *                             format: date
+ *                             example: "2024-10-10"
+ *                           descripcion:
+ *                             type: string
+ *                             example: "Se le realizó un control de plagas cultivo de maiz"
+ *                           total_insumos_usados:
+ *                             type: integer
+ *                             example: 10
+
+ *       400:
+ *         description: No hay un reporte de control de uso de insumos registrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No hay un reporte de control de uso de insumos registrado"
+ *       401:
+ *         description: Token es requerido, el token no está autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no autorizado"
+ *       500:
+ *         description: Error en el servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
+routerControl_Usa_Insumo.get('/Control_Usa_Insumo/reporte', validarToken, getTotalInsumosPorControl);
 
 export default routerControl_Usa_Insumo;

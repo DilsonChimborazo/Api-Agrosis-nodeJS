@@ -4,6 +4,69 @@ import { validarToken } from "../../controllers/usuarios/controllers.autenticaci
 
 const routerRealiza = Router();
 
+/**
+ * @swagger
+ * /realiza/reporte:
+ *   get:
+ *     summary: Se obtiene un reporte de una realizacion con validacion de token JWT
+ *     tags: [reporte de realiza]
+ *     responses:
+ *       200:
+ *         description: Reporte de realizacion obtenido correctamente 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 fk_id_cultivo:
+ *                   type: object
+ *                   properties:
+ *                     id_cultivo:
+ *                       type: integer
+ *                       example: 1
+ *                     total_cultivos:
+ *                       type: integer
+ *                       example: 5
+ *                 fk_id_actividad:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 2     
+ *                     nombre_actividad:
+ *                        type: string
+ *                        example: "Fumigacion"
+ *       404:
+ *         description: Error al obtener un de reporte de una realizacion
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error al obtener un reporte de una realizacion"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
 routerRealiza.get('/realiza/reporte',validarToken,getRealiza)
 
 

@@ -3,8 +3,6 @@ import { getInsumo, addInsumo, IdInsumo, actualizarInsumo, getTotalInsumosPorTip
 import { validarToken } from '../../controllers/usuarios/controllers.autenticacion.js';
 const routerInsumo = Router();
 
-routerInsumo.get('/insumo/reporte', validarToken, getTotalInsumosPorTipo);
-
 /**
  * @swagger
  * tags:
@@ -328,5 +326,74 @@ routerInsumo.get("/insumo/:id_insumo",validarToken, IdInsumo);
  *                   example: "Error en el servidor"
  */
 routerInsumo.put("/insumo/:id_insumo",validarToken, actualizarInsumo);
+
+/**
+ * @swagger
+ * /insumos/reporte:
+ *   get:
+ *     summary: Reporte de todos los insumos
+ *     description: Devuelve un reporte de todos los insumos almacenados en la base de datos.
+ *     tags:
+ *       - Reporte de insumos
+ *     responses:
+ *       200:
+ *         description: Reporte de insumos obtenida exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 insumos:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id_insumo:
+ *                         type: integer
+ *                         example: 1
+ *                       nombre:
+ *                         type: string
+ *                         example: "Fertilizante NPK"
+ *                       tipo:
+ *                         type: string
+ *                         example: "Fertilizante"
+ *                       cantidad:
+ *                         type: integer
+ *                         example: 100
+ *       400:
+ *         description: Error al obtener reporte de insumo
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error al obtener reporte de insumo"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       500:
+ *         description: Error en el servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Error al obtener la lista de insumos"
+ *                 error:
+ *                   type: string
+ *                   example: "Detalles del error"
+ */
+routerInsumo.get('/insumo/reporte', validarToken, getTotalInsumosPorTipo);
 
 export default routerInsumo;

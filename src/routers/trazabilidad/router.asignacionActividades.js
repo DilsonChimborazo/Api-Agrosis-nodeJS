@@ -4,6 +4,81 @@ import { validarToken } from "../../controllers/usuarios/controllers.autenticaci
 
 const routerasignacion_actividad = Router();
 
+/**
+ * @swagger
+ * /asignacion_actividad/reporte:
+ *   get:
+ *     summary: Se obtiene un reporte de asignacion de actividad con validacion de token JWT
+ *     tags: [reporte de asignacion_actividad]
+ *     responses:
+ *       200:
+ *         description: reporte de Asignacion actividad obtenido correctamente 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total_actividades:
+ *                   type: integer
+ *                   example: 10
+ *                 fk_id_actividad:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 2     
+ *                     actividades_asignadas:
+ *                        type: string
+ *                        example: "Fumigacion"
+ *                 fk_identificacion:
+ *                   type: object
+ *                   properties:
+ *                     identificacion:
+ *                       type: biginteger  
+ *                       example: 1081728782 
+ *                     nombre_usuario:
+ *                       type: string
+ *                       example: "Wilson Eduardo Samboni Rodriguez"
+ *                     fk_id_rol:
+ *                       type: object
+ *                       properties:
+ *                         id_rol:
+ *                           type: integer
+ *                           example: 2
+ *                         rol:
+ *                           type: string
+ *                           example: "aprendiz"
+ *       404:
+ *         description: Error al obtner reporte de asignacion de actividad
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error al obtener reporte de asignacion de actividad"
+ *       401:
+ *         description: Token es requerido, el token no esta autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no esta autorizado"
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
 routerasignacion_actividad.get('/asignacion_actividad/reporte',validarToken, getReporteAsignaciones)
 
 /**

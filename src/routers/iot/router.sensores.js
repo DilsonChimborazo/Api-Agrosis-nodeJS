@@ -5,8 +5,6 @@ import { validarToken } from '../../controllers/usuarios/controllers.autenticaci
 
 const routerSensores = Router();
 
-routerSensores.get('/sensores/reporte',validarToken, getReporteSensores);
-
 /**
  * @swagger
  * tags:
@@ -353,6 +351,77 @@ routerSensores.get('/sensores/:id_sensor',validarToken, getSensorById)
  *                   example: "Error al crear el sensor"
  */
 routerSensores.put('/sensores/:id_sensor',validarToken, updateSensor);
+
+/**
+ * @swagger
+ * /sensores/reporte:
+ *   get:
+ *     summary: Obtiene un reporte de sensores registrados
+ *     tags: [Reporte de sensores]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Reporte de sensores obtenida exitosamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id_sensor:
+ *                     type: integer
+ *                     example: 1
+ *                   sensores:
+ *                     type: string
+ *                     example: "Sensor de Humedad"
+ *                   tipo_sensor:
+ *                     type: string
+ *                     example: "Humedad"
+ *                   total_sensores:
+ *                     type: integer
+ *                     example: 10
+ *                   min_medida:
+ *                     type: number
+ *                     format: float
+ *                     example: 10.0
+ *                   max_medida:
+ *                     type: number
+ *                     format: float
+ *                     example: 90.0
+ *       404:
+ *         description: No hay reporte de sensores registrados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "No hay reporte de sensores registrados"
+ *       401:
+ *         description: Token requerido o token no autorizado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Token requerido o token no está autorizado"
+ *       500:
+ *         description: Error en el servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Error en el servidor"
+ */
+routerSensores.get('/sensores/reporte',validarToken, getReporteSensores);
 
 export default routerSensores;
 
