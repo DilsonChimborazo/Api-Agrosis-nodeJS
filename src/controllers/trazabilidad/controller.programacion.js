@@ -20,10 +20,10 @@ export const createProgramacion = async (req, res) => {
 export const getProgramacion = async (req, res)=>{
     try{
         const sql = ` SELECT programacion.estado, programacion.fecha_programada, programacion.duracion,
-       programacion.fk_id_asignacion_actividad, asignacion_actividad.id_asignacion_actividad, asignacion_actividad.fecha,
-       asignacion_actividad.fk_id_actividad, actividad.nombre_actividad, actividad.descripcion, usuarios.identificacion,
-       usuarios.nombre, usuarios.email, usuarios.fk_id_rol, Rol.id_rol, Rol.nombre_rol, Rol.fecha_creacion,
-       programacion.fk_id_calendario_lunar, calendario_lunar.id_calendario_lunar, calendario_lunar.fecha, calendario_lunar.descripcion_evento, calendario_lunar.evento
+        programacion.fk_id_asignacion_actividad, asignacion_actividad.id_asignacion_actividad, asignacion_actividad.fecha,
+        asignacion_actividad.fk_id_actividad, actividad.nombre_actividad, actividad.descripcion, usuarios.identificacion,
+        usuarios.nombre, usuarios.email, usuarios.fk_id_rol, Rol.id_rol, Rol.nombre_rol, Rol.fecha_creacion,
+        programacion.fk_id_calendario_lunar, calendario_lunar.id_calendario_lunar, calendario_lunar.fecha, calendario_lunar.descripcion_evento, calendario_lunar.evento
 FROM programacion
 JOIN asignacion_actividad ON programacion.fk_id_asignacion_actividad = asignacion_actividad.id_asignacion_actividad
 JOIN actividad ON asignacion_actividad.fk_id_actividad = actividad.id_actividad
