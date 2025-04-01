@@ -198,7 +198,7 @@ const Tabla = <T extends { [key: string]: any }>({
       ) : (
         // Contenedor de la tabla con desplazamiento horizontal si es necesario
         <div className="overflow-x-auto px-7">
-          <table className="min-w-full border-separate border-spacing-y-2">
+          <table className="min-w-full border-separate border-spacing-y-2 bg-white shadow-md rounded-lg">
             {/* Encabezado de la tabla */}
             <thead>
               <tr className="bg-green-700 text-white border-2 border-green-900">

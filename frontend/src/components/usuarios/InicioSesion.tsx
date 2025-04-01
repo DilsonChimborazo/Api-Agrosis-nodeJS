@@ -3,51 +3,29 @@ import { Eye, EyeOff, Facebook, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCustomForm } from "../../hooks/validaciones/useCustomForm";
 import { loginSchema, LoginData } from "../../hooks/validaciones/useSchemas";
+import { useAuth } from "@/hooks/usuarios/useAuth";
 import logoAgrosis from "../../../public/logo_proyecto-removebg-preview.png";
 import logoSena from "../../../public/logoSena.png";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { login, error } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useCustomForm(loginSchema, {
-    identificacion: "",
+    login: "",
     password: "",
   });
 
   const onSubmit = async (data: LoginData) => {
-    setError(null);
-
-    const apiUrl = import.meta.env.VITE_API_URL;
-    if (!apiUrl) {
-      setError("La URL de la API no está definida");
-      return;
-    }
-
-    try {
-      const response = await fetch(`${apiUrl}token/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      const responseData = await response.json();
-      if (!response.ok) {
-        setError("Usuario no registrado o contraseña incorrecta.");
-        return;
-      }
-
-      localStorage.setItem("token", responseData.access);
-      if (responseData.refresh) localStorage.setItem("refreshToken", responseData.refresh);
-      if (responseData.user) localStorage.setItem("user", JSON.stringify(responseData.user));
+    const result = await login(data.login, data.password);
+    console.log("a ver que aparece",result);
+    if (result.success) {
       navigate("/principal");
-    } catch (err: any) {
-      setError(err.message);
     }
   };
 
@@ -61,17 +39,17 @@ export default function Login() {
             <h2 className="text-2xl font-bold text-gray-700">AGROSIS</h2>
           </div>
           <p className="text-center text-gray-500 mb-6">¡Bienvenido!</p>
-          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+          {error && <p className="text-red-500 text-center mb-4">{error}</p>} {/* Mostrar error si existe */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <input
-                type="text" 
+                type="text"
                 placeholder="Identificación"
-                {...register("identificacion")}
+                {...register("login")}
                 className="w-full px-4 py-2 border rounded-md"
               />
-              {errors.identificacion && (
-                <p className="text-red-500 text-sm">{errors.identificacion.message}</p>
+              {errors.login && (
+                <p className="text-red-500 text-sm">{errors.login.message}</p>
               )}
             </div>
             <div className="relative">

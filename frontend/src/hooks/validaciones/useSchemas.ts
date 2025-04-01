@@ -2,7 +2,7 @@ import { z } from "zod";
 
 // Esquema para el formulario de login
 export const loginSchema = z.object({
-  identificacion: z
+  login: z
     .string()
     .min(1, { message: "La identificación es obligatoria" })
     .regex(/^\d+$/, { message: "Solo se permiten números" }),
@@ -13,7 +13,7 @@ export const loginSchema = z.object({
 
 // Esquema para el formulario de registro (ejemplo adicional)
 export const registroSchema = z.object({
-    identificacion: z
+    login: z
       .string()
       .min(1, { message: "La identificación es obligatoria" })
       .regex(/^\d+$/, { message: "Solo se permiten números" }),

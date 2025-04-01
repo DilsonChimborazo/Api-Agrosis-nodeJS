@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 
 // rutas del modulo de iot
 import routerSensores from './src/routers/iot/router.sensores.js';
@@ -31,14 +32,14 @@ import routerResiduos from "./src/routers/trazabilidad/router.residuos.js";
 import RouterCF from "./src/routers/trazabilidad/router.controlFitosanitario.js";
 import routerTipoResiduo from './src/routers/trazabilidad/router.tipo_residuo.js';
 
-// Definimos los endpoints para las operaciones CRUD para el modulo Usuarios
+// Definimos los endpoints para el modulo Usuarios
 import routerRol from './src/routers/usuarios/router.rol.js';
 import routerUsuarios from './src/routers/usuarios/router.usuarios.js';
 import router from './src/routers/usuarios/router.autenticacion.js';
 import swaggerUI from 'swagger-ui-express';
 import swaggerSpec from './src/views/swagger.js';
 
-// Definimos los endpoint para las operaciones CRUD para el modulo Inventario
+// Definimos los endpoints para el modulo Inventario
 import routerInsumo  from './src/routers/Inventario/Insumo.routers.js';
 import routerRequiere  from './src/routers/Inventario/Requiere.routers.js';
 import routerUtiliza  from './src/routers/Inventario/Utiliza.routers.js';
@@ -47,32 +48,38 @@ import routerHerramientas from './src/routers/Inventario/herramientas.routers.js
 
 const app = express();
 
+// Habilitamos CORS para permitir peticiones desde el frontend
+app.use(cors({
+    origin: 'http://localhost:5173', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+    allowedHeaders: ['Content-Type', 'Authorization'] 
+}));
+
+// Middleware para manejar JSON y datos en formulario
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
+// Definimos los endpoints para el modulo IOT
+app.use(routerSensores);
+app.use(routerUbicacion);
+app.use(routerLotes);
+app.use(routerEras);
+app.use(routerMide);
 
-
-// Definimos los endpoints para las operaciones CRUD para el modulo IOT
-app.use(routerSensores)
-app.use(routerUbicacion)
-app.use(routerLotes)
-app.use(routerEras)
-app.use(routerMide)
-
-// Definimos los endpoints para las operaciones CRUD para el modulo Finanzas
+// Definimos los endpoints para el modulo Finanzas
 app.use(rutaProduccion);
 app.use(rutaVenta);
 app.use(rutaGenera);
 
-// Definimos los endpoints para las operaciones CRUD para el modulo trazabilidad 
-app.use(routerasignacion_actividad)
-app.use(routerCalendarioLunar)
-app.use(routerEspecie)
-app.use(routerNotificacion)
-app.use(routerProgramacion)
-app.use(routerRealiza)
-app.use(routerSemillero)
-app.use(routerTipoCultivo)
+// Definimos los endpoints para el modulo trazabilidad 
+app.use(routerasignacion_actividad);
+app.use(routerCalendarioLunar);
+app.use(routerEspecie);
+app.use(routerNotificacion);
+app.use(routerProgramacion);
+app.use(routerRealiza);
+app.use(routerSemillero);
+app.use(routerTipoCultivo);
 app.use(routerPlantacion);
 app.use(routerCultivo);
 app.use(routerPea);
@@ -83,25 +90,22 @@ app.use(routerResiduos);
 app.use(RouterCF);
 app.use(routerTipoResiduo);
 
-// Definimos los endpoints para las operaciones CRUD para el modulo Usuarios
-app.use(routerRol)
-app.use(routerUsuarios)
-app.use(router)
+// Definimos los endpoints para el modulo Usuarios
+app.use(routerRol);
+app.use(routerUsuarios);
+app.use(router);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
-
-// Definimos los endpoint para las operaciones CRUD para el modulo Inventario
+// Definimos los endpoints para el modulo Inventario
 app.use(routerInsumo);
-app.use( routerRequiere);
+app.use(routerRequiere);
 app.use(routerHerramientas);
 app.use(routerUtiliza);
-app.use( routerControlUsaInsumo);
+app.use(routerControlUsaInsumo);
 
-app.listen(3000,()=>{
-    console.log("servidor iniciado en el puerto http://localhost:3000")
-    
-    console.log(
-        `Version 1 de documentacion dsiponible en url http://localhost:3000/api-docs`
-    )
+// Servidor
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`✅ Servidor iniciado en http://localhost:${PORT}`);
+    console.log(`📄 Documentación disponible en http://localhost:${PORT}/api-docs`);
 });
-

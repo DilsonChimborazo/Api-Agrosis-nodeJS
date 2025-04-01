@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useLotes } from '../../../hooks/iot/lote/useLotes';
 import Tabla from '../../globales/Tabla';
 import VentanaModal from '../../globales/VentanasModales';
-import Button from "@/components/globales/Button";
 import { useNavigate } from "react-router-dom";
 
 const Lotes = () => {
@@ -25,7 +24,7 @@ const Lotes = () => {
     navigate(`/Editarlote/${residuo.id}`);
   };
 
-  const headers = ['ID', 'Nombre', 'Dimencion', 'fk id ubicacion', 'Estado'];
+  const headers = ['ID', 'Nombre', 'Dimencion', 'ubicacion', 'Estado'];
 
   const handleRowClick = (lote: object) => {
     openModalHandler(lote);
@@ -39,11 +38,11 @@ const Lotes = () => {
 
   const lotesList = Array.isArray(lotes) ? lotes : [];
 
-  const mappedLotes = lotesList.map(lote => ({
-    id: lote.id,
+  const mappedLotes = lotesList.map((lote,index) => ({
+    id: index + 1,
     nombre: lote.nombre_lote,
-    dimencion: lote.dimencion,
-    fk_id_ubicacion: lote.fk_id_ubicacion 
+    dimencion: lote.dimension,
+    ubicacion: lote.fk_id_ubicacion 
       ? `${lote.fk_id_ubicacion.latitud}, ${lote.fk_id_ubicacion.longitud}` 
       : 'Sin ubicación',
     estado: lote.estado,
