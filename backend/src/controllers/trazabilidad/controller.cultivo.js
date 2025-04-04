@@ -1,5 +1,6 @@
 import { configuracionBD } from "../../config/conexion.js";
 
+
 export const postCultivo = async (req, res) => {
     try {
         const { fecha_plantacion, nombre_cultivo, descripcion, fk_id_especie, fk_id_semillero } = req.body;

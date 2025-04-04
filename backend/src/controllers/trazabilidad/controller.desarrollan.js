@@ -1,5 +1,6 @@
 import { configuracionBD } from "../../config/conexion.js";
 
+
 export const postDesarrollan = async (req, res) => {
     try {
         const { fk_id_cultivo, fk_id_pea } = req.body;

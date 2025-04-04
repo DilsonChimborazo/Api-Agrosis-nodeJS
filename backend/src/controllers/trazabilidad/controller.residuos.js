@@ -1,5 +1,6 @@
 import {configuracionBD} from "../../config/conexion.js";
 
+
 export const postResiduos = async (req, res) => {
     try {
         const { nombre, fecha, descripcion, fk_id_tipo_residuo, fk_id_cultivo } = req.body;

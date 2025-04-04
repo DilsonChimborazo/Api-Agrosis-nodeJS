@@ -1,4 +1,6 @@
+
 import {configuracionBD} from "../../config/conexion.js";
+
 
 export const postActividad = async (req , res) => {
     try{

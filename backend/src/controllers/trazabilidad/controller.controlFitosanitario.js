@@ -1,5 +1,6 @@
 import {configuracionBD} from "../../config/conexion.js";
 
+
 export const postControlFitosanitario = async (req, res) => {
     try{
         const {fecha_control, descripcion, fk_id_desarrollan}= req.body;

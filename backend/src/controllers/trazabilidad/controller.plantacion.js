@@ -1,6 +1,7 @@
 import { configuracionBD } from "../../config/conexion.js";
 
 
+
 export const postplantacion = async (req,res) =>{
     try{
         const {fk_id_cultivo, fk_id_era}=req.body

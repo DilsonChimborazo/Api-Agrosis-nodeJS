@@ -1,5 +1,6 @@
 import {configuracionBD} from "../../config/conexion.js"
 
+
 export const postPea = async (req, res) => {
     try {
         const { nombre, descripcion } = req.body;
