@@ -1,14 +1,19 @@
-
+<<<<<<<< HEAD:backend/src/controllers/trazabilidad/controller.desarrollan.js
 import { configuracionBD } from "../../config/conexion.js";
 
-
+========
+import { configuracionBD } from "../config/conexion.js";
+>>>>>>>> 45f304b36b8df9b96b8911b4b7ec589ae34df3ac:src/controllers/trazabilidad2/controller.desarrollan.js
 
 export const postDesarrollan = async (req, res) => {
     try {
         const { fk_id_cultivo, fk_id_pea } = req.body;
         const sql = "INSERT INTO desarrollan (fk_id_cultivo, fk_id_pea) VALUES ($1, $2)";
+<<<<<<<< HEAD:backend/src/controllers/trazabilidad/controller.desarrollan.js
         const rowCount  = await configuracionBD.query(sql, [fk_id_cultivo, fk_id_pea]);
-
+========
+        const { rowCount } = await configuracionBD.query(sql, [fk_id_cultivo, fk_id_pea]);
+>>>>>>>> 45f304b36b8df9b96b8911b4b7ec589ae34df3ac:src/controllers/trazabilidad2/controller.desarrollan.js
 
         if (rowCount > 0) {
             return res.status(200).json({ "message": "Registro en desarrollan creado correctamente" });
