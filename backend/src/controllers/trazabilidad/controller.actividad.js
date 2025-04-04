@@ -1,10 +1,6 @@
-<<<<<<<< HEAD:backend/src/controllers/trazabilidad/controller.actividad.js
-
 import {configuracionBD} from "../../config/conexion.js";
 
-========
-import {configuracionBD} from "../config/conexion.js";
->>>>>>>> 45f304b36b8df9b96b8911b4b7ec589ae34df3ac:src/controllers/trazabilidad2/controller.actividad.js
+
 
 export const postActividad = async (req , res) => {
     try{
