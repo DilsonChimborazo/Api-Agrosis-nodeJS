@@ -3,30 +3,26 @@ import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-export interface Ubicacion{
-    id: number;
-    latitud: number;
-    longitud: number;
+export interface Lote {
+    nombre_lote: string; 
 }
 
-export interface Lotes {
+export interface Eras { 
     id: number;
-    fk_id_ubicacion: Ubicacion;
-    dimencion: string;
-    nombre_lote: string;
-    estado: string;
-}
-
-export interface Eras{
-    id: number;
-    fk_id_lote: { nombre_lote: string } | null | undefined; 
-    descripcion: number;
+    descripcion: string;
+    fk_id_lote: Lote | null;
 }
 
 const fetchEras = async (): Promise<Eras[]> => {
     try {
-        const { data } = await axios.get(`${apiUrl}eras/`);
-        return data;
+        const { data } = await axios.get(`${apiUrl}eras/`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
+
+        console.log("Eras recibidas:", data.eras);
+        return data.eras; // ✅ Confirmado que el backend devuelve { eras: [...] }
     } catch (error) {
         console.error("Error al obtener las eras:", error);
         throw new Error("No se pudo obtener la lista de las eras");
