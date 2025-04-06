@@ -4,6 +4,9 @@ import { validarToken } from '../../controllers/usuarios/controllers.autenticaci
 
 const routerProduccion = Router();
 
+routerProduccion.get('/produccion/reporte', validarToken, getReporteProduccion);
+
+
 /**
  * @swagger
  * tags:
@@ -477,7 +480,6 @@ routerProduccion.put('/produccion/:id_produccion',validarToken, updateProduccion
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerProduccion.get('/produccion/reporte', validarToken, getReporteProduccion);
 
 
 
