@@ -12,7 +12,6 @@ import routerMide from './src/routers/iot/router.mide.js';
 //rutas del modulo finanzas
 import rutaProduccion from './src/routers/finanzas/router.produccion.js';
 import rutaVenta from './src/routers/finanzas/router.venta.js';
-import rutaGenera from './src/routers/finanzas/router.genera.js';
 
 //rutas del modulo trazabilidad
 import routerasignacion_actividad from './src/routers/trazabilidad/router.asignacionActividades.js';
@@ -69,7 +68,6 @@ app.use(routerMide);
 // Definimos los endpoints para el modulo Finanzas
 app.use(rutaProduccion);
 app.use(rutaVenta);
-app.use(rutaGenera);
 
 // Definimos los endpoints para el modulo trazabilidad 
 app.use(routerasignacion_actividad);

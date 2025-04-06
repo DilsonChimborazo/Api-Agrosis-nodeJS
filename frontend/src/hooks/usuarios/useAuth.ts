@@ -14,7 +14,7 @@ export function useAuth() {
 
     try {
       // Asegúrate de que el apiUrl esté correctamente configurado en .env
-      const response = await fetch(`${apiUrl}login/`, {  // Asegúrate de que la URL esté bien formada
+      const response = await fetch(`${apiUrl}login`, {  // Asegúrate de que la URL esté bien formada
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ login, contrasena }),
