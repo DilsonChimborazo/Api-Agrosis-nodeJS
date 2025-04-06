@@ -4,7 +4,7 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 export interface Pea {
     id: number;
-    nombre_pea: string;
+    nombre: string;
     descripcion: string;
 }
 

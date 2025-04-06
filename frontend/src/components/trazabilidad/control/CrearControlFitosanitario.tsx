@@ -12,38 +12,37 @@ const CrearControlFitosanitario = () => {
     // Obtener lista de controles fitosanitarios
     const { data: controles = [], isLoading: isLoadingControles } = useControlFitosanitario();
 
-    // Extraer desarrolladores únicos
+    // Extraer opciones únicas para el select de desarrollan
     const desarrollanOptions = Array.from(new Map(controles.map((control) => {
-        const desarrollan = control.fk_id_desarrollan;
-        const nombrePea = desarrollan.fk_id_pea ? desarrollan.fk_id_pea.nombre_pea : '';
-        const nombreCultivo = desarrollan.fk_id_cultivo ? desarrollan.fk_id_cultivo.nombre_cultivo : '';
-        const label = nombreCultivo && nombrePea ? `${nombreCultivo} - ${nombrePea}` : nombreCultivo || nombrePea || `Desarrollan ID: ${desarrollan.id}`;
-        return [desarrollan.id, { value: desarrollan.id, label }];
+        const desarrollan = control.desarrollan;
+        const nombrePea = desarrollan?.pea?.nombre || '';
+        const nombreCultivo = desarrollan?.cultivo?.nombre_cultivo || '';
+        const label = nombreCultivo && nombrePea ? `${nombreCultivo} - ${nombrePea}` : nombreCultivo || nombrePea || `Desarrollan ID: ${desarrollan?.id_desarrollan}`;
+        return [desarrollan?.id_desarrollan, { value: desarrollan?.id_desarrollan, label }];
     })).values());
 
-    // Definición de los campos del formulario
+    // Campos del formulario
     const formFields = [
         { id: 'fecha_control', label: 'Fecha de Control', type: 'date' },
         { id: 'descripcion', label: 'Descripción', type: 'text' },
         {
             id: 'fk_id_desarrollan',
-            label: 'Selecciona el pea y cultivo al cual se le desarrollara el control',
+            label: 'Selecciona el PEA y Cultivo',
             type: 'select',
             options: desarrollanOptions,
         },
     ];
 
     const handleSubmit = (formData: Record<string, any>) => {
-        // Validación de campos vacíos
         if (!formData.fecha_control || !formData.descripcion || !formData.fk_id_desarrollan) {
             setErrorMensaje("❌ Todos los campos son obligatorios.");
             return;
         }
 
         const nuevoControl = {
-            fecha_control: new Date(formData.fecha_control).toISOString().split('T')[0],
+            fecha_control: formData.fecha_control,
             descripcion: formData.descripcion.trim(),
-            fk_id_desarrollan: formData.fk_id_desarrollan,
+            fk_id_desarrollan: parseInt(formData.fk_id_desarrollan, 10),
         };
 
         console.log("🚀 Enviando Control Fitosanitario al backend:", nuevoControl);
@@ -53,15 +52,16 @@ const CrearControlFitosanitario = () => {
                 console.log("✅ Control Fitosanitario creado exitosamente.");
                 navigate("/control-fitosanitario");
             },
-            onError: (error) => {
-                console.error("❌ Error al crear Control Fitosanitario:", error);
+            onError: (error: any) => {
+                console.error("❌ Error al crear Control Fitosanitario:", error?.response?.data || error.message);
                 setErrorMensaje("Ocurrió un error al registrar el control.");
             },
         });
+        
     };
 
     if (isLoadingControles) {
-        return <div className="text-center text-gray-500">Cargando desarrolladores...</div>;
+        return <div className="text-center text-gray-500">Cargando desarrollan...</div>;
     }
 
     return (

@@ -1,7 +1,4 @@
-
 import {configuracionBD} from "../../config/conexion.js";
-
-
 
 export const postResiduos = async (req, res) => {
     try {
@@ -27,13 +24,13 @@ export const getResiduos = async (req, res) => {
         console.log("Buscando los residuos");
         const sql =`SELECT
                    r.id_residuo,
-                   r.nombre,
+                   r.nombre AS nombre_residuo,
                    r.fecha,
                    r.descripcion,
                    r.fk_id_tipo_residuo,
                    r.fk_id_cultivo,
                    tr.id_tipo_residuo,
-                   tr.nombre_residuo,
+                   tr.nombre_residuo AS nombre_tipo_residuo,
                    tr.descripcion AS descripcion_tipo_residuo,
                    c.id_cultivo,
                    c.fecha_plantacion,
@@ -65,13 +62,16 @@ export const getResiduos = async (req, res) => {
         const result = await configuracionBD.query(sql);
 
         if(result.rows.length > 0){
-            const residuos = result.rows.map(r => ({
+              const residuos = result.rows.map(r => ({
                 id_residuo: r.id_residuo,
-                nombre: r.nombre,
+                nombre: r.nombre_residuo, // 👈 ahora sí se toma bien
                 fecha: r.fecha,
                 descripcion: r.descripcion,
-                fk_id_tipo_residuo: r.fk_id_tipo_residuo,
-                fk_id_cultivo: r.fk_id_cultivo,
+                fk_id_tipo_residuo: {
+                    id_tipo_residuo: r.id_tipo_residuo,
+                    nombre_residuo: r.nombre_tipo_residuo,
+                    descripcion: r.descripcion_tipo_residuo,
+                },
                 fk_id_cultivo: {
                     id_cultivo: r.id_cultivo,
                     fecha_plantacion: r.fecha_plantacion,
