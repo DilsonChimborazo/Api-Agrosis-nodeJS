@@ -7,28 +7,34 @@ const CrearPea = () => {
     const navigate = useNavigate();
 
     const formFields = [
-        { id: 'nombre_pea', label: 'Nombre del PEA', type: 'text' },
+        { id: 'nombre', label: 'Nombre', type: 'text' },
         { id: 'descripcion', label: 'Descripción', type: 'text' },
     ];
 
     const handleSubmit = (formData: { [key: string]: string }) => {
         const nuevoPea: Pea = {
-            nombre_pea: formData.nombre_pea,
-            descripcion: formData.descripcion,
+            nombre: formData.nombre.trim(),
+            descripcion: formData.descripcion.trim(),
         };
 
+        if (!nuevoPea.nombre || !nuevoPea.descripcion) {
+            alert("Por favor completa todos los campos.");
+            return;
+        }
+
         console.log("Enviando PEA al backend:", nuevoPea);
-        
+
         mutation.mutate(nuevoPea, {
             onSuccess: () => {
                 console.log("PEA creado exitosamente, redirigiendo a /pea...");
-                navigate("/pea"); 
+                navigate("/pea", { replace: true }); ;
             },
             onError: (error) => {
                 console.error("Error al crear PEA:", error);
+                alert("Ocurrió un error al registrar el PEA.");
             }
         });
-    }
+    };
 
     return (
         <div className="max-w-4xl mx-auto p-4">

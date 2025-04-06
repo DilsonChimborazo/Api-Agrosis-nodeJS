@@ -1,4 +1,7 @@
+
 import {configuracionBD} from "../../config/conexion.js";
+
+
 
 export const postControlFitosanitario = async (req, res) => {
     try{

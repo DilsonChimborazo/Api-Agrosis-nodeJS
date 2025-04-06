@@ -4,8 +4,8 @@ import axios from 'axios';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export interface Residuos {
-    id: number;
-    nombre_residuo: string;
+    id_residuo: number;
+    nombre: string;
     fecha: Date;
     descripcion: string;
     fk_id_cultivo: Cultivos ;
@@ -35,15 +35,15 @@ export interface TipoCultivo {
 }
 
 export interface Especie {
-    id: number;
+    id_especie: number;
     nombre_comun: string;
     nombre_cientifico: string;
     descripcion: string;
     fk_id_tipo_cultivo: TipoCultivo;
 }
 export interface TipoResiduos {
-    id: number;
-    nombre_tipo_residuo: string;
+    id_tipo_residuo: number;
+    nombre_residuo: string;
     descripcion: string;
 }
 
@@ -52,14 +52,14 @@ export interface TipoResiduos {
 const fetchAsignacion = async (): Promise<Residuos[]> => {
     try {
         const response = await axios.get(`${apiUrl}residuos/`);
-        console.log("Respuesta completa de la API:", response);
-        console.log("Datos de residuos:", response.data);
-        return response.data;
+        console.log("Respuesta completa de la API:", response.data);
+        return response.data.residuos; // ✅ Accedemos a la propiedad correcta
     } catch (error) {
         console.error("Error al obtener residuos:", error);
         throw new Error("No se pudo obtener la lista de los residuos");
     }
 };
+
 
 export const useResiduos= () => {
     return useQuery<Residuos[], Error>({

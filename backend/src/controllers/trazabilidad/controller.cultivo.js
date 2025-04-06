@@ -1,4 +1,7 @@
+
 import { configuracionBD } from "../../config/conexion.js";
+
+
 
 export const postCultivo = async (req, res) => {
     try {

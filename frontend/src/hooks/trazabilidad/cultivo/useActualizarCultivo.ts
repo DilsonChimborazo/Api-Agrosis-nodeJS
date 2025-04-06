@@ -4,7 +4,7 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export interface Cultivo {
-    id: number;
+    id_cultivo: number;
     nombre_cultivo: string;
     fecha_plantacion: string;
     descripcion: string;
@@ -17,8 +17,8 @@ export const useActualizarCultivo = () => {
 
     return useMutation({
         mutationFn: async (cultivoActualizado: Cultivo) => {
-            const { id, ...datos } = cultivoActualizado;
-            const { data } = await axios.put(`${apiUrl}cultivo/${id}/`, datos);
+            const { id_cultivo, ...datos } = cultivoActualizado;
+            const { data } = await axios.put(`${apiUrl}cultivo/${id_cultivo}/`, datos);
             return data;
         },
         onSuccess: () => {

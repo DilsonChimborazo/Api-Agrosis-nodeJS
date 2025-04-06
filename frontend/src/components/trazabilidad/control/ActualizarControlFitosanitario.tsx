@@ -4,26 +4,33 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useControlFitosanitarioPorId } from "../../../hooks/trazabilidad/control/useControlFitosanitarioPorId";
 import Formulario from "../../globales/Formulario";
 
+export interface ControlFitosanitario {
+    id_control_fitosanitario: number;
+    fecha_control: string;
+    descripcion: string;
+    fk_id_desarrollan: number
+}
+
 const ActualizarControlFitosanitario = () => {
     const { id } = useParams();
     const { data: control, isLoading, error } = useControlFitosanitarioPorId(id);
     const actualizarControl = useActualizarControlFitosanitario();
     const navigate = useNavigate();
-    
+
     const [formData, setFormData] = useState<{ [key: string]: string }>({
         fecha_control: "",
         descripcion: "",
-        fk_id_desarrollan: "", 
+        fk_id_desarrollan: "",
     });
 
     useEffect(() => {
         if (control && Object.keys(control).length > 0) {
             console.log("🔄 Cargando datos del Control Fitosanitario:", control);
-            
+
             setFormData({
                 fecha_control: control.fecha_control ?? "",
                 descripcion: control.descripcion ?? "",
-                fk_id_desarrollan: control.fk_id_desarrollan ? control.fk_id_desarrollan.toString() : "", // Agregar FK
+                fk_id_desarrollan: control.fk_id_desarrollan ? control.fk_id_desarrollan.toString() : "",
             });
         }
     }, [control]);
@@ -32,10 +39,10 @@ const ActualizarControlFitosanitario = () => {
         if (!id) return;
 
         const controlActualizado = {
-            id: Number(id),
+            id_control_fitosanitario: Number(id),
             fecha_control: data.fecha_control || "",
             descripcion: data.descripcion || "",
-            fk_id_desarrollan: data.fk_id_desarrollan ? Number(data.fk_id_desarrollan) : null, // Convertir correctamente
+            fk_id_desarrollan: data.fk_id_desarrollan ? Number(data.fk_id_desarrollan) : null,
         };
 
         console.log("🚀 Enviando Control Fitosanitario actualizado:", controlActualizado);
@@ -60,14 +67,13 @@ const ActualizarControlFitosanitario = () => {
                 fields={[
                     { id: 'fecha_control', label: 'Fecha de Control', type: 'date' },
                     { id: 'descripcion', label: 'Descripción', type: 'text' },
-                     { id: 'fk_id_desarrollan', label: 'fk desarrollan  ', type: 'number' }, //
+                    { id: 'fk_id_desarrollan', label: 'fk desarrollan', type: 'number' },
                 ]}
                 onSubmit={handleSubmit}  
                 isError={actualizarControl.isError} 
                 isSuccess={actualizarControl.isSuccess}
                 title="Actualizar Control Fitosanitario"
-                initialValues={formData}  
-                key={JSON.stringify(formData)}
+                initialValues={formData} // Usa formData como valores iniciales
             />
         </div>
     );

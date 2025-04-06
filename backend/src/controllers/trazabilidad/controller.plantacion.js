@@ -1,4 +1,7 @@
+
 import { configuracionBD } from "../../config/conexion.js";
+
+
 
 
 export const postplantacion = async (req,res) =>{

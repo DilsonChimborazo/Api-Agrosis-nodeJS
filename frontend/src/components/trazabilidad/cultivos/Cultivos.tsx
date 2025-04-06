@@ -3,6 +3,9 @@ import { useCultivo } from "../../../hooks/trazabilidad/cultivo/useCultivo";
 import VentanaModal from "../../globales/VentanasModales";
 import Tabla from "../../globales/Tabla";
 import { useNavigate } from "react-router-dom";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 
 const Cultivos = () => {
   const { data: cultivos, isLoading, error } = useCultivo();
@@ -39,7 +42,7 @@ const Cultivos = () => {
   const cultivosList = Array.isArray(cultivos) ? cultivos : [];
 
   const mappedCultivos = cultivosList.map((cultivo) => ({
-    id: cultivo.id,
+    id: cultivo.id_cultivo,
     nombre: cultivo.nombre_cultivo,
     fecha_plantacion: new Date(cultivo.fecha_plantacion).toLocaleDateString(),
     descripcion: cultivo.descripcion,
@@ -50,6 +53,32 @@ const Cultivos = () => {
       ? cultivo.fk_id_semillero.nombre_semillero
       : "Sin semillero",
   }));
+
+  const generarPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('Cultivos Activos', 14, 15);
+  
+    const tableData = mappedCultivos.map((cultivo) => [
+      cultivo.id,
+      cultivo.nombre,
+      cultivo.fecha_plantacion,
+      cultivo.descripcion,
+      cultivo.especie,
+      cultivo.semillero,
+    ]);
+  
+    autoTable(doc, {
+      head: [headers],
+      body: tableData,
+      startY: 20,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [34, 197, 94] }, 
+    });
+  
+    doc.save('cultivos-activos.pdf');
+  };
+  
 
   const headers = [
     "ID",
@@ -62,6 +91,16 @@ const Cultivos = () => {
 
   return (
     <div className="overflow-x-auto  shadow-md rounded-lg">
+      <div className="flex justify-end items-center mb-4">
+        <button
+          onClick={generarPDF}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Reporte PDF
+        </button>
+      </div>
+
+
       <Tabla
         title="Listar Cultivos"
         headers={[...headers]}
