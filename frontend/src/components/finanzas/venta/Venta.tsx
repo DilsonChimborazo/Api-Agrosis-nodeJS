@@ -41,11 +41,13 @@ const VentaComponent = () => {
   const mappedVentas = ventasList.map((venta) => ({
     id_venta: venta.id_venta,
     cantidad: venta.cantidad,
-    precio_unitario: venta.precio_unidad,
-    total_venta: venta.cantidad * venta.precio_unidad,
-    fecha_venta: venta.fecha,
-    cantidad_produccion: venta.fk_id_produccion?.cantidad_produccion ?? "No disponible",
-    fecha_produccion: venta.fk_id_produccion?.fecha ?? "No disponible",
+    precio_unitario: venta.precio_unitario, // nombre correcto
+    total_venta: venta.cantidad * venta.precio_unitario,         // viene directamente del backend
+    fecha_venta: new Date(venta.fecha_venta).toLocaleDateString(), // para mostrar fecha limpia
+    cantidad_produccion: venta.fk_id_produccion?.cantidad_producida ?? "No disponible",
+    fecha_produccion: venta.fk_id_produccion?.fecha_produccion
+      ? new Date(venta.fk_id_produccion.fecha_produccion).toLocaleDateString()
+      : "No disponible",
   }));
 
   const headers = ["ID Venta", "Cantidad", "Precio Unitario", "Total Venta", "Fecha Venta", "Cantidad Produccion", "Fecha Produccion",];

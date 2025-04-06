@@ -4,54 +4,23 @@ import Tabla from "../../globales/Tabla";
 import VentanaModal from "../../globales/VentanasModales";
 import { useNavigate } from "react-router-dom";
 
-
-export interface TipoCultivo {
-  id_tipo_cultivo: number;
-  nombre: string;
-  descripcion: string;
-}
-
-export interface Especie {
-  id_especie: number;
-  nombre_comun: string;
-  nombre_cientifico: string;
-  descripcion: string;
-  fk_id_tipo_cultivo: TipoCultivo | null;
-}
-
-export interface Semillero {
-  id_semillero: number;
-  nombre_semilla: string;
-  fecha_siembra: string;
-  fecha_estimada: string;
-  cantidad: number;
-}
-
-export interface Cultivo {
-  id: number;
-  fecha_plantacion: string;
-  nombre_cultivo: string;
-  descripcion: string;
-  fk_id_especie: Especie | null;
-  fk_id_semillero: Semillero | null;
-}
-
-
-interface Produccion {
-  id_produccion: number;
-  cantidad_produccion?: number | null; 
-  fecha?: string;
-  fk_id?: Cultivo | null;
-}
-
+// Función para formatear fechas en formato dd/mm/yyyy
+const formatearFecha = (fechaISO: string) => {
+  const fecha = new Date(fechaISO);
+  return fecha.toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
 
 const ProduccionComponent = () => {
   const navigate = useNavigate();
   const { data: producciones, isLoading, error } = useProduccion();
-  const [selectedProduccion, setSelectedProduccion] = useState<Produccion | null>(null);
+  const [selectedProduccion, setSelectedProduccion] = useState<object | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openModalHandler = (produccion: Produccion) => {
+  const openModalHandler = (produccion: object) => {
     setSelectedProduccion(produccion);
     setIsModalOpen(true);
   };
@@ -77,33 +46,41 @@ const ProduccionComponent = () => {
   if (error instanceof Error) return <div className="text-center text-red-500">Error al cargar los datos: {error.message}</div>;
 
   // Mapeo de los datos para la tabla
-  const produccionList: Produccion[] = Array.isArray(producciones) ? producciones : [];
+  const produccionList = Array.isArray(producciones) ? producciones : [];
   const mappedProducciones = produccionList.map((produccion) => ({
     id_produccion: produccion.id_produccion,
-    cantidad_producción: produccion.cantidad_produccion ?? null,
-    fecha_producción: produccion.fecha ?? "No disponible",
-    nombre_cultivo: produccion.fk_id?.nombre_cultivo ?? "No disponible",
-    fecha_plantación: produccion.fk_id?.fecha_plantacion ?? "No disponible"
+    nombre_produccion: produccion.nombre_produccion,
+    cantidad_producida: produccion.cantidad_producida ?? null,
+    fecha_producción: produccion.fecha_produccion
+      ? formatearFecha(produccion.fecha_produccion)
+      : "No disponible",
+    nombre_cultivo: produccion.cultivo?.nombre_cultivo ?? "No disponible",
+    fecha_plantación: produccion.cultivo?.fecha_plantacion
+      ? formatearFecha(produccion.cultivo.fecha_plantacion)
+      : "No disponible"
   }));
 
-  const headers = ["ID Produccion", "Cantidad Producción", "Fecha Producción", "Nombre Cultivo", "Fecha Plantación"];
-
+  const headers = ["ID Produccion", "Cantidad Producida", "Fecha Producción", "Nombre Cultivo", "Fecha Plantación"];
 
   return (
     <div className="mx-auto p-4">
-
-      <Tabla 
-        title="Lista de Producciones" 
-        headers={headers} 
-        data={mappedProducciones} 
-        onClickAction={handleRowClick} 
+      <Tabla
+        title="Lista de Producciones"
+        headers={headers}
+        data={mappedProducciones}
+        onClickAction={handleRowClick}
         onUpdate={handleUpdate}
         onCreate={handleCreate}
         createButtonTitle="Crear"
       />
 
       {selectedProduccion && (
-        <VentanaModal isOpen={isModalOpen} onClose={closeModal} titulo="Detalles de Producción" contenido={selectedProduccion} />
+        <VentanaModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          titulo="Detalles de Producción"
+          contenido={selectedProduccion}
+        />
       )}
     </div>
   );
