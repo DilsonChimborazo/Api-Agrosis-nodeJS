@@ -292,7 +292,7 @@ routerSemillero.get('/semilleros',validarToken,getSemilleros)
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerSemillero.get('/semilleros/:id_semilleros',validarToken,getSemillerosById)
+routerSemillero.get('/semilleros/:id_semillero',validarToken,getSemillerosById)
 
 /**
  * @swagger
@@ -390,6 +390,6 @@ routerSemillero.get('/semilleros/:id_semilleros',validarToken,getSemillerosById)
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerSemillero.put('/semilleros/:id_semilleros',validarToken,updateSemilleros)
+routerSemillero.put('/semilleros/:id_semillero',validarToken,updateSemilleros)
 
 export default routerSemillero;  
