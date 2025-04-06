@@ -4,7 +4,7 @@ import axios from 'axios';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export interface Especie {
-  id: number;
+  id_especie: number;
   nombre_comun: string;
   nombre_cientifico: string;
   descripcion: string;
@@ -12,13 +12,21 @@ export interface Especie {
 }
 
 interface TipoCultivo {
+  id_tipo_cultivo: number,
   nombre: string;
   descripcion: string;
 }
 
 const fetchEspecie = async (): Promise<Especie[]> => {
   try {
-    const { data } = await axios.get(`${apiUrl}especies/`);
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("Token de autenticación no encontrado");
+    const { data } = await axios.get(`${apiUrl}especie/`,{
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
     return data;
   } catch (error: any) {
     console.error("Error al obtener las especies:", error);

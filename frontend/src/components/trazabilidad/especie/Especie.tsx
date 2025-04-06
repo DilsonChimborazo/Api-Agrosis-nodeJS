@@ -3,11 +3,13 @@ import { useEspecie } from '../../../hooks/trazabilidad/especie/useEspecie';
 import VentanaModal from '../../globales/VentanasModales';
 import Tabla from '../../globales/Tabla';
 import { useNavigate } from 'react-router-dom';
+import useReporteEspeciePDF from '@/hooks/trazabilidad/especie/useReporteEspecie';
 
 const Especies = () => {
   const { data: especies, error, isLoading } = useEspecie();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEspecie, setSelectedEspecie] = useState<any>(null);
+  const { generarPDF: generarReporteEspecie } = useReporteEspeciePDF();
 
   const navigate = useNavigate();
 
@@ -39,7 +41,7 @@ const Especies = () => {
     );
 
   const tablaData = (especies ?? []).map((especie) => ({
-    id: especie.id,
+    id: especie.id_especie,
     nombre_comun: especie.nombre_comun || 'Sin nombre común',
     nombre_cientifico: especie.nombre_cientifico || 'Sin nombre científico',
     descripcion: especie.descripcion || 'Sin descripción',
@@ -50,6 +52,12 @@ const Especies = () => {
 
   return (
     <div className="">
+        <button
+          onClick={generarReporteEspecie}
+          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+        >
+          Generar Reporte PDF
+        </button>
       <Tabla
         title="Lista de Especies"
         headers={headers}
