@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useProduccion } from "@/hooks/finanzas/produccion/useProduccion";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
-const GraficaProduccionPorLote = () => {
+const GraficaProduccionPorLote: React.FC = () => {
   const navigate = useNavigate();
   const { data, isLoading, error } = useProduccion();
 
