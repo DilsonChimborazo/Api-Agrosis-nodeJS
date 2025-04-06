@@ -3,6 +3,7 @@ import { useProduccion } from "../../../hooks/finanzas/produccion/useProduccion"
 import Tabla from "../../globales/Tabla";
 import VentanaModal from "../../globales/VentanasModales";
 import { useNavigate } from "react-router-dom";
+import useReporteProduccionPDF from "@/hooks/finanzas/produccion/useReporteProduccion";
 
 // Función para formatear fechas en formato dd/mm/yyyy
 const formatearFecha = (fechaISO: string) => {
@@ -19,6 +20,7 @@ const ProduccionComponent = () => {
   const { data: producciones, isLoading, error } = useProduccion();
   const [selectedProduccion, setSelectedProduccion] = useState<object | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { generarPDF: generarReporteProduccion } = useReporteProduccionPDF();
 
   const openModalHandler = (produccion: object) => {
     setSelectedProduccion(produccion);
@@ -40,6 +42,10 @@ const ProduccionComponent = () => {
 
   const handleCreate = () => {
     navigate("/Registrar-Producción");
+  };
+
+  const irAGrafica = () => {
+    navigate("/grafica-produccion");
   };
 
   if (isLoading) return <div className="text-center text-gray-500">Cargando producciones...</div>;
@@ -64,6 +70,21 @@ const ProduccionComponent = () => {
 
   return (
     <div className="mx-auto p-4">
+      <div className="flex flex-wrap justify-between items-center mb-4 gap-4">
+        <button
+          onClick={generarReporteProduccion}
+          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+        >
+          Generar Reporte PDF
+        </button>
+        <button
+          onClick={irAGrafica}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Ver gráfica
+        </button>
+      </div>
+
       <Tabla
         title="Lista de Producciones"
         headers={headers}
