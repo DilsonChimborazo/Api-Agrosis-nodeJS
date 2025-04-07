@@ -36,33 +36,47 @@ const Insumos = () => {
 
   const handleUpdate = (residuo: { id: number }) => {
     navigate(`/ActualizarInsumos/${residuo.id}`);
-    };
+  };
 
+  const generarPDF = () => {
+    console.log("Generando PDF...");
+    // Aquí puedes implementar la lógica para generar el PDF con jsPDF, pdfmake, etc.
+  };
 
   if (isLoading) return <div className="text-gray-500">Cargando insumos...</div>;
   if (error instanceof Error) return <div className="text-red-500">Error al cargar los insumos: {error.message}</div>;
 
   const InsumoList = Array.isArray(insumo) ? insumo : [];
-  
-  const mappedInsumo = Array.isArray(InsumoList)?InsumoList.map(insumo => ({
-    id: insumo.id,
-    nombre: insumo.nombre,
-    tipo: insumo.tipo,
-    precio_unidad: insumo.precio_unidad,
-    cantidad: insumo.cantidad,
-    unidad_medida: insumo.unidad_medida,
-  }))
-  : []; 
+
+  const mappedInsumo = Array.isArray(InsumoList)
+    ? InsumoList.map(insumo => ({
+        id: insumo.id,
+        nombre: insumo.nombre,
+        tipo: insumo.tipo,
+        precio_unidad: insumo.precio_unidad,
+        cantidad: insumo.cantidad,
+        unidad_medida: insumo.unidad_medida,
+      }))
+    : [];
 
   console.log("mappedInsumo:", mappedInsumo, Array.isArray(mappedInsumo));
 
   return (
     <div className="mx-auto p-4">
-      <Button
-        text="Crear insumos" 
-        onClick={() => navigate("/CrearInsumos")} 
-        variant="green" 
-      />
+      <div className="flex gap-4 mb-4">
+        <Button
+          text="Crear insumos"
+          onClick={() => navigate("/CrearInsumos")}
+          variant="green"
+        />
+        <button 
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+          onClick={generarPDF}
+        >
+          Descargar PDF
+        </button>
+      </div>
+
       <Tabla
         title="Insumos"
         headers={headers}
@@ -70,6 +84,7 @@ const Insumos = () => {
         onClickAction={handleRowClick}
         onUpdate={handleUpdate}
       />
+
       {selectedInsumo && (
         <VentanaModal
           isOpen={isModalOpen}
