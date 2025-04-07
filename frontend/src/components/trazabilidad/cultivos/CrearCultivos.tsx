@@ -11,23 +11,23 @@ const CrearCultivo = () => {
 
   // Obtener especies únicas
   const especiesUnicas = Array.from(new Map(
-    cultivos.map((cultivo) => [cultivo.fk_id_especie.id, cultivo.fk_id_especie])
+    cultivos.map((cultivo) => [cultivo.fk_id_especie.id_especie, cultivo.fk_id_especie])
   ).values());
 
   // Obtener semilleros únicos
   const semillerosUnicos = Array.from(new Map(
-    cultivos.map((cultivo) => [cultivo.fk_id_semillero.id, cultivo.fk_id_semillero])
+    cultivos.map((cultivo) => [cultivo.fk_id_semillero.id_semillero, cultivo.fk_id_semillero])
   ).values());
 
   // Mapeo de opciones para el select de especies
   const especieOptions = especiesUnicas.map((especie) => ({
-    value: especie.id,
+    value: especie.id_especie,
     label: especie.nombre_comun,
   }));
 
   // Mapeo de opciones para el select de semilleros
   const semilleroOptions = semillerosUnicos.map((semillero) => ({
-    value: semillero.id,
+    value: semillero.id_semillero,
     label: semillero.nombre_semillero,
   }));
 

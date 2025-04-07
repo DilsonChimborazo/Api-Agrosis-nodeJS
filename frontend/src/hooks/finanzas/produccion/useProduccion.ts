@@ -3,6 +3,20 @@ import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
+
+export interface Ubicacion {
+  id: number;
+  latitud: number;
+  longitud: number;
+}
+
+export interface Lotes {
+  id: number;
+  fk_id_ubicacion: Ubicacion;
+  dimencion: string;
+  nombre_lote: string;
+  estado: string;
+}
 export interface TipoCultivo {
   id_tipo_cultivo: number;
   nombre: string;
@@ -35,18 +49,39 @@ export interface Cultivo {
 }
 
 export interface Produccion {
+  cultivo: any;
   id_produccion: number;
-  fk_id: Cultivo | null;
-  cantidad_produccion: number;
-  fecha: string;
+  nombre_produccion: string;
+  fk_id_cultivo: Cultivo | null;
+  cantidad_producida: number;
+  fecha_produccion: string;
+  fk_id_lote: number | null;
+  descripcion_produccion: string;
+  estado: string;
+  fecha_cosecha: string;
 }
 
+
 const fetchProduccion = async (): Promise<Produccion[]> => {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Token de autenticación no encontrado");
+
   try {
-    const { data } = await axios.get(`${apiUrl}produccion/`);
-    return data;
-  } catch (error) {
-    console.error("Error al obtener los datos de producción:", error);
+    const { data } = await axios.get(`${apiUrl}produccion/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // La API devuelve {producciones: Array(...)}, así que accedemos a data.producciones
+    if (data && data.producciones && Array.isArray(data.producciones)) {
+      return data.producciones;
+    } else {
+      console.warn("⚠️ La estructura de la respuesta no es la esperada:", data);
+      return [];
+    }
+  } catch (error: any) {
+    console.error("❌ Error al obtener los datos de producción:", error?.response?.data || error.message);
     throw new Error("No se pudo obtener la lista de producción");
   }
 };

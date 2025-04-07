@@ -8,7 +8,11 @@ export const useEspeciePorId = (id: string | undefined) => {
         queryKey: ["Especie", id], // Clave específica para identificar esta consulta
         queryFn: async () => {
             if (!id) throw new Error("ID no proporcionado"); // Verifica que el ID sea válido
-            const { data } = await axios.get(`${apiUrl}especies/${id}/`); // Endpoint de la especie
+
+            const token = localStorage.getItem("token"); // Obtener el token de localStorage
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+            const { data } = await axios.get(`${apiUrl}especie/${id}/`, { headers }); // Endpoint de la especie
             console.log("🌱 Datos obtenidos del backend:", data); // Depuración
             return data;
         },

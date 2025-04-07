@@ -180,7 +180,7 @@ routerUsuarios.post('/usuarios',validarToken, createUsuarios);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerUsuarios.get('/usuarios',validarToken, getUsuarios);
+routerUsuarios.get('/usuarios', getUsuarios);
 
 /**
  * @swagger

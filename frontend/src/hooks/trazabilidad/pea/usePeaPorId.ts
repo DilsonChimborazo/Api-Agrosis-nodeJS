@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_API_URL; // Asegúrate de que esté antes de su uso
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export const usePeaPorId = (id: string | undefined) => {
     return useQuery({
@@ -10,7 +10,7 @@ export const usePeaPorId = (id: string | undefined) => {
             if (!id) throw new Error("ID no proporcionado");
             const { data } = await axios.get(`${apiUrl}pea/${id}`);
             console.log("📋 Datos de la Pea obtenidos del backend:", data);
-            return data;
+            return data.pea; // 👈 Asegúrate de acceder al objeto correctamente
         },
         enabled: !!id,
     });

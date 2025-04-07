@@ -4,11 +4,11 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export interface Semillero {
-    id_semillero: number; // ID único
-    nombre_semillero: string; // Nombre del semillero
-    fecha_siembra: string;  // Fecha en formato ISO
-    fecha_estimada: string; // Fecha estimada en formato ISO
-    cantidad: number;       // Cantidad de semilleros
+    id_semillero: number;
+    nombre_semilla: string;
+    fecha_siembra: string;
+    fecha_estimada: string;
+    cantidad: number;
 }
 
 export const useCrearSemillero = () => {
@@ -16,16 +16,22 @@ export const useCrearSemillero = () => {
 
     return useMutation({
         mutationFn: async (nuevoSemillero: Semillero) => {
-            console.log("🚀 Datos enviados al backend:", nuevoSemillero);
-            const { data } = await axios.post(`${apiUrl}semilleros/`, nuevoSemillero); // Endpoint correcto
+            const token = localStorage.getItem("token");
+
+            const { data } = await axios.post(`${apiUrl}semilleros/`, nuevoSemillero, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
             return data;
         },
         onSuccess: () => {
             console.log("✅ Semillero creado con éxito");
-            queryClient.invalidateQueries({ queryKey: ["Semilleros"] }); // Refresca la lista automáticamente
+            queryClient.invalidateQueries({ queryKey: ["Semilleros"] });
         },
         onError: (error) => {
-            console.error("❌ Error al crear semillero:", error); // Muestra el error
+            console.error("❌ Error al crear semillero:", error);
         },
     });
 };

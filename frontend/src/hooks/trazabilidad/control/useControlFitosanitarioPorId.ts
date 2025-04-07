@@ -9,9 +9,9 @@ export const useControlFitosanitarioPorId = (id: string | undefined) => {
         queryFn: async () => {
             if (!id) throw new Error("ID no proporcionado");
             
-            const { data } = await axios.get(`${apiUrl}control_fitosanitario/${id}`);
+            const { data } = await axios.get(`${apiUrl}controlfitosanitario/${id}`);
             console.log("📋 Datos del Control Fitosanitario obtenidos:", data);
-            return data;
+            return data.controles?.[0]; // para acceder al objeto directamente
         },
         enabled: !!id,
     });

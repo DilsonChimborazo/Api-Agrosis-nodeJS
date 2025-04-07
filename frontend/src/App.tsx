@@ -64,6 +64,9 @@ import ListarHerramientas from "./components/inventario/herramientas/ListarHerra
 import ListarInsumos from "./components/inventario/insumos/Insumos";
 import ActualizarInsumos from "./components/inventario/insumos/ActualizarInsumos";
 
+//graficas lucy
+import GraficaProduccionPorLote from "./components/finanzas/produccion/Grafica";
+import GraficasVentas from "@/components/finanzas/venta/GraficasVentas";
 
 
 const queryClient = new QueryClient();
@@ -150,6 +153,10 @@ function App() {
           <Route path="/registrar-venta" element={<Principal><CrearVentaPage /></Principal>} />
           <Route path="/actualizarproduccion/:id_produccion" element={<Principal><ActualizarProduccionPage /></Principal>} />
           <Route path="/actualizarventa/:id_venta" element={<Principal><ActualizarVentaPage /></Principal>} />
+          <Route path="/grafica-produccion" element={<Principal><GraficaProduccionPorLote /></Principal>} />
+          <Route path="/graficas-ventas" element={<Principal><GraficasVentas /></Principal>} />
+
+
 
           {/* Ruta por defecto para manejar errores 404 */}
           <Route path="*" element={<h1>404 - Página no encontrada</h1>} />

@@ -36,15 +36,17 @@ const Residuos = () => {
   const residuosList = Array.isArray(residuos) ? residuos : [];
 
   const mappedResiduos = residuosList.map(residuo => ({
-    id: residuo.id,
-    nombre_residuo: residuo.nombre_residuo,
+    id: residuo.id_residuo,
+    nombre: residuo.nombre ?? 'Sin nombre', // Asegura fallback
     fecha: new Date(residuo.fecha).toLocaleDateString(),
     descripcion: residuo.descripcion,
-    cultivo: residuo.fk_id_cultivo ? residuo.fk_id_cultivo.nombre_cultivo : 'Sin cultivo',
-    tipo_residuo: residuo.fk_id_tipo_residuo ? residuo.fk_id_tipo_residuo.nombre_tipo_residuo : 'Sin tipo'
+    cultivo: residuo.fk_id_cultivo?.nombre_cultivo ?? 'Sin cultivo',
+    tipo_residuo: residuo.fk_id_tipo_residuo?.nombre_residuo ?? 'Sin tipo'
   }));
+  
 
-  const headers = ['ID', 'Nombre residuo', 'Fecha', 'Descripcion', 'Cultivo', 'Tipo Residuo'];
+  const headers = ['id', 'Nombre', 'fecha', 'descripcion', 'cultivo', 'tipo_residuo'];
+
 
   return (
     <div className="overflow-x-auto  rounded-lg">

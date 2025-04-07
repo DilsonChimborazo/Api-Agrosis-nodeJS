@@ -9,29 +9,30 @@ const ActualizarPea = () => {
     const { data: pea, isLoading, error } = usePeaPorId(id);
     const actualizarPea = useActualizarPea();
     const navigate = useNavigate();
-    
+
     const [formData, setFormData] = useState<{ [key: string]: string }>({
-        nombre_pea: "",
+        nombre: "",
         descripcion: "",
     });
 
     useEffect(() => {
-        if (pea && Object.keys(pea).length > 0) {
-            console.log("🔄 Cargando datos de la Pea:", pea);
-            
+        console.log("📦 PEA desde backend:", pea);
+        if (pea && Array.isArray(pea) && pea.length > 0) {
+            const item = pea[0];
             setFormData({
-                nombre_pea: pea.nombre_pea ?? "",
-                descripcion: pea.descripcion ?? "",
+                nombre: item.nombre ?? "",
+                descripcion: item.descripcion ?? "",
             });
         }
     }, [pea]);
+    
 
     const handleSubmit = (data: { [key: string]: string }) => {
         if (!id) return;
 
         const peaActualizada = {
             id: Number(id),
-            nombre_pea: data.nombre_pea || "",
+            nombre: data.nombre || "",
             descripcion: data.descripcion || "",
         };
 
@@ -47,14 +48,20 @@ const ActualizarPea = () => {
             },
         });
     };
-    if (isLoading) return <div className="text-gray-500">Cargando datos...</div>;
+
+    if (isLoading) {
+        return <div className="text-gray-500">Cargando datos...</div>;
+    }
+
     if (error) return <div className="text-red-500">Error al cargar la Pea</div>;
-    
+
+    console.log("✅ formData cargado:", formData);
+
     return (
         <div className="max-w-4xl mx-auto p-4">
             <Formulario 
                 fields={[
-                    { id: 'nombre_pea', label: 'Nombre de la Pea', type: 'text' },
+                    { id: 'nombre', label: 'Nombre', type: 'text' },
                     { id: 'descripcion', label: 'Descripción', type: 'text' },
                 ]}
                 onSubmit={handleSubmit}  
@@ -67,4 +74,5 @@ const ActualizarPea = () => {
         </div>
     );
 };
+
 export default ActualizarPea;

@@ -3,6 +3,8 @@ import { useUsuarios } from "../../hooks/usuarios/useUsuarios";
 import { useNavigate } from "react-router-dom";
 import Tabla from "../globales/Tabla";
 import VentanaModal from "../globales/VentanasModales";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const Usuarios = () => {
   const navigate = useNavigate();
@@ -15,7 +17,6 @@ const Usuarios = () => {
   useEffect(() => {
     const usuarioGuardado = localStorage.getItem("user");
     const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
-
     setEsAdministrador(usuario?.fk_id_rol?.rol === "Administrador");
   }, []);
 
@@ -31,7 +32,7 @@ const Usuarios = () => {
   const handleCreate = () => {
     if (esAdministrador) {
       navigate("/crearUsuarios");
-    }else {
+    } else {
       setMensaje("No tienes permisos para crear usuarios.");
       setTimeout(() => setMensaje(null), 3000);
     }
@@ -42,18 +43,54 @@ const Usuarios = () => {
     setIsModalOpen(false);
   }, []);
 
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    doc.text("Lista de Usuarios", 14, 10);
+
+    autoTable(doc, {
+      head: [["id", "identificacion", "nombre", "apellido", "Email", "rol"]],
+      body: (usuarios ?? []).map((usuario) => [
+        usuario.id,
+        usuario.identificacion,
+        usuario.nombre,
+        usuario.apellido,
+        usuario.email,
+        usuario.fk_id_rol?.rol || "Sin rol asignado"
+      ]),
+      startY: 20,
+    });
+
+    doc.save("usuarios.pdf");
+  };
+
   const headers = ["ID", "identificacion", "Nombre", "Apellido", "Email", "Rol"];
 
   return (
     <div className="overflow-x-auto rounded-lg p-4">
-
       {mensaje && (
         <div className="mb-2 p-2 bg-red-500 text-white text-center rounded-md">
           {mensaje}
         </div>
       )}
 
-      {isLoading && <div className="text-center text-gray-500">Cargando usuarios...</div>}
+      <div className="flex justify-end gap-2 mb-4">
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          onClick={handleCreate}
+        >
+          Crear
+        </button>
+        <button
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          onClick={handleDownloadPDF}
+        >
+          Descargar PDF
+        </button>
+      </div>
+
+      {isLoading && (
+        <div className="text-center text-gray-500">Cargando usuarios...</div>
+      )}
 
       {error instanceof Error && (
         <div className="text-center text-red-500">
