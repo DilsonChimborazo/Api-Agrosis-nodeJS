@@ -40,13 +40,14 @@ const Especies = () => {
       </div>
     );
 
-  const tablaData = (especies ?? []).map((especie) => ({
-    id: especie.id_especie,
-    nombre_comun: especie.nombre_comun || 'Sin nombre común',
-    nombre_cientifico: especie.nombre_cientifico || 'Sin nombre científico',
-    descripcion: especie.descripcion || 'Sin descripción',
-    tipo_cultivo: especie.fk_id_tipo_cultivo?.nombre || 'Sin tipo de cultivo',
-  }));
+    const tablaData = (especies ?? []).map((especie) => ({
+      id: especie.id_especie,
+      nombre_comun: especie.nombre_comun || 'Sin nombre común',
+      nombre_cientifico: especie.nombre_cientifico || 'Sin nombre científico',
+      descripcion: especie.descripcion || 'Sin descripción',
+      tipo_cultivo: especie.tipo_cultivo?.nombre || 'Sin tipo de cultivo',
+    }));
+    
 
   const headers = ['id', 'Nombre Comun', 'Nombre Cientifico', 'descripcion', 'tipo cultivo'];
 

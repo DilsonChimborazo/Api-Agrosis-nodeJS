@@ -1,23 +1,26 @@
-import { Especie } from '@/hooks/trazabilidad/especie/useCrearEspecie';
-import Formulario from '../../globales/Formulario';
-import { useCrearEspecie } from '@/hooks/trazabilidad/especie/useCrearEspecie'; 
-import { useNavigate } from 'react-router-dom';
+import { useCrearEspecie } from '@/hooks/trazabilidad/especie/useCrearEspecie';
 import { useEspecie } from '@/hooks/trazabilidad/especie/useEspecie';
+import Formulario from '../../globales/Formulario';
+import { useNavigate } from 'react-router-dom';
 
 const CrearEspecie = () => {
-  const mutation = useCrearEspecie(); // Hook para manejar la creación
-  const { data: especies = [], isLoading: isLoadingCultivo } = useEspecie(); // Hook para obtener las especies
+  const mutation = useCrearEspecie();
+  const { data: especies = [], isLoading } = useEspecie();
   const navigate = useNavigate();
 
-  // Mapeo de opciones para el select de tipo de cultivo
-  const tipoCultivoOptions = especies
-    .filter((especie) => especie.fk_id_tipo_cultivo) // Filtrar especies con fk_id_tipo_cultivo válido
-    .map((especie) => ({
-      value: especie.fk_id_tipo_cultivo?.nombre || '', // Asegurar que value sea un string válido
-      label: especie.fk_id_tipo_cultivo?.nombre || 'Sin Nombre', // Asegurar que label sea un string válido
-    }));
+  const tipoCultivoMap = new Map<number, { value: string; label: string }>();
+  especies.forEach((especie) => {
+    const tipo = especie.tipo_cultivo;
+    if (tipo) {
+      tipoCultivoMap.set(tipo.id_tipo_cultivo, {
+        value: tipo.id_tipo_cultivo.toString(),
+        label: tipo.nombre,
+      });
+    }
+  });
 
-  // Definición de los campos del formulario
+  const tipoCultivoOptions = Array.from(tipoCultivoMap.values());
+
   const formFields = [
     { id: 'nombre_comun', label: 'Nombre Común', type: 'text' },
     { id: 'nombre_cientifico', label: 'Nombre Científico', type: 'text' },
@@ -26,11 +29,10 @@ const CrearEspecie = () => {
       id: 'fk_id_tipo_cultivo',
       label: 'Tipo de Cultivo',
       type: 'select',
-      options: tipoCultivoOptions, // Opciones dinámicas mapeadas desde el hook
+      options: tipoCultivoOptions,
     },
   ];
 
-  // Manejo del formulario
   const handleSubmit = (formData: { [key: string]: string }) => {
     if (
       !formData.nombre_comun ||
@@ -42,21 +44,15 @@ const CrearEspecie = () => {
       return;
     }
 
-    const nuevaEspecie: Especie = {
-      id: 0, // Se define como 0 porque se genera automáticamente en el backend
+    mutation.mutate({
+      id: 0,
       nombre_comun: formData.nombre_comun.trim(),
       nombre_cientifico: formData.nombre_cientifico.trim(),
       descripcion: formData.descripcion.trim(),
-      fk_id_tipo_cultivo:formData.fk_id_tipo_cultivo// Relación con tipo de cultivo
-    };
-
-    console.log("🚀 Enviando especie al backend:", nuevaEspecie);
-
-    // Llamada al hook para enviar datos al backend
-    mutation.mutate(nuevaEspecie, {
+      fk_id_tipo_cultivo: parseInt(formData.fk_id_tipo_cultivo),
+    }, {
       onSuccess: () => {
-        console.log("✅ Especie creada exitosamente");
-        navigate("/especies"); // Redirigir al listado de especies
+        navigate("/especies");
       },
       onError: (error) => {
         console.error("❌ Error al crear especie:", error);
@@ -64,7 +60,7 @@ const CrearEspecie = () => {
     });
   };
 
-  if (isLoadingCultivo) {
+  if (isLoading) {
     return <div className="text-center text-gray-500">Cargando tipos de cultivo...</div>;
   }
 
