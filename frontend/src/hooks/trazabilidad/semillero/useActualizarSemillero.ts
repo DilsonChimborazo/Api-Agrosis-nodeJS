@@ -4,8 +4,8 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export interface Semillero {
-    id: number; // ID único del semillero
-    nombre_semillero: string;
+    id_semillero: number; // 👈 Este campo debe coincidir con lo que espera el backend
+    nombre_semilla: string;
     fecha_siembra: string;
     fecha_estimada: string;
     cantidad: number;
@@ -16,16 +16,25 @@ export const useActualizarSemillero = () => {
 
     return useMutation({
         mutationFn: async (semilleroActualizado: Semillero) => {
-            const { id, ...datos } = semilleroActualizado; // Extraer el ID y preparar los datos
-            console.log("📡 Enviando datos para actualizar semillero:", datos); // Depuración
-            const { data } = await axios.put(`${apiUrl}semilleros/${id}/`, datos); // Enviar PUT al endpoint
+            const { id_semillero, ...datos } = semilleroActualizado;
+
+            const token = localStorage.getItem("token");
+            if (!token) throw new Error("Token no disponible");
+
+            const { data } = await axios.put(
+                `${apiUrl}semilleros/${id_semillero}`, // 👈 Usa `id_semillero`
+                datos,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
             return data;
         },
         onSuccess: () => {
-            console.log("✅ Semillero actualizado con éxito"); // Confirmación
-            queryClient.invalidateQueries({ queryKey: ["Semilleros"] }); // Refrescar la lista de semilleros
+            queryClient.invalidateQueries({ queryKey: ["Semilleros"] });
         },
-        
-        },
-    )
-}
+    });
+};

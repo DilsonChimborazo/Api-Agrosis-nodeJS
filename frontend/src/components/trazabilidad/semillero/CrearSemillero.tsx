@@ -11,7 +11,7 @@ const CrearSemillero = () => {
 
     // Campos ajustados para la estructura correcta
     const formFields = [
-        { id: 'nombre_semillero', label: 'Nombre del Semillero', type: 'text' },
+        { id: 'nombre_semilla', label: 'Nombre del Semillero', type: 'text' },
         { id: 'fecha_siembra', label: 'Fecha de Siembra', type: 'date' },
         { id: 'fecha_estimada', label: 'Fecha Estimada', type: 'date' },
         { id: 'cantidad', label: 'Cantidad', type: 'number' },
@@ -20,14 +20,14 @@ const CrearSemillero = () => {
     // Manejo del formulario
     const handleSubmit = (formData: { [key: string]: string }) => {
         // Validaciones iniciales
-        if (!formData.nombre_semillero || !formData.fecha_siembra || !formData.fecha_estimada || !formData.cantidad) {
+        if (!formData.nombre_semilla || !formData.fecha_siembra || !formData.fecha_estimada || !formData.cantidad) {
             console.error("❌ Todos los campos son obligatorios");
             return;
         }
 
         const nuevoSemillero: Semillero = {
-            id: 0, // El ID será asignado automáticamente por el backend
-            nombre_semillero: formData.nombre_semillero.trim(),
+            id_semillero: 0, // El ID será asignado automáticamente por el backend
+            nombre_semilla: formData.nombre_semilla.trim(),
             fecha_siembra: new Date(formData.fecha_siembra).toISOString().split("T")[0],
             fecha_estimada: new Date(formData.fecha_estimada).toISOString().split("T")[0],
             cantidad: parseInt(formData.cantidad, 10),
