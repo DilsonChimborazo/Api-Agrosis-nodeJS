@@ -11,12 +11,19 @@ export interface Pea {
 
 const fetchPeas = async (): Promise<Pea[]> => {
   try {
-    const { data } = await axios.get(`${apiUrl}pea/`);
+    const token = localStorage.getItem('token'); // 🔐 Obtiene el token del almacenamiento
+
+    const { data } = await axios.get(`${apiUrl}pea/`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // 🔑 Agrega el token en los headers
+      },
+    });
+
     console.log("Respuesta del backend (PEAs):", data.peas);
-    
+
     return data.peas.map((pea: any) => ({
       id_pea: pea.id_pea,
-      nombre: pea.nombre, 
+      nombre: pea.nombre,
       descripcion: pea.descripcion,
     }));
   } catch (error) {
@@ -25,7 +32,6 @@ const fetchPeas = async (): Promise<Pea[]> => {
   }
 };
 
-
 export const usePea = () => {
   return useQuery<Pea[], Error>({
     queryKey: ['Pea'],
@@ -33,4 +39,3 @@ export const usePea = () => {
     gcTime: 1000 * 60 * 10,
   });
 };
-

@@ -3,41 +3,48 @@ import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-export interface Cultivos{
-    id_cultivo: number;
-    fecha_plantacion: Date;
-    nombre_cultivo: string; 
-    descripcion: string;
-    fk_id_especie: Especie;
-    fk_id_semillero: Semillero;
+export interface Cultivos {
+  id_cultivo: number;
+  fecha_plantacion: Date;
+  nombre_cultivo: string;
+  descripcion: string;
+  fk_id_especie: Especie;
+  fk_id_semillero: Semillero;
 }
 
 export interface Semillero {
-    id_semillero: number;
-    nombre_semillero: string;
-    fecha_siembra: Date;
-    fecha_estimada: Date;
-    cantidad: number;
+  id_semillero: number;
+  nombre_semillero: string;
+  fecha_siembra: Date;
+  fecha_estimada: Date;
+  cantidad: number;
 }
 
 export interface TipoCultivo {
-    id_tipo_cultivo: number;
-    nombre: string;
-    descripcion: string;
+  id_tipo_cultivo: number;
+  nombre: string;
+  descripcion: string;
 }
 
 export interface Especie {
-    id_especie: number;
-    nombre_comun: string;
-    nombre_cientifico: string;
-    descripcion: string;
-    fk_id_tipo_cultivo: TipoCultivo;
+  id_especie: number;
+  nombre_comun: string;
+  nombre_cientifico: string;
+  descripcion: string;
+  fk_id_tipo_cultivo: TipoCultivo;
 }
 
-// Función para obtener los usuarios con manejo de errores
+// ✅ Función para obtener cultivos con token
 const fetchAsignacion = async (): Promise<Cultivos[]> => {
   try {
-    const { data } = await axios.get(`${apiUrl}cultivo/`);
+    const token = localStorage.getItem('token'); // 🔐 Aquí obtienes el token
+
+    const { data } = await axios.get(`${apiUrl}cultivo/`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // 🔑 Envías el token en los headers
+      },
+    });
+
     const cultivos = data.cultivos.map((cultivo: any) => ({
       id_cultivo: cultivo.id_cultivo,
       fecha_plantacion: cultivo.fecha_plantacion,
@@ -56,7 +63,7 @@ const fetchAsignacion = async (): Promise<Cultivos[]> => {
       },
       fk_id_semillero: cultivo.fk_id_semillero && {
         id_semillero: cultivo.fk_id_semillero.id_semillero,
-        nombre_semillero: cultivo.fk_id_semillero.nombre_semilla,
+        nombre_semillero: cultivo.fk_id_semillero.nombre_semillero, // ✅ corregido nombre_semilla → nombre_semillero
         fecha_siembra: cultivo.fk_id_semillero.fecha_siembra,
         fecha_estimada: cultivo.fk_id_semillero.fecha_estimada,
         cantidad: cultivo.fk_id_semillero.cantidad,
@@ -70,14 +77,10 @@ const fetchAsignacion = async (): Promise<Cultivos[]> => {
   }
 };
 
-
 export const useCultivo = () => {
-    return useQuery<Cultivos[], Error>({
-        queryKey: ['Cultivos'],
-        queryFn: fetchAsignacion,
-        gcTime: 1000 * 60 * 10, 
-
-    });
+  return useQuery<Cultivos[], Error>({
+    queryKey: ['Cultivos'],
+    queryFn: fetchAsignacion,
+    gcTime: 1000 * 60 * 10,
+  });
 };
-
-

@@ -8,12 +8,13 @@ export interface Residuos {
     nombre: string;
     fecha: Date;
     descripcion: string;
-    fk_id_cultivo: Cultivos ;
+    fk_id_cultivo: Cultivos;
     fk_id_tipo_residuo: TipoResiduos;
 }
-export interface Cultivos{
+
+export interface Cultivos {
     id: number;
-    nombre_cultivo: string; 
+    nombre_cultivo: string;
     fecha_plantacion: Date;
     descripcion: string;
     fk_id_especie: Especie;
@@ -41,36 +42,41 @@ export interface Especie {
     descripcion: string;
     fk_id_tipo_cultivo: TipoCultivo;
 }
+
 export interface TipoResiduos {
     id_tipo_residuo: number;
     nombre_residuo: string;
     descripcion: string;
 }
 
-
-// Función para obtener los usuarios con manejo de errores
+// ✅ Función que incluye el token en el encabezado
 const fetchAsignacion = async (): Promise<Residuos[]> => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        throw new Error("No hay token disponible. Por favor inicia sesión.");
+    }
+
     try {
-        const response = await axios.get(`${apiUrl}residuos/`);
+        const response = await axios.get(`${apiUrl}residuos/`, {
+            headers: {
+                Authorization: `Bearer ${token}`, // o `Token ${token}` si usas DRF TokenAuth
+            },
+        });
+
         console.log("Respuesta completa de la API:", response.data);
-        return response.data.residuos; // ✅ Accedemos a la propiedad correcta
+        return response.data.residuos;
     } catch (error) {
         console.error("Error al obtener residuos:", error);
         throw new Error("No se pudo obtener la lista de los residuos");
     }
 };
 
-
-export const useResiduos= () => {
+// Hook de React Query
+export const useResiduos = () => {
     return useQuery<Residuos[], Error>({
         queryKey: ['Residuos'],
-        queryFn: async () => {
-            const data = await fetchAsignacion();
-            console.log("Datos de residuos en React Query:", data);
-            return data;
-        },
-        gcTime: 1000 * 60 * 10, 
+        queryFn: fetchAsignacion,
+        gcTime: 1000 * 60 * 10,
     });
 };
-
-
