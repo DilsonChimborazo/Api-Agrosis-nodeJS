@@ -1,0 +1,36 @@
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+
+const apiUrl = import.meta.env.VITE_API_URL;
+
+export interface Asignacion {
+  id: number;
+  estado: string;
+  fecha_programada: string;
+  observaciones?: string;
+  fk_id_realiza: number | { id: number };
+  fk_identificacion: number | { id: number };
+}
+
+const actualizarAsignacion = async (asignacion: Asignacion) => {
+  const token = localStorage.getItem('token');
+  const id = asignacion.id;
+
+  const { data } = await axios.patch(`${apiUrl}asignaciones_actividades/${id}/`, asignacion, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return data;
+};
+
+export const useActualizarAsignacion = () => {
+  return useMutation({
+    mutationFn: actualizarAsignacion,
+    onError: (error: any) => {
+      console.error('Error al actualizar asignación:', error.response?.data || error.message);
+    },
+  });
+};
