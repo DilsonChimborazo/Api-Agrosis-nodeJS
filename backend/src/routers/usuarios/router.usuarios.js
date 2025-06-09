@@ -101,7 +101,7 @@ routerUsuarios.get('/usuarios/reporte', validarToken, getReporteUsuarios);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerUsuarios.post('/usuarios',validarToken, createUsuarios);
+routerUsuarios.post('/usuarios', createUsuarios);
 
 /**
  * @swagger
