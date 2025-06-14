@@ -170,7 +170,7 @@ routerasignacion_actividad.get('/asignacion_actividad/reporte',validarToken, get
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerasignacion_actividad.post('/asignacion_actividad',validarToken,createAsignacionActividad)
+routerasignacion_actividad.post('/asignacion_actividad',createAsignacionActividad)
 
 /**
  * @swagger
@@ -261,7 +261,7 @@ routerasignacion_actividad.post('/asignacion_actividad',validarToken,createAsign
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerasignacion_actividad.get('/asignacion_actividad',validarToken,getAsignacionActividad)
+routerasignacion_actividad.get('/asignacion_actividad',getAsignacionActividad)
 
 /**
  * @swagger

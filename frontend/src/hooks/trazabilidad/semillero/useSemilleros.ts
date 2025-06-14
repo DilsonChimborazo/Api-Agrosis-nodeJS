@@ -15,7 +15,7 @@ export interface Semilleros {
 const fetchSemilleros = async (): Promise<Semilleros[]> => {
   try {
     const token = localStorage.getItem('token'); // o donde guardes el JWT
-    const { data } = await axios.get(`${apiUrl}semilleros`, {
+    const { data } = await axios.get(`${apiUrl}semilleros/`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

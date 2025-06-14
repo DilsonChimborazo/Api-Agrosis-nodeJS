@@ -32,7 +32,7 @@ export const useEditarAsignacion = () => {
             console.log("📝 Enviando datos para actualizar:", datos);
 
             try {
-                const { data } = await axios.put(`${apiUrl}asignaciones_actividades/${id}/`, datos, {
+                const { data } = await axios.put(`${apiUrl}asignacion_actividades/${id}/`, datos, {
                     headers: {
                         "Content-Type": "application/json",
                     },
