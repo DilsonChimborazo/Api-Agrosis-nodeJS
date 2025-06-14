@@ -4,9 +4,11 @@ import { Insumo } from '../../../hooks/inventario/insumos/useInsumo';
 import Tabla from '../../globales/Tabla';
 import VentanaModal from '../../globales/VentanasModales';
 import { useNavigate } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const Insumos = () => {
-  const { data: insumo, isLoading, error } = useInsumo();
+  const { data: insumo, isLoading, error, refetch } = useInsumo(); 
   const [selectedInsumo, setSelectedInsumo] = useState<Insumo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -16,6 +18,15 @@ const Insumos = () => {
       console.log("Insumo seleccionado:", selectedInsumo);
     }
   }, [selectedInsumo]);
+
+  // Efecto para actualizar los datos automáticamente
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch(); 
+    }, 1000); 
+
+    return () => clearInterval(interval);
+  }, [refetch]);
 
   const openModalHandler = (insumo: Insumo) => {
     setSelectedInsumo(insumo);
@@ -42,8 +53,31 @@ const Insumos = () => {
   };
 
   const generarPDF = () => {
-    console.log("Generando PDF...");
-    // Aquí puedes implementar la lógica para generar el PDF con jsPDF, pdfmake, etc.
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text('Reporte de Insumos', 10, 10);
+
+    if (mappedInsumo.length > 0) {
+      const tableData = mappedInsumo.map(item => [
+        item.id,
+        item.nombre,
+        item.tipo,
+        item.precio_unidad,
+        item.cantidad,
+        item.unidad_medida,
+      ]);
+
+      autoTable(doc,{
+        head: [['ID', 'Nombre', 'Tipo', 'Precio Unidad', 'Cantidad', 'Unidad Medida']],
+        body: tableData,
+        startY: 20,
+      });
+
+      doc.save(`reporte_insumos_${new Date().toLocaleDateString('es-ES')}.pdf`);
+    } else {
+      doc.text('No hay datos disponibles para el reporte.', 10, 20);
+      doc.save(`reporte_insumos_vacio_${new Date().toLocaleDateString('es-ES')}.pdf`);
+    }
   };
 
   if (isLoading) return <div className="text-gray-500">Cargando insumos...</div>;

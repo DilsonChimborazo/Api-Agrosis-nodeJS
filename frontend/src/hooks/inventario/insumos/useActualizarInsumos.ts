@@ -14,7 +14,16 @@ export interface Insumo {
 
 const actualizarInsumo = async (insumo: Insumo) => {
     try {
-        const { data } = await axios.put(`${apiUrl}/insumos/${insumo.id_insumo}`, insumo);
+        const token = localStorage.getItem("token"); // Ejemplo: obtener token de localStorage
+        if (!token) {
+            throw new Error("No se encontró un token de autenticación");
+        }
+
+        const { data } = await axios.put(`${apiUrl}insumo/${insumo.id_insumo}`, insumo, {
+            headers: {
+                Authorization: `Bearer ${token}`, // Agregar token en el encabezado
+            },
+        });
         return data;
     } catch (error) {
         console.error("Error al actualizar el insumo:", error);
@@ -32,4 +41,3 @@ export const useActualizarInsumo = () => {
         },
     });
 };
-

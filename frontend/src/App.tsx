@@ -108,7 +108,7 @@ function App() {
           <Route path="/ActualizarHerramienta/:id_herramienta" element={<Principal><ActualizarHerramientas /></Principal>} />
           <Route path="/insumos" element={<Principal><InsumoPage /></Principal>} />
           <Route path="/CrearInsumos" element={<Principal><CrearInsumos /></Principal>} />
-          <Route path="/ActualizarInsumos" element={<Principal><ActualizarInsumos /></Principal>} />
+          <Route path="/ActualizarInsumos/:id_insumo" element={<Principal><ActualizarInsumos /></Principal>} />
           <Route path="/herramientas" element={<Principal><ListarHerramientas /></Principal>} />
           <Route path="/insumos" element={<Principal><ListarInsumos /></Principal>} />
           <Route path="/insumos" element={<Principal><ActualizarInsumo /></Principal>} />
