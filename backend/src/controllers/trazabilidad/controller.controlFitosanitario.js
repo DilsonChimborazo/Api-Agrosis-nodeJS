@@ -4,18 +4,17 @@ import {configuracionBD} from "../../config/conexion.js";
 
 
 export const postControlFitosanitario = async (req, res) => {
-    try{
-        const {fecha_control, descripcion, fk_id_desarrollan}= req.body;
-        const sql ="INSERT INTO control_fitosanitario(fecha_control, descripcion, fk_id_desarrollan)VALUES ($1, $2, $3)";
-        const rows = await configuracionBD.query(sql,[fecha_control, descripcion, fk_id_desarrollan]);
-        if (rows.rowCount >0)
-            return res.status(200).json({"message":"Control fitosanitrio registrados correctamente"});
-        else{
-            res.status(404).json({"message":"No se registro control fitosanitario"})
-        }
-    }catch(error){
-        console.error(error)
-        return res.status(500).json({"message":"error en el servidor"})
+    try {
+        const { fecha_control, descripcion, fk_id_desarrollan } = req.body;
+        if (!fk_id_desarrollan || !fecha_control || !descripcion) return res.status(400).json({ "message": "Campos requeridos" });
+        const check = await configuracionBD.query("SELECT COUNT(*) FROM desarrollan WHERE id_desarrollan = $1", [fk_id_desarrollan]);
+        if (check.rows[0].count === '0') return res.status(400).json({ "message": "fk_id_desarrollan no existe" });
+        const result = await configuracionBD.query("INSERT INTO control_fitosanitario (fecha_control, descripcion, fk_id_desarrollan) VALUES ($1, $2, $3)", [fecha_control, descripcion, fk_id_desarrollan]);
+        if (result.rowCount > 0) return res.status(200).json({ "message": "Control fitosanitario registrado correctamente" });
+        else return res.status(404).json({ "message": "No se registro control fitosanitario" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ "message": "Error en el servidor" });
     }
 };
 

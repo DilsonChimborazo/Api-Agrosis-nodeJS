@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-
 const ControlFitosanitario = () => {
   const { data: controles, isLoading, error } = useControlFitosanitario();
   const [selectedControl, setSelectedControl] = useState<null | object>(null);
@@ -27,12 +26,12 @@ const ControlFitosanitario = () => {
     openModalHandler(control);
   };
 
-  const handleUpdate = (residuo: { id: number }) => {
-    navigate(`/controlfitosanitario/editar/${residuo.id}`);
+  const handleUpdate = (control: { id_control_fitosanitario: number }) => {
+    navigate(`/controlfitosanitario/editar/${control.id_control_fitosanitario}`);
   };
 
   const handleCreate = () => {
-    navigate("/crearcontrolfitosanitario");
+    navigate('/crearcontrolfitosanitario');
   };
 
   if (isLoading) return <div>Cargando Controles Fitosanitarios...</div>;
@@ -40,46 +39,44 @@ const ControlFitosanitario = () => {
 
   const controlesList = Array.isArray(controles) ? controles : [];
 
-
   const mappedControles = controlesList.map(control => ({
-    id: control.id_control_fitosanitario,
-    fecha_control: new Date(control.fecha_control).toLocaleDateString(),
-    descripcion: control.descripcion,
+    id_control_fitosanitario: control.id_control_fitosanitario,
+    fecha_control: control.fecha_control ? new Date(control.fecha_control).toLocaleDateString('es-CO') : 'Sin fecha',
+    descripcion: control.descripcion || 'Sin descripción',
     cultivo: control.desarrollan?.cultivo?.nombre_cultivo || 'Sin cultivo',
-    pea: control.desarrollan?.pea?.nombre || 'Sin PEA'
+    pea: control.desarrollan?.pea?.nombre || 'Sin PEA',
+    especie: (control.desarrollan?.cultivo as any)?.especie?.nombre_comun || 'Sin especie', // Solución temporal
   }));
 
- const generarPDF = () => {
-     const doc = new jsPDF();
-     doc.setFontSize(16);
-     doc.text('Controles Generados', 14, 15);
-   
-     const tableData = mappedControles.map((control) => [
-      control.id,
+  const generarPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('Controles Generados', 14, 15);
+
+    const tableData = mappedControles.map((control) => [
+      control.id_control_fitosanitario,
       control.fecha_control,
-      control.descripcion,
       control.descripcion,
       control.cultivo,
       control.pea,
-     ]);
-   
-     autoTable(doc, {
-       head: [headers],
-       body: tableData,
-       startY: 20,
-       styles: { fontSize: 10 },
-       headStyles: { fillColor: [34, 197, 94] }, 
-     });
-   
-     doc.save('Controles.generados.pdf');
-   };
-   
-  
+      control.especie,
+    ]);
 
-  const headers = ['ID', 'Fecha Control', 'Descripcion', 'Cultivo', 'Pea'];
+    autoTable(doc, {
+      head: [['iD', 'Fecha Control', 'Descripcion', 'Cultivo', 'PEA', 'Especie']],
+      body: tableData,
+      startY: 20,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [34, 197, 94] },
+    });
+
+    doc.save('Controles_generados.pdf');
+  };
+
+  const headers = [ 'Fecha Control', 'descripcion', 'Cultivo', 'PEA', 'Especie'];
 
   return (
-    <div className="overflow-x-auto  rounded-lg">
+    <div className="overflow-x-auto rounded-lg">
       <div className="flex justify-end items-center mb-4">
         <button
           onClick={generarPDF}
@@ -91,10 +88,10 @@ const ControlFitosanitario = () => {
 
       <Tabla
         title="Lista de Controles Fitosanitarios"
-        headers={[...headers]}
+        headers={headers}
         data={mappedControles}
         onClickAction={handleRowClick}
-        onUpdate={handleUpdate} 
+        onUpdate={handleUpdate}
         onCreate={handleCreate}
         createButtonTitle="Crear"
       />
@@ -104,7 +101,7 @@ const ControlFitosanitario = () => {
           isOpen={isModalOpen}
           onClose={closeModal}
           titulo="Detalles del Control Fitosanitario"
-          contenido={selectedControl} 
+          contenido={selectedControl}
         />
       )}
     </div>
