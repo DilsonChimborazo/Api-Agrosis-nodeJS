@@ -4,7 +4,6 @@ import { Insumo } from '../../../hooks/inventario/insumos/useInsumo';
 import Tabla from '../../globales/Tabla';
 import VentanaModal from '../../globales/VentanasModales';
 import { useNavigate } from 'react-router-dom';
-import Button from "@/components/globales/Button";
 
 const Insumos = () => {
   const { data: insumo, isLoading, error } = useInsumo();
@@ -28,7 +27,7 @@ const Insumos = () => {
     setIsModalOpen(false);
   };
 
-  const headers = ["ID", "Nombre", "Tipo", "Precio Unidad", "Cantidad", "Unidad de Medida"];
+  const headers = ["id", "Nombre", "Tipo", "Precio Unidad", "Cantidad", "Unidad Medida"];
 
   const handleRowClick = (insumo: Insumo) => {
     openModalHandler(insumo);
@@ -36,6 +35,10 @@ const Insumos = () => {
 
   const handleUpdate = (residuo: { id: number }) => {
     navigate(`/ActualizarInsumos/${residuo.id}`);
+  };
+
+  const handleCreate = () => {
+    navigate("/crearinsumos");
   };
 
   const generarPDF = () => {
@@ -50,7 +53,7 @@ const Insumos = () => {
 
   const mappedInsumo = Array.isArray(InsumoList)
     ? InsumoList.map(insumo => ({
-        id: insumo.id,
+        id: insumo.id_insumo,
         nombre: insumo.nombre,
         tipo: insumo.tipo,
         precio_unidad: insumo.precio_unidad,
@@ -64,11 +67,6 @@ const Insumos = () => {
   return (
     <div className="mx-auto p-4">
       <div className="flex gap-4 mb-4">
-        <Button
-          text="Crear insumos"
-          onClick={() => navigate("/CrearInsumos")}
-          variant="green"
-        />
         <button 
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
           onClick={generarPDF}
@@ -83,6 +81,8 @@ const Insumos = () => {
         data={mappedInsumo}
         onClickAction={handleRowClick}
         onUpdate={handleUpdate}
+        onCreate={handleCreate}
+        createButtonTitle="Crear"
       />
 
       {selectedInsumo && (
