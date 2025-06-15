@@ -1,13 +1,8 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from 'react';
+import io from 'socket.io-client';
 
-const WS_URL = "ws://192.168.0.113:8000/ws/api/mide/";
-const WS_SENSORES_URL = "ws://192.168.0.113:8000/ws/api/sensores/";
-const API_SENSORES = "http://192.168.0.113:8000/api/sensores/";
-const API_MEDICIONES = "http://192.168.0.113:8000/api/mide/";
-const API_CREATE_SENSOR = "http://192.168.0.113:8000/api/sensores/";
-
-export interface Sensor {
-  id: number;
+interface Sensor {
+  id_sensor: number;
   nombre_sensor: string;
   tipo_sensor: string;
   unidad_medida: string;
@@ -16,186 +11,129 @@ export interface Sensor {
   medida_maxima: number;
 }
 
-export interface Mide {
-  fk_id_sensor: number;
-  nombre_sensor: string;
-  fk_id_era: number;
+interface Mide {
+  id_mide: number;
   valor_medicion: number;
   fecha_medicion: string;
+  fk_id_sensor: number;
+  fk_id_era: number;
 }
 
-export function useMide() {
-  const [sensorData, setSensorData] = useState<Mide[]>([]);
+export const useMide = () => {
   const [sensors, setSensors] = useState<Sensor[]>([]);
-  const socketRef = useRef<WebSocket | null>(null);
-  const sensorSocketRef = useRef<WebSocket | null>(null);
-  const reconnectAttempts = useRef(0);
-  const isManuallyClosed = useRef(false);
+  const [sensorData, setSensorData] = useState<Mide[]>([]);
 
-  // Función para parsear fechas
-  const parseDate = (dateString: string) => {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      console.error(`Fecha inválida: ${dateString}`);
-      return new Date();
-    }
-    return date;
+  const getAuthToken = (): string => {
+    return localStorage.getItem('token') || '';
   };
 
-  // Cargar datos históricos de mediciones
-  const fetchMediciones = async () => {
-    try {
-      const response = await fetch(API_MEDICIONES);
-      if (!response.ok) throw new Error("Error al obtener mediciones");
-      const data: Mide[] = await response.json();
-      console.log("📥 Datos históricos recibidos:", data);
-      const processedData = data.map((item) => ({
-        ...item,
-        valor_medicion: Number(item.valor_medicion),
-        fecha_medicion: parseDate(item.fecha_medicion).toISOString(),
-      }));
-      setSensorData(processedData);
-      console.log("Datos procesados y guardados en sensorData:", processedData);
-    } catch (error) {
-      console.error("❌ Error obteniendo mediciones:", error);
-    }
-  };
+  useEffect(() => {
+    // Conectar a socket.io
+    const socket = io(import.meta.env.VITE_API_URL, {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      auth: { token: getAuthToken() },
+      withCredentials: true,
+    });
 
-  // Cargar sensores
-  const fetchSensors = async () => {
-    try {
-      const response = await fetch(API_SENSORES);
-      if (!response.ok) throw new Error("Error al obtener sensores");
-      const data: Sensor[] = await response.json();
-      console.log("📥 Sensores recibidos:", data);
-      setSensors(data);
-    } catch (error) {
-      console.error("❌ Error obteniendo sensores:", error);
-    }
-  };
+    socket.on('connect', () => {
+      console.log('✅ Conectado al WebSocket');
+    });
 
-  // Conectar al WebSocket de mediciones
-  const connectWebSocket = useCallback(() => {
-    if (isManuallyClosed.current) return;
-    const socket = new WebSocket(WS_URL);
-    socketRef.current = socket;
+    socket.on('connect_error', (err) => {
+      console.error('Error de conexión WebSocket:', err.message);
+    });
 
-    socket.onopen = () => {
-      console.log("✅ WebSocket de mediciones conectado");
-      reconnectAttempts.current = 0;
-    };
+    socket.on('newMide', (newMide: any) => {
+      console.log('Nueva medición recibida:', newMide);
+      const normalizedMide: Mide = {
+        id_mide: newMide.id_mide,
+        valor_medicion: newMide.valor_medicion,
+        fecha_medicion: newMide.fecha_medicion,
+        fk_id_sensor: newMide.fk_id_sensor?.id_sensor || newMide.fk_id_sensor,
+        fk_id_era: newMide.fk_id_era?.id || newMide.fk_id_era,
+      };
+      console.log('Medición normalizada:', normalizedMide);
+      setSensorData((prev) => {
+        const updatedData = [...prev, normalizedMide].slice(-50);
+        console.log('sensorData actualizado:', updatedData);
+        return updatedData;
+      });
+    });
 
-    socket.onmessage = (event: MessageEvent) => {
-      try {
-        const data: Mide = JSON.parse(event.data);
-        console.log("📥 Mensaje WebSocket recibido:", data);
-        if (data.fk_id_sensor && data.valor_medicion !== undefined && data.fecha_medicion) {
-          setSensorData((prev) => {
-            const exists = prev.some(
-              (item) =>
-                item.fecha_medicion === data.fecha_medicion &&
-                item.fk_id_sensor === data.fk_id_sensor
-            );
-            if (exists) return prev;
-            const newData = [
-              ...prev,
-              {
-                ...data,
-                valor_medicion: Number(data.valor_medicion),
-                fecha_medicion: parseDate(data.fecha_medicion).toISOString(),
-              },
-            ];
-            console.log("Datos actualizados en sensorData:", newData);
-            return newData.slice(-100);
-          });
-        }
-      } catch (error) {
-        console.error("❌ Error al procesar mensaje WebSocket:", error);
-      }
-    };
+    socket.on('disconnect', () => {
+      console.log('⚠ Desconectado del WebSocket');
+    });
 
-    socket.onerror = (error) => console.error("❌ WebSocket error:", error);
-
-    socket.onclose = () => {
-      if (!isManuallyClosed.current) {
-        const retryTime = Math.min(5000, 1000 * 2 ** reconnectAttempts.current);
-        reconnectAttempts.current = Math.min(reconnectAttempts.current + 1, 6);
-        console.log(`⚠ WebSocket de mediciones cerrado, reintentando en ${retryTime}ms...`);
-        setTimeout(connectWebSocket, retryTime);
-      }
+    return () => {
+      socket.disconnect();
     };
   }, []);
 
-  // Conectar al WebSocket de sensores
-  const connectSensorWebSocket = useCallback(() => {
-    if (isManuallyClosed.current) return;
-    const socket = new WebSocket(WS_SENSORES_URL);
-    sensorSocketRef.current = socket;
-
-    socket.onopen = () => {
-      console.log("✅ WebSocket de sensores conectado");
-      reconnectAttempts.current = 0;
-    };
-
-    socket.onmessage = (event: MessageEvent) => {
+  useEffect(() => {
+    const fetchSensors = async () => {
       try {
-        const newSensor: Sensor = JSON.parse(event.data);
-        console.log("📥 Mensaje WebSocket de sensores recibido:", newSensor);
-        if (newSensor.id) {
-          setSensors((prev) => {
-            const exists = prev.some((sensor) => sensor.id === newSensor.id);
-            if (exists) {
-              console.log(`Sensor ${newSensor.nombre_sensor} ya existe en el estado sensors`);
-              return prev;
-            }
-            console.log(`Añadiendo sensor ${newSensor.nombre_sensor} al estado sensors`);
-            return [...prev, newSensor];
-          });
-        }
+        const response = await fetch(`${import.meta.env.VITE_API_URL}sensores`, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`,
+          },
+        });
+        if (!response.ok) throw new Error(`Error al obtener sensores: ${response.statusText}`);
+        const data = await response.json();
+        console.log('Sensores obtenidos:', data.sensores);
+        setSensors(data.sensores || []);
       } catch (error) {
-        console.error("❌ Error al procesar mensaje WebSocket de sensores:", error);
+        console.error('Error al obtener sensores:', error);
       }
     };
-
-    socket.onerror = (error) => console.error("❌ Error en WebSocket de sensores:", error);
-
-    socket.onclose = () => {
-      if (!isManuallyClosed.current) {
-        const retryTime = Math.min(5000, 1000 * 2 ** reconnectAttempts.current);
-        reconnectAttempts.current = Math.min(reconnectAttempts.current + 1, 6);
-        console.log(`⚠ WebSocket de sensores cerrado, reintentando en ${retryTime}ms...`);
-        setTimeout(connectSensorWebSocket, retryTime);
-      }
-    };
+    fetchSensors();
   }, []);
 
-  // Crear un nuevo sensor
-  const createSensor = async (sensor: Omit<Sensor, "id">) => {
+  useEffect(() => {
+    const fetchMide = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}mide`, {
+          headers: {
+            Authorization: `Bearer ${getAuthToken()}`,
+          },
+        });
+        if (!response.ok) throw new Error(`Error al obtener mediciones: ${response.statusText}`);
+        const data = await response.json();
+        const normalizedData = (data.mide || []).map((m: any) => ({
+          id_mide: m.id_mide,
+          valor_medicion: m.valor_medicion,
+          fecha_medicion: m.fecha_medicion,
+          fk_id_sensor: m.fk_id_sensor?.id_sensor || m.fk_id_sensor,
+          fk_id_era: m.fk_id_era?.id || m.fk_id_era,
+        }));
+        console.log('Mediciones obtenidas:', normalizedData);
+        setSensorData(normalizedData);
+      } catch (error) {
+        console.error('Error al obtener mediciones:', error);
+      }
+    };
+    fetchMide();
+  }, []);
+
+  const createSensor = async (sensor: Omit<Sensor, 'id_sensor'>) => {
     try {
-      const response = await fetch(API_CREATE_SENSOR, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch(`${import.meta.env.VITE_API_URL}sensores`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthToken()}`,
+        },
         body: JSON.stringify(sensor),
       });
-      if (!response.ok) throw new Error("Error al crear sensor");
+      if (!response.ok) throw new Error(`Error al crear sensor: ${response.statusText}`);
+      const data = await response.json();
+      setSensors((prev) => [...prev, data.sensor]);
     } catch (error) {
-      console.error("❌ Error creando sensor:", error);
+      console.error('Error al crear sensor:', error);
       throw error;
     }
   };
 
-  useEffect(() => {
-    fetchSensors();
-    fetchMediciones();
-    connectWebSocket();
-    connectSensorWebSocket();
-
-    return () => {
-      isManuallyClosed.current = true;
-      socketRef.current?.close();
-      sensorSocketRef.current?.close();
-    };
-  }, [connectWebSocket, connectSensorWebSocket]);
-
-  return { sensorData, sensors, createSensor };
-}
+  return { sensors, sensorData, createSensor };
+};

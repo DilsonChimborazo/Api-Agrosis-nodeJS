@@ -17,18 +17,20 @@ export const createUbicacion = async (req, res) => {
 }
 
 export const getUbicaciones = async (req, res) => {
-    try{
+    console.log('Ruta /ubicaciones accedida');
+    try {
         const sql = 'SELECT * FROM ubicacion';
         const result = await configuracionBD.query(sql);
-        if(result.rowCount>0){
-            res.status(200).json({msg:'Ubicaciones obtenidas con éxito', result: result.rows});
-        }else{
-            res.status(404).json({msg:'No hay ubicaciones registradas'})
+        if (result.rowCount > 0) {
+            res.status(200).json({ msg: 'Ubicaciones obtenidas con éxito', result: result.rows });
+        } else {
+            res.status(404).json({ msg: 'No hay ubicaciones registradas' });
         }
-    }catch{
-        res.status(500).json({msg: 'Error al obtener las ubicaciones'});
+    } catch (error) {
+        console.error('Error en getUbicaciones:', error);
+        res.status(500).json({ msg: 'Error al obtener las ubicaciones' });
     }
-}
+};
 
 export const getUbicacionById = async (req, res) => {
     try{

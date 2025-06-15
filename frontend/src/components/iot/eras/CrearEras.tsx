@@ -7,37 +7,53 @@ import { useLotes } from '@/hooks/iot/lote/useLotes';
 const CrearEras = () => {
     const mutation = useCrearEras();
     const navigate = useNavigate();
-    const { data: lotes = [] } = useLotes();  // Esta hook debe traer todos los lotes
-    
+    const { data: lotes = [] } = useLotes();
+
     const formFields = [
-        { id: 'fk_id_lote', label: 'Lote', type: 'select', 
-            options: lotes.map(lote => ({ value: lote.id, label: lote.nombre_lote }))  // Transformar los lotes a un array de objetos para el select
+        {
+            id: 'fk_id_lote',
+            label: 'Lote',
+            type: 'select',
+            options: lotes.map(lote => ({ value: lote.id, label: lote.nombre_lote }))
         },
-        { id: 'descripcion', label: 'Descripción', type: 'text' },
+        {
+            id: 'descripcion',
+            label: 'Descripción',
+            type: 'text'
+        },
+        {
+            id: 'estado',
+            label: 'Estado',
+            type: 'select',
+            options: [
+                { value: 'Activo', label: 'Activo' },
+                { value: 'Inactivo', label: 'Inactivo' }
+            ]
+        }
     ];
-    
+
     const handleSubmit = (formData: { [key: string]: string }) => {
-        const nuevaEra: Eras = {
-            id: 0,  
-            fk_id_lote: Number(formData.fk_id_lote), 
+        const nuevaEra: Omit<Eras, 'id'> = {
+            fk_id_lote: Number(formData.fk_id_lote),
             descripcion: formData.descripcion,
+            estado: formData.estado
         };
 
         mutation.mutate(nuevaEra, {
             onSuccess: () => {
-                navigate('/Eras'); 
+                navigate('/Eras');
             }
         });
     };
-    
+
     return (
         <div className="p-10">
-            <Formulario 
-                fields = {formFields} 
-                onSubmit={handleSubmit} 
-                isError={mutation.isError} 
+            <Formulario
+                fields={formFields}
+                onSubmit={handleSubmit}
+                isError={mutation.isError}
                 isSuccess={mutation.isSuccess}
-                title="Crear Era"  
+                title="Crear Era"
             />
         </div>
     );

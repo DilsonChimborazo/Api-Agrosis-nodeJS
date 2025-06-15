@@ -1,6 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import { createServer } from 'http';
+import { Server as SocketIOServer } from 'socket.io';
 
 // rutas del modulo de iot
 import routerSensores from './src/routers/iot/router.sensores.js';
@@ -39,24 +41,45 @@ import swaggerUI from 'swagger-ui-express';
 import swaggerSpec from './src/views/swagger.js';
 
 // Definimos los endpoints para el modulo Inventario
-import routerInsumo  from './src/routers/Inventario/Insumo.routers.js';
-import routerRequiere  from './src/routers/Inventario/Requiere.routers.js';
-import routerUtiliza  from './src/routers/Inventario/Utiliza.routers.js';
+import routerInsumo from './src/routers/Inventario/Insumo.routers.js';
+import routerRequiere from './src/routers/Inventario/Requiere.routers.js';
+import routerUtiliza from './src/routers/Inventario/Utiliza.routers.js';
 import routerControlUsaInsumo from './src/routers/Inventario/Control_Usa_Insumo.routers.js';
 import routerHerramientas from './src/routers/Inventario/herramientas.routers.js';
 
 const app = express();
+const httpServer = createServer(app);
+
+
+// Inicializar socket.io
+const io = new SocketIOServer(httpServer, {
+  cors: {
+    origin: ['http://localhost:5173', 'http://192.168.100.205:5173'],
+    methods: ['GET', 'POST'],
+    credentials: true, // Añadir para soportar withCredentials
+  },
+});
+
+io.on('connection', (socket) => {
+  console.log('✅ Cliente conectado al WebSocket');
+  socket.on('disconnect', () => {
+    console.log('⚠ Cliente desconectado');
+  });
+});
+
+// Exportar io para usarlo en controladores
+export { io };
 
 // Habilitamos CORS para permitir peticiones desde el frontend
 app.use(cors({
-    origin: 'http://localhost:5173', 
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], 
-    allowedHeaders: ['Content-Type', 'Authorization'] 
+  origin: ['http://localhost:5173',, 'http://192.168.100.205:5173'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Middleware para manejar JSON y datos en formulario
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // Definimos los endpoints para el modulo IOT
 app.use(routerSensores);
@@ -69,7 +92,7 @@ app.use(routerMide);
 app.use(rutaProduccion);
 app.use(rutaVenta);
 
-// Definimos los endpoints para el modulo trazabilidad 
+// Definimos los endpoints para el modulo trazabilidad
 app.use(routerasignacion_actividad);
 app.use(routerCalendarioLunar);
 app.use(routerEspecie);
@@ -103,7 +126,7 @@ app.use(routerControlUsaInsumo);
 
 // Servidor
 const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`✅ Servidor iniciado en http://localhost:${PORT}`);
-    console.log(`📄 Documentación disponible en http://localhost:${PORT}/api-docs`);
+httpServer.listen(PORT, () => {
+  console.log(`✅ Servidor iniciado en http://localhost:${PORT}`);
+  console.log(`📄 Documentación disponible en http://localhost:${PORT}/api-docs`);
 });

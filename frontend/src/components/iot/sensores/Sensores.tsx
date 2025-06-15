@@ -1,30 +1,30 @@
+// src/pages/iot/IotPage.tsx (o Sensores.tsx según tu estructura)
 import { useState } from 'react';
-import { useSensores } from '../../../hooks/iot/sensores/useSensores';
+import { useSensores, Sensor } from '../../../hooks/iot/sensores/useSensores';
 import Tabla from '../../globales/Tabla';
 import VentanaModal from '../../globales/VentanasModales';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import {
-  LineChart,
-  AreaChart,
-  Line,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from 'recharts';
+
+interface TableRow {
+  id: number;
+  nombre: string;
+  tipo: string;
+  unidad: string;
+  descripcion: string;
+  minimo: number;
+  maximo: number;
+  evapotranspiracion: string;
+}
 
 const Sensores = () => {
-  const { data: sensores, isLoading, error } = useSensores();
-  const [selectedSensor, setSelectedSensor] = useState<object | null>(null);
+  const { data: sensores = [], isLoading, error } = useSensores();
+  const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentSensorIndex, setCurrentSensorIndex] = useState(0);
   const navigate = useNavigate();
 
-  const openModalHandler = (sensor: object) => {
+  const openModalHandler = (sensor: Sensor) => {
     setSelectedSensor(sensor);
     setIsModalOpen(true);
   };
@@ -35,22 +35,76 @@ const Sensores = () => {
   };
 
   const handleUpdate = (sensor: { id: number }) => {
-    navigate(`/editar-sensor/${sensor.id}`);
+    navigate(`/iot/editar-sensor/${sensor.id}`);
+  };
+
+  const headers = [ 'Nombre', 'Tipo', 'Unidad', 'Descripcion', 'Minimo', 'Maximo','Evapotranspiracion'];
+
+  const handleRowClick = (row: TableRow) => {
+    const originalSensor = sensores.find((s) => s.id_sensor === row.id);
+    if (originalSensor) {
+      openModalHandler(originalSensor);
+    }
   };
 
   const handleCreate = () => {
     navigate('/crear-sensor');
   };
 
-  const headers = ['ID', 'Nombre', 'Tipo', 'Unidad', 'descripcion', 'minimo', 'maximo'];
+  const generarPDF = () => {
+    if (isLoading) {
+      alert('Cargando sensores, por favor espera.');
+      return;
+    }
+    if (error) {
+      alert('No se puede generar el PDF: error al cargar los sensores.');
+      return;
+    }
+    if (!sensores.length) {
+      alert('No hay sensores para generar el reporte.');
+      return;
+    }
+
+    const doc = new jsPDF();
+    doc.text('Reporte de Sensores', 14, 10);
+
+    const tableData = sensores.map((item, index) => [
+      index + 1,
+      item.nombre_sensor || 'N/A',
+      item.tipo_sensor || 'N/A',
+      item.unidad_medida || 'N/A',
+      item.descripcion || 'N/A',
+      item.medida_minima !== undefined ? item.medida_minima : 'N/A',
+      item.medida_maxima !== undefined ? item.medida_maxima : 'N/A',
+      item.evapotranspiracion ? item.evapotranspiracion.toFixed(2) : 'N/A',
+    ]);
+
+    autoTable(doc, {
+      head: [[ 'Nombre', 'Tipo', 'Unidad', 'Descripcion', 'Minimo', 'Maximo', 'Evapotranspiracion']],
+      body: tableData,
+      startY: 20,
+      margin: { horizontal: 10 },
+      styles: { overflow: 'linebreak' },
+      columnStyles: {
+        0: { cellWidth: 10 },
+        1: { cellWidth: 30 },
+        2: { cellWidth: 20 },
+        3: { cellWidth: 20 },
+        4: { cellWidth: 40 },
+        5: { cellWidth: 20 },
+        6: { cellWidth: 20 },
+        7: { cellWidth: 20 },
+      },
+    });
+
+    doc.save('Reporte_Sensores.pdf');
+  };
 
   if (isLoading) return <div className="text-center">Cargando sensores...</div>;
-  if (error instanceof Error)
-    return <div className="text-red-500">Error al cargar sensores: {error.message}</div>;
+  if (error) return <div className="text-red-600 text-center">Error al cargar los sensores: {error.message}</div>;
 
-  const sensoresList = Array.isArray(sensores) ? sensores : [];
-
-  const mappedSensores = sensoresList.map((sensor) => ({
+  // Forzamos datos vacíos si no hay sensores para evitar el mensaje "No se encontraron resultados"
+  const mappedSensores = sensores.length > 0 ? sensores.map((sensor) => ({
     id: sensor.id_sensor,
     nombre: sensor.nombre_sensor,
     tipo: sensor.tipo_sensor,
@@ -58,131 +112,20 @@ const Sensores = () => {
     descripcion: sensor.descripcion,
     minimo: sensor.medida_minima,
     maximo: sensor.medida_maxima,
-  }));
-
-  const generarPDF = () => {
-    const doc = new jsPDF();
-    doc.text('Sensores activos', 14, 10);
-    const tableData = mappedSensores.map((sensor) => [
-      sensor.id,
-      sensor.nombre,
-      sensor.tipo,
-      sensor.unidad,
-      sensor.descripcion,
-      sensor.minimo,
-      sensor.maximo,
-    ]);
-    autoTable(doc, {
-      head: [headers],
-      body: tableData,
-      startY: 20,
-    });
-    doc.save('Sensores.activos.pdf');
-  };
-
-  const handleRowClick = (sensor: object) => {
-    openModalHandler(sensor);
-  };
-
-  const simulateSensorData = (min: number, max: number) => {
-    return Array.from({ length: 10 }, (_, i) => ({
-      tiempo: `T${i + 1}`,
-      valor: Math.floor(Math.random() * (max - min + 1)) + min,
-    }));
-  };
-
-  const currentSensor = sensoresList[currentSensorIndex];
-  const simulatedData = currentSensor
-    ? simulateSensorData(currentSensor.medida_minima, currentSensor.medida_maxima)
-    : [];
-
-  const nextSensor = () => {
-    setCurrentSensorIndex((prev) => (prev + 1) % sensoresList.length);
-  };
-
-  const prevSensor = () => {
-    setCurrentSensorIndex((prev) => (prev - 1 + sensoresList.length) % sensoresList.length);
-  };
+    evapotranspiracion: sensor.evapotranspiracion ? sensor.evapotranspiracion.toFixed(2) : 'N/A',
+  })) : [{ id: 0, nombre: '', tipo: '', unidad: '', descripcion: '', minimo: 0, maximo: 0, evapotranspiracion: '' }];
 
   return (
-    <div className="overflow-x-auto rounded-lg">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Sensores</h2>
+    <div className="overflow-x-auto rounded-lg p-4">
+      <div className="flex justify-end items-center mb-4">
         <button
           onClick={generarPDF}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:bg-green-300"
+          disabled={isLoading || !sensores.length || !!error}
         >
-          Reporte PDF
+          Generar Reporte PDF
         </button>
       </div>
-
-      {/* 📊 Carrusel de gráficos */}
-      <div className="bg-white p-4 rounded shadow-md mb-6 border-2 border-green-500 max-w-md mx-auto">
-        <h3 className="text-green-700 font-semibold text-lg mb-3 text-center">
-          Mediciones simuladas por sensor
-        </h3>
-
-        {currentSensor && (
-          <div className="text-center mb-2">
-            <h4 className="text-md font-bold">{currentSensor.nombre_sensor}</h4>
-            <p className="text-gray-500 text-xs">
-              {currentSensor.tipo_sensor} — {currentSensor.unidad_medida}
-            </p>
-          </div>
-        )}
-
-        <div className="w-full h-[200px] mb-2">
-          <ResponsiveContainer width="100%" height="100%">
-            {currentSensorIndex % 2 === 0 ? (
-              <LineChart data={simulatedData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="tiempo" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="valor" stroke="#3b82f6" strokeWidth={2} />
-              </LineChart>
-            ) : (
-              <AreaChart data={simulatedData}>
-                <defs>
-                  <linearGradient id="colorArea" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="tiempo" />
-                <YAxis />
-                <Tooltip />
-                <Area
-                  type="monotone"
-                  dataKey="valor"
-                  stroke="#10b981"
-                  fillOpacity={1}
-                  fill="url(#colorArea)"
-                />
-              </AreaChart>
-            )}
-          </ResponsiveContainer>
-        </div>
-
-        <div className="flex justify-center gap-2">
-          <button
-            onClick={prevSensor}
-            className="text-green-700 text-xl px-2 hover:text-green-900"
-            title="Anterior"
-          >
-            ←
-          </button>
-          <button
-            onClick={nextSensor}
-            className="text-green-700 text-xl px-2 hover:text-green-900"
-            title="Siguiente"
-          >
-            →
-          </button>
-        </div>
-      </div>
-
       <Tabla
         title="Sensores"
         headers={headers}
@@ -190,15 +133,23 @@ const Sensores = () => {
         onClickAction={handleRowClick}
         onUpdate={handleUpdate}
         onCreate={handleCreate}
-        createButtonTitle="Crear"
+        createButtonTitle="Crear Sensor"
       />
-
       {selectedSensor && (
         <VentanaModal
           isOpen={isModalOpen}
           onClose={closeModal}
           titulo="Detalles del Sensor"
-          contenido={selectedSensor}
+          contenido={{
+            ID: selectedSensor.id_sensor,
+            Nombre: selectedSensor.nombre_sensor,
+            Tipo: selectedSensor.tipo_sensor,
+            Unidad: selectedSensor.unidad_medida,
+            Descripción: selectedSensor.descripcion,
+            Mínimo: selectedSensor.medida_minima,
+            Máximo: selectedSensor.medida_maxima,
+            Evapotranspiración: selectedSensor.evapotranspiracion ? selectedSensor.evapotranspiracion.toFixed(2) : 'N/A',
+          }}
         />
       )}
     </div>
