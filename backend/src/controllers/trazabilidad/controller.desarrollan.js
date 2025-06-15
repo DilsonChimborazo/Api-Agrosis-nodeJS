@@ -6,11 +6,10 @@ import { configuracionBD } from "../../config/conexion.js";
 export const postDesarrollan = async (req, res) => {
     try {
         const { fk_id_cultivo, fk_id_pea } = req.body;
-        const sql = "INSERT INTO desarrollan (fk_id_cultivo, fk_id_pea) VALUES ($1, $2)";
-        const rowCount  = await configuracionBD.query(sql, [fk_id_cultivo, fk_id_pea]);
+        if (!fk_id_cultivo || !fk_id_pea) return res.status(400).json({ "message": "fk_id_cultivo y fk_id_pea son requeridos" });
+        const result = await configuracionBD.query("INSERT INTO desarrollan (fk_id_cultivo, fk_id_pea) VALUES ($1, $2)", [fk_id_cultivo, fk_id_pea]);
 
-
-        if (rowCount > 0) {
+        if (result.rowCount > 0) {
             return res.status(200).json({ "message": "Registro en desarrollan creado correctamente" });
         } else {
             return res.status(404).json({ "message": "No se pudo registrar en desarrollan" });

@@ -11,31 +11,32 @@ export interface Pea {
 
 const fetchPeas = async (): Promise<Pea[]> => {
   try {
-    const token = localStorage.getItem('token'); // 🔐 Obtiene el token del almacenamiento
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No hay token disponible. Por favor, inicia sesión.');
+    }
 
-    const { data } = await axios.get(`${apiUrl}pea/`, {
+    const { data } = await axios.get(`${apiUrl}pea`, {
       headers: {
-        Authorization: `Bearer ${token}`, // 🔑 Agrega el token en los headers
+        Authorization: `Bearer ${token}`,
       },
     });
 
-    console.log("Respuesta del backend (PEAs):", data.peas);
-
-    return data.peas.map((pea: any) => ({
-      id_pea: pea.id_pea,
-      nombre: pea.nombre,
-      descripcion: pea.descripcion,
-    }));
+    console.log('Respuesta del backend (PEAs):', data.peas);
+    return data.peas || [];
   } catch (error) {
-    console.error("Error al obtener la lista de Peas:", error);
-    throw new Error("No se pudo obtener la lista de Peas");
+    console.error('Error al obtener la lista de PEAs:', error);
+    throw new Error('No se pudo obtener la lista de PEAs');
   }
 };
 
 export const usePea = () => {
   return useQuery<Pea[], Error>({
-    queryKey: ['Pea'],
+    queryKey: ['peas'],
     queryFn: fetchPeas,
-    gcTime: 1000 * 60 * 10,
+    retry: 1,
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+    gcTime: 0,
   });
 };

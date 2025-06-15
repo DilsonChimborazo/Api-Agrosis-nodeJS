@@ -1,90 +1,142 @@
-import { useCrearResiduo } from '@/hooks/trazabilidad/residuo/useCrearResiduo';
+import { useState } from 'react';
+import { useCrearResiduo, CrearResiduoInput } from '@/hooks/trazabilidad/residuo/useCrearResiduo';
 import Formulario from '@/components/globales/Formulario';
 import { useNavigate } from 'react-router-dom';
 import { useCultivo } from '@/hooks/trazabilidad/cultivo/useCultivo';
 import { useResiduos } from '@/hooks/trazabilidad/residuo/useResiduos';
+
+// Interfaz para los campos del formulario
+interface FormField {
+    id: string;
+    label: string;
+    type: 'text' | 'date' | 'select';
+    options?: { value: string | number; label: string }[];
+}
 
 const CrearResiduo = () => {
     const mutation = useCrearResiduo();
     const navigate = useNavigate();
     const { data: cultivos = [], isLoading: isLoadingCultivos } = useCultivo();
     const { data: residuos = [], isLoading: isLoadingResiduos } = useResiduos();
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    console.log("🚀 Cultivos recibidos:", cultivos);
-    console.log("🚀 Residuos recibidos:", residuos);
-
-    // Validar cultivos y residuos antes de mapear
-    const cultivosValidos = Array.isArray(cultivos) ? cultivos.filter(c => c?.id) : [];
-    const residuosValidos = Array.isArray(residuos) ? residuos.filter(r => r?.fk_id_tipo_residuo?.id) : [];
+    // Validar cultivos y residuos
+    const cultivosValidos = Array.isArray(cultivos)
+        ? cultivos.filter((c) => c?.id_cultivo && c?.nombre_cultivo)
+        : [];
+    const residuosValidos = Array.isArray(residuos)
+        ? residuos.filter((r) => r?.fk_id_tipo_residuo?.id_tipo_residuo && r?.fk_id_tipo_residuo?.nombre_residuo)
+        : [];
 
     // Obtener cultivos únicos
-    const cultivosUnicos = Array.from(new Map(cultivosValidos.map((cultivo) => [cultivo.id, cultivo])).values());
-    
-    // Obtener tipos de residuos únicos
-    const tiposResiduosUnicos = Array.from(
-        new Map(residuosValidos.map((residuo) => [residuo.fk_id_tipo_residuo.id, residuo.fk_id_tipo_residuo])).values()
+    const cultivosUnicos = Array.from(
+        new Map(cultivosValidos.map((cultivo) => [cultivo.id_cultivo, cultivo])).values()
     );
 
-    // Si los datos aún no están listos, mostrar mensaje de carga
-    if (isLoadingCultivos || isLoadingResiduos || cultivosUnicos.length === 0 || tiposResiduosUnicos.length === 0) {
-        return <div className="text-center text-gray-500">Cargando datos de residuos y cultivos...</div>;
+    // Obtener tipos de residuos únicos
+    const tiposResiduosUnicos = Array.from(
+        new Map(
+            residuosValidos.map((residuo) => [residuo.fk_id_tipo_residuo.id_tipo_residuo, residuo.fk_id_tipo_residuo])
+        ).values()
+    );
+
+    // Mostrar mensaje de carga si los datos no están listos
+    if (isLoadingCultivos || isLoadingResiduos) {
+        return <div className="text-center text-gray-500 py-4">Cargando datos...</div>;
+    }
+
+    // Validar que haya datos disponibles
+    if (cultivosUnicos.length === 0 || tiposResiduosUnicos.length === 0) {
+        return (
+            <div className="text-center text-red-500 py-4">
+                No hay cultivos o tipos de residuos disponibles. Por favor, crea algunos primero.
+            </div>
+        );
     }
 
     // Definir los campos del formulario
-    const formFields = [
-        { id: 'nombre_residuo', label: 'Nombre del Residuo', type: 'text' },
+    const formFields: FormField[] = [
+        { id: 'nombre', label: 'Nombre del Residuo', type: 'text' },
         { id: 'fecha', label: 'Fecha', type: 'date' },
         { id: 'descripcion', label: 'Descripción', type: 'text' },
-        { 
-            id: 'fk_id_cultivo', 
-            label: 'Cultivo', 
-            type: 'select', 
-            options: cultivosUnicos.map(cultivo => ({ value: cultivo.id, label: cultivo.nombre_cultivo }))
+        {
+            id: 'fk_id_cultivo',
+            label: 'Cultivo',
+            type: 'select',
+            options: cultivosUnicos.map((cultivo) => ({
+                value: cultivo.id_cultivo,
+                label: cultivo.nombre_cultivo,
+            })),
         },
-        { 
-            id: 'fk_id_tipo_residuo', 
-            label: 'Tipo de Residuo', 
-            type: 'select', 
-            options: tiposResiduosUnicos.map(tipo => ({ value: tipo.id, label: tipo.nombre_tipo_residuo }))
+        {
+            id: 'fk_id_tipo_residuo',
+            label: 'Tipo de Residuo',
+            type: 'select',
+            options: tiposResiduosUnicos.map((tipo) => ({
+                value: tipo.id_tipo_residuo,
+                label: tipo.nombre_residuo,
+            })),
         },
     ];
 
     // Manejo del formulario
     const handleSubmit = (formData: { [key: string]: string }) => {
-        if (!formData.fecha || !formData.fk_id_cultivo || !formData.fk_id_tipo_residuo) {
-            console.error("❌ Todos los campos son obligatorios");
+        setErrorMessage(null);
+
+        // Validar campos obligatorios
+        if (
+            !formData.nombre ||
+            !formData.fecha ||
+            !formData.fk_id_cultivo ||
+            !formData.fk_id_tipo_residuo
+        ) {
+            setErrorMessage('Todos los campos son obligatorios.');
             return;
         }
 
-        const nuevoResiduo = {
-            nombre_residuo: formData.nombre_residuo,
+        const nuevoResiduo: CrearResiduoInput = {
+            nombre: formData.nombre,
             fecha: new Date(formData.fecha).toISOString().split('T')[0],
-            descripcion: formData.descripcion,
-            fk_id_cultivo: parseInt(formData.fk_id_cultivo) || 0,
-            fk_id_tipo_residuo: parseInt(formData.fk_id_tipo_residuo) || 0,
+            descripcion: formData.descripcion || '',
+            fk_id_cultivo: parseInt(formData.fk_id_cultivo),
+            fk_id_tipo_residuo: parseInt(formData.fk_id_tipo_residuo),
         };
 
-        console.log("🚀 Enviando residuo al backend:", nuevoResiduo);
-        
         mutation.mutate(nuevoResiduo, {
             onSuccess: () => {
-                console.log("✅ Residuo creado exitosamente, redirigiendo a /residuos...");
-                navigate("/residuos");
+                navigate('/residuos');
             },
-            onError: (error) => {
-                console.error("❌ Error al crear residuo:", error);
-            }
+            onError: (error: any) => {
+                setErrorMessage(
+                    error.response?.data?.message || 'Error al crear el residuo. Inténtalo de nuevo.'
+                );
+            },
         });
     };
 
     return (
         <div className="max-w-4xl mx-auto p-4">
-            <Formulario 
-                fields={formFields} 
-                onSubmit={handleSubmit} 
-                isError={mutation.isError} 
+            {errorMessage && (
+                <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
+                    {errorMessage}
+                </div>
+            )}
+            {mutation.isPending && (
+                <div className="mb-4 p-4 bg-blue-100 text-blue-700 rounded">
+                    Creando residuo...
+                </div>
+            )}
+            {mutation.isSuccess && (
+                <div className="mb-4 p-4 bg-green-100 text-green-700 rounded">
+                    Residuo creado exitosamente.
+                </div>
+            )}
+            <Formulario
+                fields={formFields}
+                onSubmit={handleSubmit}
+                isError={mutation.isError}
                 isSuccess={mutation.isSuccess}
-                title="Registrar Nuevo Residuo"  
+                title="Registrar Nuevo Residuo"
             />
         </div>
     );

@@ -7,7 +7,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 const Pea = () => {
-  const { data: peas, isLoading, error } = usePea();
+  const { data: peas = [], isLoading, error } = usePea();
   const [selectedPea, setSelectedPea] = useState<object | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -16,6 +16,7 @@ const Pea = () => {
     setSelectedPea(pea);
     setIsModalOpen(true);
   };
+
   const closeModal = () => {
     setSelectedPea(null);
     setIsModalOpen(false);
@@ -25,63 +26,65 @@ const Pea = () => {
     openModalHandler(pea);
   };
 
-  const handleUpdate = (pea: { id: number }) => {
-    navigate(`/pea/editar/${pea.id}`);
+  const handleUpdate = (pea: { id_pea: number }) => {
+    navigate(`/pea/editar/${pea.id_pea}`);
   };
 
   const handleCreate = () => {
-    navigate("/crearpea");
+    navigate('/crearpea');
   };
 
-  if (isLoading) return <div>Cargando PEA...</div>;
-  if (error instanceof Error) return <div>Error al cargar los PEA: {error.message}</div>;
+  if (isLoading) return <div className="text-center text-gray-500 py-4">Cargando PEAs...</div>;
+  if (error) return <div className="text-center text-red-500 py-4">Error al cargar los PEAs: {error.message}</div>;
 
-  const peasList = Array.isArray(peas) ? peas : [];
-
-  const mappedPeas = peasList.map(pea => ({
-    id: pea.id_pea,                
-    nombre: pea.nombre,        
-    descripcion: pea.descripcion
+  const mappedPeas = peas.map(pea => ({
+    id_pea: pea.id_pea,
+    nombre: pea.nombre,
+    descripcion: pea.descripcion || 'Sin descripción',
   }));
-  
-    const generarPDF = () => {
-      const doc = new jsPDF();
-      doc.setFontSize(16);
-      doc.text('PEA Registrada', 14, 15);
-    
-      const tableData = mappedPeas.map((peas) => [
-        peas.id,
-        peas.nombre,
-        peas.descripcion,
-        
-      ]);
-    
-      autoTable(doc, {
-        head: [headers],
-        body: tableData,
-        startY: 20,
-        styles: { fontSize: 10 },
-        headStyles: { fillColor: [34, 197, 94] }, 
-      });
-    
-      doc.save('Pea.Registradas.pdf');
-    };
-    
 
-  const headers = ['ID', 'Nombre', 'Descripcion'];
+  const generarPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('PEAs Registrados', 14, 15);
+
+    const tableData = mappedPeas.map(pea => [
+      pea.id_pea,
+      pea.nombre,
+      pea.descripcion,
+    ]);
+
+    autoTable(doc, {
+      head: [['ID', 'Nombre', 'Descripción']],
+      body: tableData,
+      startY: 20,
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [34, 197, 94] },
+    });
+
+    doc.save('PEAs_Registrados.pdf');
+  };
+
+  const headers = [ 'Nombre', 'Descripcion'];
 
   return (
-    <div className="overflow-x-auto rounded-lg">
-       <div className="flex justify-end items-center mb-4">
+    <div className="overflow-x-auto rounded-lg p-4">
+      <div className="flex justify-end items-center mb-4 space-x-2">
         <button
           onClick={generarPDF}
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
         >
-          Reporte PDF
+          Generar PDF
+        </button>
+        <button
+          onClick={handleCreate}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Crear PEA
         </button>
       </div>
       <Tabla
-        title="Lista de PEA"
+        title="Lista de PEAs"
         headers={headers}
         data={mappedPeas}
         onClickAction={handleRowClick}
@@ -89,7 +92,6 @@ const Pea = () => {
         onCreate={handleCreate}
         createButtonTitle="Crear"
       />
-
       {selectedPea && (
         <VentanaModal
           isOpen={isModalOpen}
