@@ -1,85 +1,147 @@
 import { Asignacion } from '@/hooks/trazabilidad/asignacion/useCrearAsignacion';
-import { useCrearAsignacion } from '../../../hooks/trazabilidad/asignacion/useCrearAsignacion';
+import { useCrearAsignacion } from '@/hooks/trazabilidad/asignacion/useCrearAsignacion';
+import { useQueryClient } from '@tanstack/react-query';
 import Formulario from '../../globales/Formulario';
 import { useUsuarios } from '@/hooks/usuarios/useUsuarios';
-import { useAsignacion } from '@/hooks/trazabilidad/asignacion/useAsignacion'; // Hook para obtener actividades
+import { useAsignacion } from '@/hooks/trazabilidad/asignacion/useAsignacion';
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 const CrearAsignacion = () => {
-  const mutation = useCrearAsignacion(); // Hook para manejar la creación
+  const mutation = useCrearAsignacion();
   const navigate = useNavigate();
-  const { data: usuarios = [] } = useUsuarios(); // Hook para obtener usuarios
-  const { data: asignaciones = [], isLoading: isLoadingAsignaciones } = useAsignacion(); // Hook para obtener actividades relacionadas con asignaciones
+  const queryClient = useQueryClient();
+  const { data: usuarios = [], isLoading: isLoadingUsuarios, error: usuariosError } = useUsuarios();
+  const { data: asignaciones = [], isLoading: isLoadingAsignaciones, error: asignacionesError } = useAsignacion();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Mapeo de opciones para el select de actividades
-  const actividadOptions = asignaciones
-    .map((asignacion) => ({
-      value: asignacion.fk_id_actividad.id, // ID de la actividad
-      label: asignacion.fk_id_actividad.nombre_actividad, // Nombre de la actividad
-    }));
+  // Filtrar actividades únicas para evitar duplicados
+  const actividadOptions = Array.from(
+    new Map(
+      asignaciones.map((asignacion) => [
+        asignacion.fk_id_actividad.id.toString(),
+        {
+          value: asignacion.fk_id_actividad.id.toString(),
+          label: asignacion.fk_id_actividad.nombre_actividad || 'Sin nombre',
+        },
+      ])
+    ).values()
+  );
 
   // Mapeo de opciones para el select de usuarios
   const usuarioOptions = usuarios.map((usr) => ({
-    value: usr.id,
-    label: `${usr.nombre} ${usr.apellido}`, // Mostrar nombre completo del usuario
+    value: usr.identificacion?.toString() || (usr.id?.toString() || ''),
+    label: `${usr.nombre || 'Sin nombre'} ${usr.apellido || ''}`.trim() || 'Usuario sin nombre',
   }));
+
+  // Depuración
+  useEffect(() => {
+    console.log('Usuarios disponibles:', usuarios);
+    console.log('Opciones de usuario:', usuarioOptions);
+    console.log('Asignaciones disponibles:', asignaciones);
+    console.log('Opciones de actividad únicas:', actividadOptions);
+    if (usuarioOptions.length === 0 && !isLoadingUsuarios) {
+      console.warn('No hay usuarios disponibles para seleccionar:', usuarios);
+    }
+    if (actividadOptions.length === 0 && !isLoadingAsignaciones) {
+      console.warn('No hay actividades disponibles para seleccionar:', asignaciones);
+    }
+  }, [usuarioOptions, isLoadingUsuarios, usuarios, asignaciones, actividadOptions, isLoadingAsignaciones]);
 
   // Definición de los campos del formulario
   const formFields = [
-    { id: 'fecha', label: 'Fecha', type: 'date' }, // Campo de tipo date
-    { id: 'observaciones', label: 'Observaciones', type: 'text' }, // Observaciones
+    { id: 'fecha', label: 'Fecha', type: 'date', required: true },
     {
       id: 'fk_id_actividad',
       label: 'Actividad',
       type: 'select',
-      options: actividadOptions, // Opciones dinámicas basadas en actividades
+      options: actividadOptions,
+      required: true,
     },
     {
-      id: 'id_identificacion',
+      id: 'fk_identificacion',
       label: 'Usuario',
       type: 'select',
-      options: usuarioOptions, // Opciones dinámicas basadas en usuarios
+      options: usuarioOptions,
+      required: true,
     },
   ];
 
   // Manejo del formulario
   const handleSubmit = (formData: { [key: string]: string }) => {
-    if (
-      !formData.fecha ||
-      !formData.observaciones ||
-      !formData.fk_id_actividad ||
-      !formData.id_identificacion
-    ) {
-      console.error("❌ Todos los campos son obligatorios");
+    setErrorMessage(null);
+
+    console.log('FormData recibido:', formData);
+
+    const requiredFields = ['fecha', 'fk_id_actividad', 'fk_identificacion'];
+    const missingFields = requiredFields.filter((field) => !formData[field] || formData[field] === '');
+    if (missingFields.length > 0) {
+      setErrorMessage(`Los siguientes campos son obligatorios: ${missingFields.join(', ')}`);
       return;
     }
 
     const newAsignacion: Asignacion = {
-      fecha: new Date(formData.fecha).toISOString().split('T')[0], // Convertir la fecha al formato ISO
-      observaciones: formData.observaciones.trim(),
-      fk_id_actividad: formData.fk_id_actividad,
-      id_identificacion:formData.id_identificacion
+      fecha: formData.fecha,
+      fk_id_actividad: String(formData.fk_id_actividad),
+      fk_identificacion: String(formData.fk_identificacion),
     };
 
-    console.log("🚀 Enviando asignación al backend:", newAsignacion);
+    console.log('🚀 Enviando asignación al backend:', newAsignacion);
 
     mutation.mutate(newAsignacion, {
-      onSuccess: () => {
-        console.log("✅ Asignación creada exitosamente");
-        navigate("/actividad"); // Redirigir al listado de actividades
+      onSuccess: (response) => {
+        console.log('✅ Asignación creada con éxito:', response);
+        queryClient.invalidateQueries({ queryKey: ['asignaciones'] });
+        navigate('/actividad');
       },
-      onError: (error) => {
-        console.error("❌ Error al crear asignación:", error);
+      onError: (error: any) => {
+        console.error('❌ Error al crear asignación:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
+        setErrorMessage(
+          error.response?.data?.msg || error.message || 'Error al crear la asignación. Por favor, intenta de nuevo.'
+        );
       },
     });
   };
 
-  if (isLoadingAsignaciones) {
-    return <div className="text-center text-gray-500">Cargando actividades...</div>;
+  if (isLoadingAsignaciones || isLoadingUsuarios) {
+    return <div className="text-center text-gray-500">Cargando datos...</div>;
+  }
+
+  if (usuariosError || asignacionesError) {
+    return (
+      <div className="text-center text-red-500">
+        Error al cargar los datos: {usuariosError?.message || asignacionesError?.message}
+      </div>
+    );
+  }
+
+  if (usuarioOptions.length === 0 && !isLoadingUsuarios) {
+    return (
+      <div className="text-center text-red-500">
+        No hay usuarios disponibles para seleccionar.
+      </div>
+    );
+  }
+
+  if (actividadOptions.length === 0 && !isLoadingAsignaciones) {
+    return (
+      <div className="text-center text-red-500">
+        No hay actividades disponibles para seleccionar.
+      </div>
+    );
   }
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+      {errorMessage && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
+          {errorMessage}
+        </div>
+      )}
       <Formulario
         fields={formFields}
         onSubmit={handleSubmit}

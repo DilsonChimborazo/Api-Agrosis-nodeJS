@@ -1,22 +1,36 @@
 import {configuracionBD} from '../../config/conexion.js';
 
 export const createAsignacionActividad = async (req, res) => {
-    try{
-        const {fecha, fk_id_actividad, fk_identificacion} = req.body;
-        const sql = 'INSERT INTO asignacion_actividad (fecha, fk_id_actividad, fk_identificacion) VALUES($1, $2, $3)';
-        const values = [fecha, fk_id_actividad, fk_identificacion];
-        const result = await configuracionBD.query(sql, values);
-        if(result.rowCount>0){
-            res.status(200).json({msg:'asignacion de actividad registrada con éxito'});
-        }else{
-            res.status(400).json({msg:'Error al registrar la asignacion de actividad'});
-        }
-    }catch(erro){
-        console.log(erro);
-        res.status(500).json({msg: 'Error en el servidor'});
+  try {
+    const { fecha, fk_id_actividad, fk_identificacion } = req.body;
+    if (!fecha || !fk_id_actividad || !fk_identificacion) {
+      return res.status(400).json({ msg: 'Todos los campos son requeridos' });
     }
-}
 
+    const fkIdActividad = parseInt(fk_id_actividad);
+    if (isNaN(fkIdActividad)) {
+      return res.status(400).json({ msg: 'fk_id_actividad debe ser un número válido' });
+    }
+
+    const sql = 'INSERT INTO asignacion_actividad (fecha, fk_id_actividad, fk_identificacion) VALUES ($1, $2, $3)';
+    const values = [fecha, fkIdActividad, fk_identificacion];
+    const result = await configuracionBD.query(sql, values);
+    if (result.rowCount > 0) {
+      res.status(200).json({ msg: 'asignacion de actividad registrada con éxito' });
+    } else {
+      res.status(400).json({ msg: 'Error al registrar la asignacion de actividad' });
+    }
+  } catch (erro) {
+    console.error('Error detallado al crear asignación:', erro);
+    if (erro.code === '23503') { // Violación de clave foránea
+      res.status(400).json({ msg: 'Error: fk_id_actividad o fk_identificacion no existen en las tablas relacionadas' });
+    } else if (erro.code === '23502') { // Violación de NOT NULL
+      res.status(400).json({ msg: 'Error: Campos requeridos están vacíos' });
+    } else {
+      res.status(500).json({ msg: 'Error interno del servidor', error: erro.message });
+    }
+  }
+};
 export const getAsignacionActividad = async (req, res)=>{
     try{
         const sql = ` SELECT asignacion_actividad.id_asignacion_actividad, asignacion_actividad.fecha, asignacion_actividad.fk_id_actividad,
