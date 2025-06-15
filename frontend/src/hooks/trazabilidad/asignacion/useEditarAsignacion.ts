@@ -4,51 +4,51 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export interface Asignacion {
-    id: number;
-    fecha: String;
-    observaciones: string;
-    fk_id_actividad: number;
-    id_identificacion: number;
-
+  id: number;
+  fecha: string; // Cambiado a string para consistencia con el formulario
+  fk_id_actividad: number;
+  fk_identificacion: number;
 }
 
 export const useEditarAsignacion = () => {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: async (sensorActualizado: Asignacion) => {
-            const { id, ...datos } = sensorActualizado;
+  return useMutation({
+    mutationFn: async (asignacionActualizada: Asignacion) => {
+      const { id, ...datos } = asignacionActualizada;
 
-            // Validar antes de enviar
-            if (
-                !datos.fecha.trim() ||
-                !datos.observaciones.trim() ||
-                !datos.fk_id_actividad === undefined ||
-                !datos.id_identificacion === undefined 
-            ) {
-                throw new Error("⚠️ Datos inválidos. Por favor, revisa los campos.");
-            }
+      // Validación corregida
+      if (
+        !datos.fecha ||
+        datos.fk_id_actividad === undefined ||
+        datos.fk_identificacion === undefined ||
+        datos.fk_id_actividad <= 0 ||
+        datos.fk_identificacion <= 0
+      ) {
+        throw new Error("⚠️ Datos inválidos. Por favor, revisa los campos.");
+      }
 
-            console.log("📝 Enviando datos para actualizar:", datos);
+      console.log("📝 Enviando datos para actualizar:", datos);
 
-            try {
-                const { data } = await axios.put(`${apiUrl}asignacion_actividades/${id}/`, datos, {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                });
-                return data;
-            } catch (error: any) {
-                console.error("❌ Error en la solicitud:", error.response?.data || error.message);
-                throw error;
-            }
-        },
-        onSuccess: () => {
-            console.log("✅ Sensor actualizado con éxito");
-            queryClient.invalidateQueries({ queryKey: ["sensores"] });
-        },
-        onError: (error) => {
-            console.error("❌ Error al actualizar el Sensor:", error);
-        },
-    });
+      try {
+        const { data } = await axios.put(`${apiUrl}asignacion_actividad/${id}`, datos, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`, // Añadir token si es necesario
+          },
+        });
+        return data;
+      } catch (error: any) {
+        console.error("❌ Error en la solicitud:", error.response?.data || error.message);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      console.log("✅ Asignación actualizada con éxito");
+      queryClient.invalidateQueries({ queryKey: ["asignaciones"] }); // Cambiado a "asignaciones"
+    },
+    onError: (error) => {
+      console.error("❌ Error al actualizar la asignación:", error.message || error);
+    },
+  });
 };

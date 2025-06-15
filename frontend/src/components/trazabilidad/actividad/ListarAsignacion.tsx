@@ -1,163 +1,128 @@
-import { useState, useCallback } from 'react';
-import { useAsignacion } from '@/hooks/trazabilidad/asignacion/useAsignacion';
-import { useNavigate } from 'react-router-dom';
-import Tabla from '../../globales/Tabla';
-import VentanaModal from '../../globales/VentanasModales';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAsignacionporId } from "../../../hooks/trazabilidad/asignacion/useAsignacionPorId";
+import { useEditarAsignacion } from "../../../hooks/trazabilidad/asignacion/useEditarAsignacion";
+import { useUsuarios } from "@/hooks/usuarios/useUsuarios";
+import { useAsignacion } from "@/hooks/trazabilidad/asignacion/useAsignacion";
+import Formulario from "../../globales/Formulario";
 
-const Asignaciones = () => {
+const ActualizarAsignacion = () => {
+  const { id } = useParams(); // Obtener ID de la URL
+  const { data: asignacion, isLoading, error } = useAsignacionporId(id); // Hook para obtener datos por ID
+  const actualizarAsignacion = useEditarAsignacion(); // Hook para actualizar
+  const { data: usuarios = [] } = useUsuarios(); // Hook para obtener la lista de usuarios
+  const { data: asignaciones = [] } = useAsignacion(); // Hook para obtener actividades
   const navigate = useNavigate();
-  const { data: asignaciones = [], isLoading, error } = useAsignacion();
-  const [selectedAsignacion, setSelectedAsignacion] = useState<Record<string, any> | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openModalHandler = useCallback((asignacion: Record<string, any>) => {
-    setSelectedAsignacion(asignacion);
-    setIsModalOpen(true);
-  }, []);
+  // Estado inicial del formulario
+  const [formData, setFormData] = useState<{ [key: string]: string }>({
+    fecha: "",
+    fk_id_actividad: "",
+    fk_identificacion: "", // Corregido a fk_identificacion para consistencia
+  });
 
-  const handleUpdate = (asignacion: Record<string, any>) => {
-    navigate(`actualizarsignacion/${asignacion.id}`);
-  };
+  // Cargar los datos de la asignación en el formulario cuando se obtengan
+  useEffect(() => {
+    if (asignacion && Object.keys(asignacion).length > 0) {
+      console.log("🔄 Actualizando formulario con:", asignacion);
 
-  const handleCreate = () => {
-    navigate('/CrearAsignacion/');
-  };
-
-  const closeModal = useCallback(() => {
-    setSelectedAsignacion(null);
-    setIsModalOpen(false);
-  }, []);
-
-  const handleDownloadPDF = () => {
-    const doc = new jsPDF();
-    doc.text('Lista de Asignaciones', 14, 10);
-
-    // Tabla de todas las asignaciones
-    let currentY = 20;
-    autoTable(doc, {
-      head: [['ID', 'Fecha', 'Actividad', 'Usuario', 'Email']],
-      body: asignaciones.map((asignacion) => [
-        asignacion.id,
-        asignacion.fecha
-          ? new Date(asignacion.fecha).toLocaleDateString('es-ES')
-          : 'Sin fecha',
-        asignacion.fk_id_actividad?.nombre_actividad || 'Sin actividad',
-        asignacion.fk_id_actividad?.fk_identificacion?.nombre || 'Sin usuario',
-        asignacion.fk_id_actividad?.fk_identificacion?.email || 'Sin email',
-      ]),
-      startY: currentY,
-    });
-    currentY = doc.internal.pageSize.height - 10; // Ajuste aproximado
-
-    // Generar reporte agrupado por actividad
-    const actividadReporte = asignaciones.reduce((acc, asignacion) => {
-      const nombre = asignacion.fk_id_actividad?.nombre_actividad || 'Sin nombre';
-      if (!acc[nombre]) {
-        acc[nombre] = [];
-      }
-      acc[nombre].push(asignacion);
-      return acc;
-    }, {} as Record<string, any[]>);
-
-    // Añadir el reporte al PDF
-    doc.text('Reporte de Actividades por Nombre', 14, currentY + 10);
-    currentY += 20;
-
-    Object.entries(actividadReporte).forEach(([nombre, asignacionesGrupo]) => {
-      // Añadir título con el nombre de la actividad y la cantidad
-      doc.text(`${nombre} (Cantidad: ${asignacionesGrupo.length})`, 14, currentY);
-      currentY += 10;
-
-      // Añadir tabla con los detalles de las asignaciones
-      autoTable(doc, {
-        head: [['ID', 'Fecha', 'Actividad', 'Usuario', 'Email']],
-        body: asignacionesGrupo.map((asignacion) => [
-          asignacion.id,
-          asignacion.fecha
-            ? new Date(asignacion.fecha).toLocaleDateString('es-ES')
-            : 'Sin fecha',
-          asignacion.fk_id_actividad?.nombre_actividad || 'Sin actividad',
-          asignacion.fk_id_actividad?.fk_identificacion?.nombre || 'Sin usuario',
-          asignacion.fk_id_actividad?.fk_identificacion?.email || 'Sin email',
-        ]),
-        startY: currentY,
+      setFormData({
+        fecha: asignacion.fecha || "",
+        fk_id_actividad: asignacion.fk_id_actividad?.toString() || "", // Convertir a string para el formulario
+        fk_identificacion: asignacion.fk_identificacion?.toString() || "", // Corregido a fk_identificacion
       });
+    }
+  }, [asignacion]);
 
-      currentY += 10; // Espacio adicional para la siguiente sección
+  // Mapeo de opciones para el select de actividades
+  const actividadOptions = Array.from(
+    new Map(
+      asignaciones.map((asignacion) => [
+        asignacion.fk_id_actividad.id.toString(),
+        {
+          value: asignacion.fk_id_actividad.id.toString(),
+          label: asignacion.fk_id_actividad.nombre_actividad || "Sin nombre",
+        },
+      ])
+    ).values()
+  );
+
+  // Mapeo de opciones para el select de usuarios
+  const usuarioOptions = usuarios.map((usr) => ({
+    value: usr.id.toString(),
+    label: `${usr.nombre || "Sin nombre"} ${usr.apellido || ""}`.trim() || "Usuario sin nombre",
+  }));
+
+  // Definir los campos del formulario
+  const formFields = [
+    { id: "fecha", label: "Fecha", type: "date", required: true },
+    {
+      id: "fk_id_actividad",
+      label: "Actividad",
+      type: "select",
+      options: actividadOptions,
+      required: true,
+    },
+    {
+      id: "fk_identificacion",
+      label: "Usuario",
+      type: "select",
+      options: usuarioOptions,
+      required: true,
+    },
+  ];
+
+  // Manejar el envío del formulario
+  const handleSubmit = (data: { [key: string]: string }) => {
+    if (!id) return;
+
+    // Validar campos obligatorios
+    const requiredFields = ["fecha", "fk_id_actividad", "fk_identificacion"];
+    const missingFields = requiredFields.filter((field) => !data[field] || data[field] === "");
+    if (missingFields.length > 0) {
+      console.warn(`Campos obligatorios faltantes: ${missingFields.join(", ")}`);
+      return;
+    }
+
+    const asignacionActualizada = {
+      id: Number(id), // Convertir ID a número
+      fecha: data.fecha || "",
+      fk_id_actividad: parseInt(data.fk_id_actividad) || 0, // Convertir a número
+      fk_identificacion: parseInt(data.fk_identificacion) || 0, // Corregido a fk_identificacion
+    };
+
+    console.log("🚀 Enviando datos al backend:", asignacionActualizada); // Verifica los datos enviados
+
+    actualizarAsignacion.mutate(asignacionActualizada, {
+      onSuccess: () => {
+        console.log("✅ Asignación actualizada correctamente");
+        navigate("/asignacion_actividad"); // Redirigir tras el éxito
+      },
+      onError: (error: any) => {
+        console.error("❌ Error al actualizar la asignación:", error.message || error);
+      },
     });
-
-    doc.save('asignaciones.pdf');
   };
 
-  const headers = ['ID', 'Fecha', 'Actividad', 'Usuario', 'Email'];
+  // Mostrar estados de carga o error
+  if (isLoading) return <div className="text-gray-500">Cargando datos...</div>;
+  if (error) return <div className="text-red-500">Error al cargar la asignación: {error.message}</div>;
+
+  console.log("📌 Estado actual de formData:", formData);
 
   return (
-    <div className="overflow-x-auto rounded-lg p-4">
-      <div className="flex justify-start gap-2 mb-4">
-        <button
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-          onClick={handleDownloadPDF}
-        >
-          Descargar PDF
-        </button>
-      </div>
-
-      {isLoading && (
-        <div className="text-center text-gray-500">Cargando asignaciones...</div>
-      )}
-
-      {error instanceof Error && (
-        <div className="text-center text-red-500">
-          Error al cargar las asignaciones: {error.message}
-        </div>
-      )}
-
-      {!isLoading && !error && (!Array.isArray(asignaciones) || asignaciones.length === 0) && (
-        <div className="text-center text-gray-500">No hay asignaciones registradas.</div>
-      )}
-
-      {Array.isArray(asignaciones) && asignaciones.length > 0 && (
-        <Tabla
-          title="Lista de Asignaciones"
-          headers={headers}
-          data={asignaciones.map((asignacion) => ({
-            id: asignacion.id,
-            fecha: asignacion.fecha
-              ? new Date(asignacion.fecha).toLocaleDateString('es-ES')
-              : 'Sin fecha',
-            actividad: asignacion.fk_id_actividad?.nombre_actividad || 'Sin actividad',
-            usuario: asignacion.fk_id_actividad?.fk_identificacion?.nombre || 'Sin usuario',
-            email: asignacion.fk_id_actividad?.fk_identificacion?.email || 'Sin email',
-          }))}
-          onClickAction={openModalHandler}
-          onUpdate={handleUpdate}
-          onCreate={handleCreate}
-          createButtonTitle="Crear"
-        />
-      )}
-
-      {selectedAsignacion && (
-        <VentanaModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          titulo="Detalles de la Asignación"
-          contenido={{
-            ID: selectedAsignacion.id,
-            Fecha: selectedAsignacion.fecha
-              ? new Date(selectedAsignacion.fecha).toLocaleDateString('es-ES')
-              : 'Sin fecha',
-            Actividad: selectedAsignacion.fk_id_actividad?.nombre_actividad || 'Sin actividad',
-            Descripción: selectedAsignacion.fk_id_actividad?.descripcion || 'Sin descripción',
-            Usuario: selectedAsignacion.fk_id_actividad?.fk_identificacion?.nombre || 'Sin usuario',
-            Email: selectedAsignacion.fk_id_actividad?.fk_identificacion?.email || 'Sin email',
-            Rol: selectedAsignacion.fk_id_actividad?.fk_identificacion?.fk_id_rol?.nombre_rol || 'Sin rol',
-          }}
-        />
-      )}
+    <div className="max-w-4xl mx-auto p-4">
+      <Formulario
+        fields={formFields}
+        onSubmit={handleSubmit}
+        isError={actualizarAsignacion.isError}
+        isSuccess={actualizarAsignacion.isSuccess}
+        title="Actualizar Asignación"
+        initialValues={formData}
+        key={JSON.stringify(formData)} // Forzar re-render cuando cambien los datos
+      />
     </div>
   );
 };
 
-export default Asignaciones;
+export default ActualizarAsignacion;
