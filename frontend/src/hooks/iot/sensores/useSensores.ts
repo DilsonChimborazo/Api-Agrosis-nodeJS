@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL; // Ejemplo: http://localhost:3000/
 
 export interface Sensor {
   id_sensor: number;
@@ -12,33 +12,27 @@ export interface Sensor {
   medida_minima: number;
   medida_maxima: number;
   evapotranspiracion?: number;
+  temperatura?: number;
+  humedad?: number;
+  luminiosidad?: number;
 }
 
 const fetchSensores = async (): Promise<Sensor[]> => {
   try {
-    const { data } = await axios.get(`${apiUrl}sensores/`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No se ha encontrado un token de autenticación');
+    }
+    const { data } = await axios.get(`${apiUrl}sensores`, {
+      headers: { Authorization: `Bearer ${token}` },
     });
 
-    console.log("respuesta sensores:", data);
+    console.log('Respuesta sensores:', data);
 
-    // si data ya es un array de sensores, simplemente lo retornamos
-    if (Array.isArray(data)) {
-      return data;
-    }
-
-    // si data.sensores existe y es un array, retornamos eso
-    if (Array.isArray(data.sensores)) {
-      return data.sensores;
-    }
-
-    // en cualquier otro caso, retornamos un array vacío
-    return [];
+    return Array.isArray(data.sensores) ? data.sensores : [];
   } catch (error) {
-    console.error("Error al obtener sensores:", error);
-    throw new Error("No se pudo obtener la lista de sensores");
+    console.error('Error al obtener sensores:', error);
+    throw new Error('No se pudo obtener la lista de sensores');
   }
 };
 
@@ -47,5 +41,7 @@ export const useSensores = () => {
     queryKey: ['sensores'],
     queryFn: fetchSensores,
     staleTime: 1000 * 60 * 10, // 10 minutos
+    retry: 1,
+    refetchOnWindowFocus: false,
   });
 };

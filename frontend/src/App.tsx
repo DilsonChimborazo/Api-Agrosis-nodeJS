@@ -10,7 +10,8 @@ import  {HomePage}  from "./pages/HomePage";
 import HistoricalDataPage from "./pages/HistoricalDataPage"
 import UsersPage from "./pages/usuarios/UsersPage";
 import CalendarPage from "./pages/trazabilidad/CalendarPage";
-import IOtPage from "./pages/iot/IotPage";
+import Sensores from "./pages/iot/IotPage";
+
 import CrearSensor from "./components/iot/sensores/CrearSensor";
 import LotesPage from "./pages/iot/LotesPage";
 import ErasPage from "./pages/iot/ErasPage";
@@ -90,10 +91,10 @@ function App() {
           <Route path="/mapa" element={<Principal><Mapa /></Principal>} />
 
           {/* Rutas módulo IOT */}
-          <Route path="/iot" element={<Principal><IOtPage /></Principal>} />
           <Route path="/iot/principal" element={<Principal><HomePage /></Principal>} />
           <Route path="/crear-sensor" element={<Principal><CrearSensor /></Principal>} />
-          <Route path="/EditarSensor/:id" element={<Principal><EditarSensor /></Principal>} />
+          <Route path="/iot/sensores" element={<Principal><Sensores /></Principal>} /> 
+          <Route path="/iot/Editar-Sensor/:id" element={<Principal><EditarSensor /></Principal>} />
           <Route path="/lotes" element={<Principal><LotesPage /></Principal>} />
           <Route path="/crear-lote" element={<Principal><CrearLote /></Principal>} />
           <Route path="/Editarlote/:id" element={<Principal><EditarLote /></Principal>} />

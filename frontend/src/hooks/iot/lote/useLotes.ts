@@ -1,42 +1,49 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-export interface Ubicacion{
-    id_ubicacion: number;
-    latitud: number;
-    longitud: number;
+export interface Ubicacion {
+  id: number;
+  latitud: number;
+  longitud: number;
 }
 
-export interface Lotes {
-    id_lote: number;
-    dimension: string;
-    nombre_lote: string;
-    fk_id_ubicacion: Ubicacion;
-    estado: string;
+export interface Lote {
+  id: number;
+  dimension: string;
+  nombre_lote: string;
+  fk_id_ubicacion: Ubicacion | null;
+  estado: string;
 }
 
-const fetchLotes = async (): Promise<Lotes[]> => {
-    try {
-        const { data } = await axios.get(`${apiUrl}lotes/`,{
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-        });
+interface BackendError {
+  msg: string;
+}
 
-        console.log("aver si sale el lote", data.lote);
-        return data.lote;
-    } catch (error) {
-        console.error("Error al obtener los lotes:", error);
-        throw new Error("No se pudo obtener la lista de lotes");
+const fetchLotes = async (): Promise<Lote[]> => {
+  try {
+    const { data } = await axios.get(`${apiUrl}lotes`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
+      },
+    });
+
+    if (data.lote && Array.isArray(data.lote)) {
+      return data.lote;
     }
+    throw new Error('No se pudo obtener la lista de lotes');
+  } catch (error) {
+    const err = error as AxiosError<BackendError>;
+    console.error('Error al obtener los lotes:', err, err.response);
+    throw new Error(err.response?.data?.msg || 'Error al conectar con el servidor');
+  }
 };
 
 export const useLotes = () => {
-    return useQuery<Lotes[], Error>({
-        queryKey: ['lotes'],
-        queryFn: fetchLotes,
-        staleTime: 1000 * 60 * 10,
-    });
+  return useQuery<Lote[], Error>({
+    queryKey: ['lotes'],
+    queryFn: fetchLotes,
+    staleTime: 1000 * 60 * 10,
+  });
 };

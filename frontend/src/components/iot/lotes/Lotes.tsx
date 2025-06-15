@@ -1,19 +1,26 @@
 import { useState } from 'react';
-import { useLotes } from '../../../hooks/iot/lote/useLotes';
+import { useLotes, Lote } from '../../../hooks/iot/lote/useLotes';
 import Tabla from '../../globales/Tabla';
 import VentanaModal from '../../globales/VentanasModales';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+interface TableRow {
+  id: number;
+  nombre: string;
+  dimension: string;
+  ubicacion: string;
+  estado: string;
+}
 
 const Lotes = () => {
-  const { data: lotes, isLoading, error } = useLotes();
-  const [selectedLote, setSelectedLote] = useState<object | null>(null);
+  const { data: lotes = [], isLoading, error } = useLotes();
+  const [selectedLote, setSelectedLote] = useState<Lote | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
-  const openModalHandler = (lote: object) => {
+  const openModalHandler = (lote: Lote) => {
     setSelectedLote(lote);
     setIsModalOpen(true);
   };
@@ -23,64 +30,79 @@ const Lotes = () => {
     setIsModalOpen(false);
   };
 
-  const handleUpdate = (residuo: { id: number }) => {
-    navigate(`/Editarlote/${residuo.id}`);
+  const handleUpdate = (lote: { id: number }) => {
+    navigate(`/Editarlote/${lote.id}`);
   };
 
-  const headers = ['ID', 'Nombre', 'Dimencion', 'ubicacion', 'Estado'];
+  const headers = [ 'Nombre', 'Dimension', 'Ubicacion', 'Estado'];
 
-  const handleRowClick = (lote: object) => {
-    openModalHandler(lote);
+  const handleRowClick = (row: TableRow) => {
+    const originalLote = lotes.find((l) => l.id === row.id);
+    if (originalLote) {
+      openModalHandler(originalLote);
+    }
   };
+
   const handleCreate = () => {
-    navigate("/Crear-lote");
+    navigate('/Crear-lote');
   };
-
-  if (isLoading) return <div>Cargando lotes...</div>;
-  if (error instanceof Error) return <div>Error al cargar los lotes: {error.message}</div>;
-
-  const lotesList = Array.isArray(lotes) ? lotes : [];
-
-  const mappedLotes = lotesList.map((lote,index) => ({
-    id: index + 1,
-    nombre: lote.nombre_lote,
-    dimencion: lote.dimension,
-    ubicacion: lote.fk_id_ubicacion 
-      ? `${lote.fk_id_ubicacion.latitud}, ${lote.fk_id_ubicacion.longitud}` 
-      : 'Sin ubicación',
-    estado: lote.estado,
-  }));
 
   const generarPDF = () => {
-    const doc = new jsPDF();
-    doc.text('Lotes activos', 14, 10);
+    if (isLoading) {
+      alert('Cargando lotes, por favor espera.');
+      return;
+    }
+    if (error) {
+      alert('No se puede generar el PDF: error al cargar los lotes.');
+      return;
+    }
+    if (!lotes.length) {
+      alert('No hay lotes para generar el reporte.');
+      return;
+    }
 
-    const tableData = mappedLotes.map((lote) => [
-      lote.id,
-      lote.dimencion,
-      lote.nombre,
-      lote.ubicacion,
-      lote.estado,
+    const doc = new jsPDF();
+    doc.text('Reporte de Lotes', 14, 10);
+
+    const tableData = lotes.map((item, index) => [
+      index + 1,
+      item.nombre_lote,
+      item.dimension,
+      item.fk_id_ubicacion ? `${item.fk_id_ubicacion.latitud}, ${item.fk_id_ubicacion.longitud}` : 'Sin ubicación',
+      item.estado,
     ]);
 
     autoTable(doc, {
-      head: [headers],
+      head: [['#', 'Nombre', 'Dimensión', 'Ubicación', 'Estado']],
       body: tableData,
       startY: 20,
     });
 
-    doc.save('Lotes.activos.pdf')
-  }
- 
+    doc.save('Reporte_Lotes.pdf');
+  };
+
+  if (isLoading) return <div className="text-center">Cargando lotes...</div>;
+  if (error) return <div className="text-red-600 text-center">Error al cargar los lotes: {error.message}</div>;
+
+  const mappedLotes = lotes.map((lote) => ({
+    id: lote.id,
+    nombre: lote.nombre_lote,
+    dimension: lote.dimension,
+    ubicacion: lote.fk_id_ubicacion
+      ? `${lote.fk_id_ubicacion.latitud}, ${lote.fk_id_ubicacion.longitud}`
+      : 'Sin ubicación',
+    estado: lote.estado,
+  }));
 
   return (
-    <div className="overflow-x-auto  rounded-lg">
+    <div className="overflow-x-auto rounded-lg p-4">
       <div className="flex justify-end items-center mb-4">
         <button
           onClick={generarPDF}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:bg-green-300"
+          disabled={isLoading || !lotes.length || !!error}
         >
-          Reporte PDF
+          Generar Reporte PDF
         </button>
       </div>
       <Tabla
@@ -90,14 +112,22 @@ const Lotes = () => {
         onClickAction={handleRowClick}
         onUpdate={handleUpdate}
         onCreate={handleCreate}
-        createButtonTitle="Crear"
+        createButtonTitle="Crear Lote"
       />
       {selectedLote && (
         <VentanaModal
           isOpen={isModalOpen}
           onClose={closeModal}
           titulo="Detalles del Lote"
-          contenido={selectedLote} 
+          contenido={{
+            ID: selectedLote.id,
+            Nombre: selectedLote.nombre_lote,
+            Dimensión: selectedLote.dimension,
+            Ubicación: selectedLote.fk_id_ubicacion
+              ? `${selectedLote.fk_id_ubicacion.latitud}, ${selectedLote.fk_id_ubicacion.longitud}`
+              : 'Sin ubicación',
+            Estado: selectedLote.estado,
+          }}
         />
       )}
     </div>

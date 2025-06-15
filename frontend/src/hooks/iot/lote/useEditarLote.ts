@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export interface Lotes {
     id: number;
     fk_id_ubicacion: number;
-    dimencion: number;
+    dimension: number;
     nombre_lote: string;
     estado: string;
 }
@@ -19,22 +19,33 @@ export const useEditarLote = () => {
             const { id, ...datos } = loteActualizado;
 
             // Validar antes de enviar
-            if (!datos.fk_id_ubicacion || !datos.dimencion || !datos.nombre_lote.trim() || !datos.estado.trim()) {
+            if (!datos.fk_id_ubicacion || !datos.dimension || !datos.nombre_lote.trim() || !datos.estado.trim()) {
                 throw new Error("⚠️ Datos inválidos. Por favor, revisa los campos.");
             }
 
             console.log("📝 Enviando datos para actualizar:", datos);
 
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('❌ Error: No se ha encontrado un token de autenticación');
+                throw new Error('No se ha encontrado un token de autenticación');
+            }
+
             try {
-                const { data } = await axios.put(`${apiUrl}lote/${id}/`, datos, {
+                const { data } = await axios.put(`${apiUrl}lotes/${id}`, datos, {
                     headers: {
-                        "Content-Type": "application/json", 
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`, // Agregado para autenticación
                     },
                 });
                 return data;
             } catch (error: any) {
-                console.error("❌ Error en la solicitud:", error.response?.data || error.message);
-                throw error;
+                console.error("❌ Error en la solicitud PUT:", {
+                    message: error.message,
+                    response: error.response?.data,
+                    status: error.response?.status,
+                });
+                throw new Error(error.response?.data?.msg || `Error al actualizar el lote: ${error.message}`);
             }
         },
         onSuccess: () => {

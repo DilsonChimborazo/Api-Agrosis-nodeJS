@@ -56,7 +56,13 @@ const menuItems = [
       { name: "Herramientas", path: "/herramientas" },
     ],
   },
-  { name: "IoT", icon: <Cpu size={18} />, path: "/iot" },
+  {
+    name: "IoT",
+    icon: <Cpu size={18} />,
+    submenu: [
+      { name: "Sensores", path: "/iot/sensores" },
+    ],
+  },
 ];
 
 export default function Principal({ children }: LayoutProps) {
