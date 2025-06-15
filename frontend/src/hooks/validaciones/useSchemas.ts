@@ -13,14 +13,13 @@ export const loginSchema = z.object({
 
 // Esquema para el formulario de registro (ejemplo adicional)
 export const registroSchema = z.object({
-    login: z
+    identificacion: z
       .string()
       .min(1, { message: "La identificación es obligatoria" })
       .regex(/^\d+$/, { message: "Solo se permiten números" }),
     email: z.string().email({ message: "Debe ser un correo válido" }),
     nombre: z.string().min(2, { message: "El nombre debe tener al menos 2 caracteres" }),
-    apellido: z.string().min(2, { message: "El apellido debe tener al menos 2 caracteres" }),
-    password: z.string().min(6, { message: "La contraseña debe tener al menos 6 caracteres" }),
+    contrasena: z.string().min(6, { message: "La contraseña debe tener al menos 6 caracteres" }),
     fk_id_rol: z.string().min(1, { message: "Debes seleccionar un rol" }), // Se valida como string porque el select devuelve string
   });
 

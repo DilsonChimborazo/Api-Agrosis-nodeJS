@@ -1,20 +1,19 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { ZodString } from 'zod';
 
 const apiUrl = import.meta.env.VITE_API_URL; // Verifica que esta variable esté configurada en tu entorno
 
 // Interfaces
 export interface Rol {
   id: number;
-  rol: string;
+  nombre_rol: string;
 }
 
 export interface Usuario {
-  id: number;
-  identificacion: string;
+  identificacion: number;
   email: string;
   nombre: string;
-  apellido: string;
   fk_id_rol: Rol | null; 
 }
 

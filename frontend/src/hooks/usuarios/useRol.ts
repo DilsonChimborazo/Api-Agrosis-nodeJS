@@ -4,8 +4,8 @@ import axios from 'axios';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export interface Rol {
-  id: number;
-  rol: string;
+  id_rol: number;
+  nombre_rol: string;
 }
 
 const fetchRoles = async (): Promise<Rol[]> => {

@@ -101,7 +101,7 @@ routerUsuarios.get('/usuarios/reporte', validarToken, getReporteUsuarios);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerUsuarios.post('/usuarios',validarToken, createUsuarios);
+routerUsuarios.post('/usuarios',createUsuarios);
 
 /**
  * @swagger
@@ -180,7 +180,7 @@ routerUsuarios.post('/usuarios',validarToken, createUsuarios);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerUsuarios.get('/usuarios', getUsuarios);
+routerUsuarios.get('/usuarios',validarToken, getUsuarios);
 
 /**
  * @swagger
@@ -265,7 +265,7 @@ routerUsuarios.get('/usuarios', getUsuarios);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerUsuarios.get('/usuarios/:identificacion', validarToken, getUsuariosById);
+routerUsuarios.get('/usuarios/:identificacion',validarToken, getUsuariosById);
 
 /**
  * @swagger
@@ -365,6 +365,6 @@ routerUsuarios.get('/usuarios/:identificacion', validarToken, getUsuariosById);
  *                   type: string
  *                   example: "Error en el servidor"
  */
-routerUsuarios.put('/usuarios/:identificacion', updateUsuarios);
+routerUsuarios.put('/usuarios/:identificacion',validarToken, updateUsuarios);
 
 export default routerUsuarios;

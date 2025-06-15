@@ -86,7 +86,7 @@ function App() {
           <Route path="/principal" element={<Principal><HomePage /></Principal>} />
           <Route path="/usuarios" element={<Principal><UsersPage /></Principal>} />
           <Route path="/crearUsuarios" element={<Principal><CrearUsuario /></Principal>} />
-          <Route path="/editarUsuario/:id" element={<Principal><ActualizarUsuario/></Principal>} />
+          <Route path="/editarUsuario/:identificacion" element={<Principal><ActualizarUsuario/></Principal>} />
           <Route path="/mapa" element={<Principal><Mapa /></Principal>} />
 
           {/* Rutas módulo IOT */}

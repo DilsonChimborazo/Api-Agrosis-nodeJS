@@ -7,8 +7,8 @@ import { Usuario } from "@/hooks/usuarios/useCreateUsuarios";
 import { useRoles } from "@/hooks/usuarios/useRol";
 
 const ActualizarUsuario = () => {
-    const { id } = useParams(); 
-    const { data: usuario, isLoading, error } = useUsuarioPorId(id || "");
+    const { identificacion } = useParams(); 
+    const { data: usuario, isLoading, error } = useUsuarioPorId(identificacion || "");
     const actualizarUsuario = useActualizarUsuario();
     const navigate = useNavigate();
     const { data: roles = [] } = useRoles(); 
@@ -17,7 +17,6 @@ const ActualizarUsuario = () => {
         identificacion: 0,
         email: "",
         nombre: "",
-        apellido: "",
         fk_id_rol: 0,
     });
 
@@ -26,17 +25,19 @@ const ActualizarUsuario = () => {
             console.log("🔄 Cargando datos del usuario:", usuario);
 
             setFormData({
-                identificacion: usuario.identificacion ?? 0,
-                email: usuario.email ?? "",
-                nombre: usuario.nombre ?? "",
-                apellido: usuario.apellido ?? "",
-                fk_id_rol: usuario.fk_id_rol?.id ?? 0, 
-            });
+          identificacion: Number(usuario.identificacion) || 0,
+          email: usuario.email ?? "",
+          nombre: usuario.nombre ?? "",
+          fk_id_rol:
+            typeof usuario.fk_id_rol === "object"
+              ? usuario.fk_id_rol.id
+              : usuario.fk_id_rol ?? 0,
+        });
         }
     }, [usuario]);
 
     const handleSubmit = (data: { [key: string]: string }) => {
-        if (!id) return;
+        if (!identificacion) return;
 
         const usuarioActualizado: Partial<Usuario> = {};
 
@@ -50,7 +51,7 @@ const ActualizarUsuario = () => {
 
         console.log("🚀 Enviando datos PATCH:", usuarioActualizado);
 
-        if (!id) {
+        if (!identificacion) {
             console.error("❌ ID de usuario no válido");
             return;
         }
@@ -60,7 +61,7 @@ const ActualizarUsuario = () => {
         );
         
         actualizarUsuario.mutate(
-            { id: Number(id), ...usuarioFinal },
+            { identificacion: Number(identificacion), ...usuarioFinal },
             {
                 onSuccess: () => {
                     console.log("✅ Usuario actualizado correctamente");
@@ -83,13 +84,13 @@ const ActualizarUsuario = () => {
                     { id: 'identificacion', label: 'Identificación', type: 'text' },
                     { id: 'email', label: 'Email', type: 'email' },
                     { id: 'nombre', label: 'Nombre', type: 'text' },
-                    { id: 'apellido', label: 'Apellido', type: 'text' },
+
                     { 
                         id: "fk_id_rol", 
                         label: "Rol", 
                         type: "select", 
                         options: Array.isArray(roles) 
-                            ? roles.map((rol) => ({ value: String(rol.id), label: rol.rol }))
+                            ? roles.map((rol) => ({ value: String(rol.id_rol), label: rol.nombre_rol }))
                             : []
                     }
                 ]} 

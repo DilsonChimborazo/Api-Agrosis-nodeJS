@@ -5,12 +5,12 @@ import jwt from "jsonwebtoken";
 export const createUsuarios = async (req, res) => {
     try {
         const { identificacion, nombre, contrasena, email, fk_id_rol } = req.body;
-        const token = req.headers.authorization?.split(" ")[1];
+
         const checkUsers = await configuracionBD.query(`SELECT COUNT(*) FROM usuarios`);
         const hayUsuarios = parseInt(checkUsers.rows[0].count) > 0;
-        
 
         if (hayUsuarios) {
+            const token = req.headers.authorization?.split(" ")[1];
             if (!token) {
                 return res.status(401).json({ msg: "Acceso no autorizado" });
             }
@@ -19,11 +19,16 @@ export const createUsuarios = async (req, res) => {
             if (decoded.rol !== 1) {
                 return res.status(403).json({ msg: "No tienes permisos para crear usuarios" });
             }
+        } else {
+            // Si no hay usuarios, solo se permite crear uno con rol de administrador
+            if (fk_id_rol !== 1) {
+                return res.status(403).json({ msg: "El primer usuario debe ser un administrador" });
+            }
         }
 
         const hashedContrasena = await bcrypt.hash(contrasena, 10);
         const sql = `INSERT INTO usuarios (identificacion, nombre, contrasena, email, fk_id_rol)
-                    VALUES ($1, $2, $3, $4, $5)`;
+                     VALUES ($1, $2, $3, $4, $5)`;
         const values = [identificacion, nombre, hashedContrasena, email, fk_id_rol];
 
         const result = await configuracionBD.query(sql, values);
@@ -41,6 +46,7 @@ export const createUsuarios = async (req, res) => {
 
 
 
+
 export const getUsuarios = async (req, res) =>{
     try{
         const sql = `SELECT usuarios.identificacion, usuarios.nombre, usuarios.contrasena, usuarios.email, usuarios.fk_id_rol, 
@@ -50,7 +56,7 @@ export const getUsuarios = async (req, res) =>{
     const result = await configuracionBD.query(sql);
     if(result.rows.length > 0){
         const usuarios = result.rows.map(usuarios =>({
-            id: usuarios.identificacion,
+            identificacion: usuarios.identificacion,
             nombre: usuarios.nombre,
             contrasena: usuarios.contrasena,
             email: usuarios.email,
@@ -74,14 +80,14 @@ export const getUsuarios = async (req, res) =>{
 export const getUsuariosById = async (req, res) =>{
     try{
         const {identificacion} = req.params;
-        const sql = `SELECT usuarios.nombre, usuarios.contrasena, usuarios.email, usuarios.fk_id_rol, 
+        const sql = `SELECT usuarios.identificacion, usuarios.nombre, usuarios.contrasena, usuarios.email, usuarios.fk_id_rol, 
         rol.id_rol, rol.nombre_rol, rol.fecha_creacion 
     FROM rol
     JOIN usuarios on usuarios.fk_id_rol = rol.id_rol WHERE identificacion = $1`;
     const result = await configuracionBD.query(sql, [identificacion]);
     if(result.rows.length > 0){
         const usuarios = result.rows.map(usuarios =>({
-            id: usuarios.identificacion,
+            identificacion: usuarios.identificacion,
             nombre: usuarios.nombre,
             contrasena: usuarios.contrasena,
             email: usuarios.email,
@@ -102,25 +108,53 @@ export const getUsuariosById = async (req, res) =>{
 }   
 };
 
-export const updateUsuarios = async (req, res)=>{
-    try{
-        const {nombre, contrasena, email, fk_id_rol} = req.body;
-        const {identificacion} = req.params;
-        let hashedContrasena;
-        if (contrasena) {
-            hashedContrasena = await bycriptjs.hash(contrasena, 10);
+export const updateUsuarios = async (req, res) => {
+    try {
+        const { nombre, contrasena, email, fk_id_rol } = req.body;
+        const { identificacion } = req.params;
+
+        const fields = [];
+        const values = [];
+
+        if (nombre !== undefined) {
+            fields.push(`nombre = $${fields.length + 1}`);
+            values.push(nombre);
         }
-        const sql = `UPDATE usuarios set nombre = $1 , contrasena = $2, email = $3, fk_id_rol = $4 where identificacion =$5`;
-        const result = await configuracionBD.query(sql, [nombre, hashedContrasena, email, fk_id_rol, identificacion]);
-        if(result.rowCount > 0){
-            res.status(200).json({msg: "Usuario actualizado correctamente"})
-        }else{
-            res.status(400).json({msg:'Error al actualizar usuario'})
+
+        if (contrasena !== undefined) {
+            const hashed = await bcrypt.hash(contrasena, 10);
+            fields.push(`contrasena = $${fields.length + 1}`);
+            values.push(hashed);
         }
-    } catch(error){
-            console.log(error)
-            res.status(500).json({msg:'Error en el servidor'})        
-    }   
+
+        if (email !== undefined) {
+            fields.push(`email = $${fields.length + 1}`);
+            values.push(email);
+        }
+
+        if (fk_id_rol !== undefined) {
+            fields.push(`fk_id_rol = $${fields.length + 1}`);
+            values.push(fk_id_rol);
+        }
+
+        if (fields.length === 0) {
+            return res.status(400).json({ msg: 'No se proporcionaron campos para actualizar' });
+        }
+
+        values.push(identificacion); // WHERE identificacion = $n
+
+        const sql = `UPDATE usuarios SET ${fields.join(', ')} WHERE identificacion = $${values.length}`;
+        const result = await configuracionBD.query(sql, values);
+
+        if (result.rowCount > 0) {
+            res.status(200).json({ msg: "Usuario actualizado correctamente" });
+        } else {
+            res.status(400).json({ msg: 'Error al actualizar usuario' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: 'Error en el servidor' });
+    }
 };  
 
 

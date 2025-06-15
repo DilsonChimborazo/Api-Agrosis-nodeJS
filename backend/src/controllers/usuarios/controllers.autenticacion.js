@@ -14,8 +14,13 @@ export const validarUsuario = async (req, resp) => {
         if (!contrasena) {
             return resp.status(400).json({ msg: "Contraseña no proporcionada" });
         }
-
-        const sql = `SELECT identificacion, nombre, contrasena, email, fk_id_rol FROM usuarios WHERE identificacion = $1`;
+        const sql = `
+            SELECT u.identificacion, u.nombre, u.contrasena, u.email, u.fk_id_rol,
+                   r.nombre_rol
+            FROM usuarios u
+            JOIN rol r ON u.fk_id_rol = r.id_rol
+            WHERE u.identificacion = $1
+        `;
         const result = await configuracionBD.query(sql, [login]);
 
         if (result.rows.length === 0) {
@@ -42,7 +47,17 @@ export const validarUsuario = async (req, resp) => {
             { expiresIn: AUTH_EXPIRES }
         );
 
-        return resp.status(200).json({ msg: 'Usuario autorizado', access: token });
+        return resp.status(200).json({ msg: 'Usuario autorizado', 
+            access: token,
+            usuario: {
+                identificacion: usuario.identificacion,
+                nombre: usuario.nombre,
+                email: usuario.email,
+                rol: {
+                    id: usuario.fk_id_rol,
+                    nombre: usuario.nombre_rol
+                }
+  } });
     } catch (error) {
         console.error("Error en validarUsuario:", error);
         resp.status(500).json({ msg: "Error en el servidor" });

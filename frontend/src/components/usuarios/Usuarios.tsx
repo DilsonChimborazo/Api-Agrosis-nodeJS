@@ -17,7 +17,7 @@ const Usuarios = () => {
   useEffect(() => {
     const usuarioGuardado = localStorage.getItem("user");
     const usuario = usuarioGuardado ? JSON.parse(usuarioGuardado) : null;
-    setEsAdministrador(usuario?.fk_id_rol?.rol === "Administrador");
+    setEsAdministrador(usuario?.rol?.nombre === "Administrador");
   }, []);
 
   const openModalHandler = useCallback((usuario: Record<string, any>) => {
@@ -26,7 +26,13 @@ const Usuarios = () => {
   }, []);
 
   const handleUpdate = (usuario: Record<string, any>) => {
-    navigate(`/editarUsuario/${usuario.id}`);
+    if (esAdministrador) {
+      navigate(`/editarUsuario/${usuario.identificacion}`);
+    } else {
+      setMensaje("No tienes permisos para actualizar usuarios.");
+      setTimeout(() => setMensaje(null), 3000);
+    }
+    
   };
 
   const handleCreate = () => {
@@ -44,26 +50,29 @@ const Usuarios = () => {
   }, []);
 
   const handleDownloadPDF = () => {
+    if (esAdministrador) {
     const doc = new jsPDF();
     doc.text("Lista de Usuarios", 14, 10);
 
     autoTable(doc, {
-      head: [["id", "identificacion", "nombre", "apellido", "Email", "rol"]],
+      head: [["identificacion","nombre", "Email", "rol"]],
       body: (usuarios ?? []).map((usuario) => [
-        usuario.id,
         usuario.identificacion,
         usuario.nombre,
-        usuario.apellido,
         usuario.email,
-        usuario.fk_id_rol?.rol || "Sin rol asignado"
+        usuario.fk_id_rol?.nombre_rol || "Sin rol asignado"
       ]),
       startY: 20,
     });
 
     doc.save("usuarios.pdf");
+  } else {
+      setMensaje("No tienes permisos para descargar informes de usuarios.");
+      setTimeout(() => setMensaje(null), 3000);
+    }
   };
 
-  const headers = ["ID", "identificacion", "Nombre", "Apellido", "Email", "Rol"];
+  const headers = ["Identificacion","Nombre","Email", "Rol"];
 
   return (
     <div className="overflow-x-auto rounded-lg p-4">
@@ -74,12 +83,6 @@ const Usuarios = () => {
       )}
 
       <div className="flex justify-end gap-2 mb-4">
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-          onClick={handleCreate}
-        >
-          Crear
-        </button>
         <button
           className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
           onClick={handleDownloadPDF}
@@ -107,12 +110,10 @@ const Usuarios = () => {
           title="Lista de Usuarios"
           headers={headers}
           data={usuarios.map((usuario) => ({
-            id: usuario.id,
             identificacion: usuario.identificacion,
             nombre: usuario.nombre,
-            apellido: usuario.apellido,
             email: usuario.email,
-            rol: usuario.fk_id_rol?.rol || "Sin rol asignado",
+            rol: usuario.fk_id_rol?.nombre_rol || "Sin rol asignado",
           }))}
           onClickAction={openModalHandler}
           onUpdate={handleUpdate}

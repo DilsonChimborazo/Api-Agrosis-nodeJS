@@ -22,8 +22,7 @@ export default function RegisterForm() {
     identificacion: "",
     email: "",
     nombre: "",
-    apellido: "",
-    password: "",
+    contrasena: "",
     fk_id_rol: "",
   });
 
@@ -45,7 +44,7 @@ export default function RegisterForm() {
         fk_id_rol: parseInt(data.fk_id_rol), // Convertimos a número para la API
       };
 
-      const response = await axios.post(`${apiUrl}usuario/`, dataToSend, {
+      const response = await axios.post(`${apiUrl}usuarios/`, dataToSend, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -53,7 +52,7 @@ export default function RegisterForm() {
 
       if (response.status === 201) {
         setSuccess(true);
-        setTimeout(() => navigate("/login"), 2000);
+        setTimeout(() => navigate("/"), 2000);
       }
     } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
@@ -73,7 +72,7 @@ export default function RegisterForm() {
   };
 
   const roles = [
-    { id: 1, nombre: "Administrador" },
+    { id_rol: 1, nombre_rol: "Administrador" },
   ];
 
   return (
@@ -125,22 +124,11 @@ export default function RegisterForm() {
                 <p className="text-red-500 text-sm">{errors.nombre.message}</p>
               )}
             </div>
-            <div>
-              <input
-                type="text"
-                placeholder="Apellido"
-                {...register("apellido")}
-                className="w-full px-4 py-2 border rounded-md"
-              />
-              {errors.apellido && (
-                <p className="text-red-500 text-sm">{errors.apellido.message}</p>
-              )}
-            </div>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Contraseña"
-                {...register("password")}
+                {...register("contrasena")}
                 className="w-full px-4 py-2 border rounded-md"
               />
               <button
@@ -150,8 +138,8 @@ export default function RegisterForm() {
               >
                 {showPassword ? <EyeOff /> : <Eye />}
               </button>
-              {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password.message}</p>
+              {errors.contrasena && (
+                <p className="text-red-500 text-sm">{errors.contrasena.message}</p>
               )}
             </div>
             <div>
@@ -161,8 +149,8 @@ export default function RegisterForm() {
               >
                 <option value="">Selecciona un rol</option>
                 {roles.map((rol) => (
-                  <option key={rol.id} value={rol.id}>
-                    {rol.nombre}
+                  <option key={rol.id_rol} value={rol.id_rol}>
+                    {rol.nombre_rol}
                   </option>
                 ))}
               </select>

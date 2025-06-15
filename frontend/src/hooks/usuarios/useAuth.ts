@@ -36,6 +36,8 @@ export function useAuth() {
       localStorage.setItem("token", data.access);
       console.log("Token guardado exitosamente:", data.access);
 
+      localStorage.setItem("user", JSON.stringify(data.usuario));
+
       if (data.refresh) {
         localStorage.setItem("refreshToken", data.refresh); // Si hay refreshToken, guardarlo también
       }
