@@ -41,13 +41,6 @@ const CrearInsumos = () => {
         isSuccess={mutation.isSuccess}
         title="Crear Insumo"
       />
-      {/* Botón para regresar a la lista de insumos */}
-      <button 
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        onClick={() => navigate('/insumos')}
-      >
-        Volver a Insumos
-      </button>
     </div>
   );
 };

@@ -3,17 +3,19 @@ import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-export interface Herramientas {
-    nombre_h: string;
-    fecha_prestamo: string | null;
-    estado: string;
+export interface Insumo {
+    nombre: string;
+    tipo: string ;
+    precio_unidad: number;
+    cantidad: number;
+    unidad_medida: string;
 }
 
 export const useCrearInsumos = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (nuevoHerramienta: Herramientas) => {
+        mutationFn: async (nuevoHerramienta: Insumo) => {
             const token = localStorage.getItem("token");
             console.log(token);
             console.log(nuevoHerramienta)
@@ -21,7 +23,7 @@ export const useCrearInsumos = () => {
                 throw new Error("No se ha encontrado un token de autenticación");
             }
             const data  = await axios.post(
-                `${apiUrl}herramientas/`,
+                `${apiUrl}insumo/`,
                 nuevoHerramienta,
                 {
                     headers: {

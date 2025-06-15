@@ -1,82 +1,109 @@
-import React, { useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
+import React, { useState, useEffect } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
-import axios from "axios"; // Para realizar la solicitud al backend
+import axios from "axios";
 import "leaflet/dist/leaflet.css";
+
+const apiUrl = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem("token");
+
+interface Ubicacion {
+  latitud: string;
+  longitud: string;
+}
 
 interface Lote {
   id: number;
-  fk_id_ubicacion: number;
-  dimencion: string;
+  fk_id_ubicacion: Ubicacion;
+  dimension: string;
   nombre_lote: string;
   estado: string;
 }
 
-const LocationPicker = ({ onLocationSelect }: { onLocationSelect: (position: LatLngExpression) => void }) => {
-  useMapEvents({
-    click(event) {
-      const { lat, lng } = event.latlng;
-      onLocationSelect([lat, lng]); // Pasa las coordenadas seleccionadas al componente padre
-    },
-  });
-
+// Componente auxiliar para cambiar el centro dinámicamente
+const CambiarCentroMapa: React.FC<{ center: LatLngExpression }> = ({ center }) => {
+  const map = useMap();
+  map.setView(center); // Actualiza la vista al nuevo centro
   return null;
 };
 
 const Mapa: React.FC = () => {
-  const [position, setPosition] = useState<LatLngExpression | null>(null); // Coordenadas seleccionadas
-  const [lote, setLote] = useState<Lote | null>(null); // Datos del lote
+  const [lotes, setLotes] = useState<Lote[]>([]);
+  const [center, setCenter] = useState<LatLngExpression>([1.8667, -76.0145]);
 
-  const handleLocationSelect = (newPosition: LatLngExpression) => {
-    setPosition(newPosition);
-    console.log("Ubicación seleccionada:", newPosition);
-
-    // Hacer la solicitud a la API para obtener los datos del lote con las coordenadas seleccionadas
+  useEffect(() => {
     axios
-      .get(`http://127.0.0.1:8000/lote?lat=${newPosition[0]}&lng=${newPosition[1]}`)
+      .get(`${apiUrl}lotes/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
-        setLote(response.data); // Guardar los datos del lote
-        console.log("Datos del lote:", response.data);
+        const data = response.data;
+
+        if (Array.isArray(data.lote)) {
+          setLotes(data.lote);
+
+          // Centrar en el primer lote con ubicación válida
+          const primerLote = data.lote.find(
+            (l: Lote) =>
+              l.fk_id_ubicacion &&
+              l.fk_id_ubicacion.latitud &&
+              l.fk_id_ubicacion.longitud
+          );
+
+          if (primerLote) {
+            const lat = parseFloat(primerLote.fk_id_ubicacion.latitud);
+            const lng = parseFloat(primerLote.fk_id_ubicacion.longitud);
+            setCenter([lat, lng]);
+          }
+        } else {
+          console.error("La respuesta de /lotes/ no es un arreglo:", data);
+        }
       })
       .catch((error) => {
-        console.error("Error al obtener los datos del lote:", error);
+        console.error("Error al obtener los lotes:", error);
       });
-  };
+  }, []);
 
   return (
     <div style={{ height: "700px", width: "100%" }}>
       <MapContainer
-        center={position || [1.8667, -76.0145]} // Si no hay posición seleccionada, usa la inicial
+        center={center}
         zoom={15}
         scrollWheelZoom={true}
         style={{ height: "100%", width: "100%" }}
       >
-        {/* Capa de mosaicos de OpenStreetMap */}
+        <CambiarCentroMapa center={center} />
+
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
 
-        {/* Si hay una ubicación seleccionada, mostrar un marcador */}
-        {position && (
-          <Marker position={position}>
-            <Popup>
-              {lote ? (
-                <>
-                  <h3>{lote.nombre_lote}</h3>
-                  <p>{lote.dimencion}</p>
-                  <p>{lote.estado}</p>
-                  {/* Puedes agregar más información sobre el lote aquí */}
-                </>
-              ) : (
-                <p>Cargando información del lote...</p>
-              )}
-            </Popup>
-          </Marker>
-        )}
+        {lotes.map((lote, index) => {
+          const ubicacion = lote.fk_id_ubicacion;
+          if (!ubicacion) return null;
 
-        {/* Componente para manejar la selección de ubicación */}
-        <LocationPicker onLocationSelect={handleLocationSelect} />
+          const lat = parseFloat(ubicacion.latitud);
+          const lng = parseFloat(ubicacion.longitud);
+
+          return (
+            <Marker key={`marker-${lote.id}-${index}`} position={[lat, lng]}>
+              <Popup>
+                <div style={{ minWidth: "180px" }}>
+                  <h1 className="font-bold text-lg">{lote.nombre_lote || "Sin nombre"}</h1>
+                  <p><strong>Dimensión:</strong> {lote.dimension || "No especificada"}</p>
+                  <p><strong>Estado:</strong> {lote.estado || "Sin estado"}</p>
+                  <p>
+                    <strong>Latitud:</strong> {ubicacion.latitud}<br />
+                    <strong>Longitud:</strong> {ubicacion.longitud}
+                  </p>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );
