@@ -107,7 +107,7 @@ const ActualizarAsignacion = () => {
     actualizarAsignacion.mutate(asignacionActualizada, {
       onSuccess: () => {
         console.log("✅ Asignación actualizada correctamente");
-        navigate("/asignacion_actividad");
+        navigate("/actividad");
       },
       onError: (error: any) => {
         console.error("❌ Error al actualizar la asignación:", error.message || error);
