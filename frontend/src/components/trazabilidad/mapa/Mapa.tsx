@@ -5,7 +5,6 @@ import axios from "axios";
 import "leaflet/dist/leaflet.css";
 
 const apiUrl = import.meta.env.VITE_API_URL;
-const token = localStorage.getItem("token");
 
 interface Ubicacion {
   latitud: string;
@@ -32,6 +31,7 @@ const Mapa: React.FC = () => {
   const [center, setCenter] = useState<LatLngExpression>([1.8667, -76.0145]);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     axios
       .get(`${apiUrl}lotes/`, {
         headers: {
