@@ -25,7 +25,7 @@ const fetchEspecie = async (): Promise<EspecieConTipo[]> => {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Token de autenticación no encontrado");
 
-    const { data } = await axios.get(`${apiUrl}especie`, {
+    const { data } = await axios.get(`${apiUrl}especie/`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
