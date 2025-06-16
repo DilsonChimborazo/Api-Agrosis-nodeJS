@@ -13,6 +13,7 @@ const Asignaciones = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModalHandler = useCallback((asignacion: Record<string, any>) => {
+    // Guardamos la asignación original, no el objeto mapeado
     setSelectedAsignacion(asignacion);
     setIsModalOpen(true);
   }, []);
@@ -34,7 +35,6 @@ const Asignaciones = () => {
     const doc = new jsPDF();
     doc.text('Lista de Asignaciones', 14, 10);
 
-    // Tabla de todas las asignaciones
     let currentY = 20;
     autoTable(doc, {
       head: [['ID', 'Fecha', 'Actividad', 'Usuario', 'Email']],
@@ -49,9 +49,8 @@ const Asignaciones = () => {
       ]),
       startY: currentY,
     });
-    currentY = doc.internal.pageSize.height - 10; // Ajuste aproximado
+    currentY = doc.internal.pageSize.height - 10;
 
-    // Generar reporte agrupado por actividad
     const actividadReporte = asignaciones.reduce((acc, asignacion) => {
       const nombre = asignacion.fk_id_actividad?.nombre_actividad || 'Sin nombre';
       if (!acc[nombre]) {
@@ -61,16 +60,13 @@ const Asignaciones = () => {
       return acc;
     }, {} as Record<string, any[]>);
 
-    // Añadir el reporte al PDF
     doc.text('Reporte de Actividades por Nombre', 14, currentY + 10);
     currentY += 20;
 
     Object.entries(actividadReporte).forEach(([nombre, asignacionesGrupo]) => {
-      // Añadir título con el nombre de la actividad y la cantidad
       doc.text(`${nombre} (Cantidad: ${asignacionesGrupo.length})`, 14, currentY);
       currentY += 10;
 
-      // Añadir tabla con los detalles de las asignaciones
       autoTable(doc, {
         head: [['ID', 'Fecha', 'Actividad', 'Usuario', 'Email']],
         body: asignacionesGrupo.map((asignacion) => [
@@ -85,7 +81,7 @@ const Asignaciones = () => {
         startY: currentY,
       });
 
-      currentY += 10; // Espacio adicional para la siguiente sección
+      currentY += 10;
     });
 
     doc.save('asignaciones.pdf');
@@ -122,6 +118,7 @@ const Asignaciones = () => {
         <Tabla
           title="Lista de Asignaciones"
           headers={headers}
+          // Pasamos el objeto asignacion original a onClickAction
           data={asignaciones.map((asignacion) => ({
             id: asignacion.id,
             fecha: asignacion.fecha
@@ -130,8 +127,9 @@ const Asignaciones = () => {
             actividad: asignacion.fk_id_actividad?.nombre_actividad || 'Sin actividad',
             usuario: asignacion.fk_id_actividad?.fk_identificacion?.nombre || 'Sin usuario',
             email: asignacion.fk_id_actividad?.fk_identificacion?.email || 'Sin email',
+            original: asignacion, // Añadimos el objeto original
           }))}
-          onClickAction={openModalHandler}
+          onClickAction={(row) => openModalHandler(row.original)} // Pasamos el objeto original
           onUpdate={handleUpdate}
           onCreate={handleCreate}
           createButtonTitle="Crear"

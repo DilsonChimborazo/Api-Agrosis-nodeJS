@@ -1,42 +1,42 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAsignacionporId } from "../../../hooks/trazabilidad/asignacion/useAsignacionPorId";
-import { useEditarAsignacion } from "../../../hooks/trazabilidad/asignacion/useEditarAsignacion";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAsignacionporId } from "@/hooks/trazabilidad/asignacion/useAsignacionPorId";
+import { useEditarAsignacion } from "@/hooks/trazabilidad/asignacion/useEditarAsignacion";
 import { useUsuarios } from "@/hooks/usuarios/useUsuarios";
 import { useAsignacion } from "@/hooks/trazabilidad/asignacion/useAsignacion";
 import Formulario from "../../globales/Formulario";
 
 const ActualizarAsignacion = () => {
   const { id } = useParams();
-  const { data: asignacion, isLoading, error } = useAsignacionporId(id);
-  const actualizarAsignacion = useEditarAsignacion();
-  const { data: usuarios = [] } = useUsuarios();
-  const { data: asignaciones = [] } = useAsignacion();
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
+  const { data: asignacion, isLoading, error: asignacionError } = useAsignacionporId(id);
+  const { data: usuarios = [], isLoading: isLoadingUsuarios, error: usuariosError } = useUsuarios();
+  const { data: asignaciones = [], isLoading: isLoadingAsignaciones, error: asignacionesError } = useAsignacion();
+  const mutation = useEditarAsignacion();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [formData, setFormData] = useState<{ [key: string]: string }>({
     fecha: "",
     fk_id_actividad: "",
     fk_identificacion: "",
   });
-  const [isDataLoaded, setIsDataLoaded] = useState(false); // Estado para rastrear la carga
 
-  // Cargar los datos de la asignación en el formulario cuando se obtengan
+  // Cargar datos iniciales desde la asignación
   useEffect(() => {
-    if (asignacion && Object.keys(asignacion).length > 0) {
-      console.log("🔄 Datos de la asignación recibidos:", JSON.stringify(asignacion, null, 2));
+    if (asignacion) {
+      console.log("🔄 Datos de la asignación recibidos:", asignacion);
       const initialData = {
         fecha: asignacion.fecha || "",
-        fk_id_actividad: asignacion.fk_id_actividad?.toString() || "",
-        fk_identificacion: asignacion.fk_identificacion?.toString() || "",
+        fk_id_actividad: asignacion.fk_id_actividad?.id?.toString() || asignacion.fk_id_actividad || "",
+        fk_identificacion: asignacion.fk_identificacion?.id?.toString() || asignacion.fk_identificacion || "",
       };
       setFormData(initialData);
-      setIsDataLoaded(true); // Marcar como cargado
-      console.log("📋 formData inicializado con:", JSON.stringify(initialData, null, 2));
+      console.log("📋 formData inicializado con:", initialData);
     }
   }, [asignacion]);
 
-  // Mapeo de opciones para el select de actividades
+  // Filtrar actividades únicas
   const actividadOptions = Array.from(
     new Map(
       asignaciones.map((asignacion) => [
@@ -49,30 +49,35 @@ const ActualizarAsignacion = () => {
     ).values()
   );
 
-  // Mapeo de opciones para el select de usuarios
+  // Mapeo de usuarios
   const usuarioOptions = usuarios.map((usr) => ({
-    value: usr.id.toString(),
-    label: `${usr.nombre || "Sin nombre"} ${usr.apellido || ""}`.trim() || "Usuario sin nombre",
+    value: usr.identificacion?.toString() || (usr.identificacion?.toString() || ""),
+    label: `${usr.nombre || "Sin nombre"} ${usr.email || ""}`.trim() || "Usuario sin nombre",
   }));
 
-  // Preseleccionar la opción correcta en los selects
-  const getInitialSelectValue = (field: string, options: { value: string; label: string }[]) => {
-    if (formData[field] && options.some((opt) => opt.value === formData[field])) {
-      return formData[field];
+  // Depuración
+  useEffect(() => {
+    console.log("Usuarios disponibles:", usuarios);
+    console.log("Opciones de usuario:", usuarioOptions);
+    console.log("Asignaciones disponibles:", asignaciones);
+    console.log("Opciones de actividad únicas:", actividadOptions);
+    if (usuarioOptions.length === 0 && !isLoadingUsuarios) {
+      console.warn("No hay usuarios disponibles para seleccionar:", usuarios);
     }
-    return "";
-  };
+    if (actividadOptions.length === 0 && !isLoadingAsignaciones) {
+      console.warn("No hay actividades disponibles para seleccionar:", asignaciones);
+    }
+  }, [usuarioOptions, isLoadingUsuarios, usuarios, asignaciones, actividadOptions, isLoadingAsignaciones]);
 
-  // Definir los campos del formulario
+  // Definir campos del formulario
   const formFields = [
-    { id: "fecha", label: "Fecha", type: "date", required: true, value: formData.fecha },
+    { id: "fecha", label: "Fecha", type: "date", required: true },
     {
       id: "fk_id_actividad",
       label: "Actividad",
       type: "select",
       options: actividadOptions,
       required: true,
-      value: getInitialSelectValue("fk_id_actividad", actividadOptions),
     },
     {
       id: "fk_identificacion",
@@ -80,58 +85,93 @@ const ActualizarAsignacion = () => {
       type: "select",
       options: usuarioOptions,
       required: true,
-      value: getInitialSelectValue("fk_identificacion", usuarioOptions),
     },
   ];
 
-  // Manejar el envío del formulario
+  // Manejar envío del formulario
   const handleSubmit = (data: { [key: string]: string }) => {
-    if (!id) return;
+    setErrorMessage(null);
+
+    console.log("FormData recibido:", data);
 
     const requiredFields = ["fecha", "fk_id_actividad", "fk_identificacion"];
     const missingFields = requiredFields.filter((field) => !data[field] || data[field] === "");
     if (missingFields.length > 0) {
-      console.warn(`Campos obligatorios faltantes: ${missingFields.join(", ")}`);
+      setErrorMessage(`Los siguientes campos son obligatorios: ${missingFields.join(", ")}`);
       return;
     }
 
     const asignacionActualizada = {
       id: Number(id),
-      fecha: data.fecha || "",
-      fk_id_actividad: parseInt(data.fk_id_actividad) || 0,
-      fk_identificacion: parseInt(data.fk_identificacion) || 0,
+      fecha: data.fecha,
+      fk_id_actividad: data.fk_id_actividad,
+      fk_identificacion: data.fk_identificacion,
     };
 
-    console.log("🚀 Enviando datos al backend:", asignacionActualizada);
+    console.log("🚀 Enviando asignación al backend:", asignacionActualizada);
 
-    actualizarAsignacion.mutate(asignacionActualizada, {
-      onSuccess: () => {
-        console.log("✅ Asignación actualizada correctamente");
+    mutation.mutate(asignacionActualizada, {
+      onSuccess: (response) => {
+        console.log("✅ Asignación actualizada con éxito:", response);
+        queryClient.invalidateQueries({ queryKey: ["asignaciones_actividades"] });
         navigate("/actividad");
       },
       onError: (error: any) => {
-        console.error("❌ Error al actualizar la asignación:", error.message || error);
+        console.error("❌ Error al actualizar asignación:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+        });
+        setErrorMessage(
+          error.response?.data?.msg || error.message || "Error al actualizar la asignación. Por favor, intenta de nuevo."
+        );
       },
     });
   };
 
-  // Mostrar estados de carga o error
-  if (isLoading) return <div className="text-gray-500">Cargando datos...</div>;
-  if (error) return <div className="text-red-500">Error al cargar la asignación: {error.message}</div>;
-  if (!isDataLoaded) return <div className="text-gray-500">Cargando formulario...</div>;
+  // Estados de carga y error
+  if (isLoading || isLoadingUsuarios || isLoadingAsignaciones) {
+    return <div className="text-center text-gray-500">Cargando datos...</div>;
+  }
 
-  console.log("📌 Estado actual de formData:", JSON.stringify(formData, null, 2));
+  if (asignacionError || usuariosError || asignacionesError) {
+    return (
+      <div className="text-center text-red-500">
+        Error al cargar los datos: {asignacionError?.message || usuariosError?.message || asignacionesError?.message}
+      </div>
+    );
+  }
+
+  if (usuarioOptions.length === 0 && !isLoadingUsuarios) {
+    return (
+      <div className="text-center text-red-500">
+        No hay usuarios disponibles para seleccionar.
+      </div>
+    );
+  }
+
+  if (actividadOptions.length === 0 && !isLoadingAsignaciones) {
+    return (
+      <div className="text-center text-red-500">
+        No hay actividades disponibles para seleccionar.
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto p-4">
+      {errorMessage && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">
+          {errorMessage}
+        </div>
+      )}
       <Formulario
         fields={formFields}
         onSubmit={handleSubmit}
-        isError={actualizarAsignacion.isError}
-        isSuccess={actualizarAsignacion.isSuccess}
+        isError={mutation.isError}
+        isSuccess={mutation.isSuccess}
         title="Actualizar Asignación"
         initialValues={formData}
-        key={JSON.stringify(formData)}
       />
     </div>
   );
